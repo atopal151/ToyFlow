@@ -1,7 +1,10 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, library_private_types_in_public_api
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../LoginScreen/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth ekleniyor
+import '../LoginScreen/loginScreen.dart'; // Giriş ekranı
+import '../adminPage/adminHomeScreen/adminHomeScreen.dart';
+import '../usersPage/dikaHomeScreen/dikaHomeScreen.dart'; // Kullanıcı ana sayfası
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,11 +39,32 @@ class _SplashScreenState extends State<SplashScreen>
     // Kontrolcüyü başlat
     _controller.forward();
 
-    // 3 saniye sonra LoginScreen'e yönlendir
-    Timer(const Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+    // 2 saniye sonra yönlendirme
+    Timer(const Duration(seconds: 2), () async {
+      // Kullanıcı oturum durumunu kontrol et
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Kullanıcı zaten oturum açmış
+        // Firestore'dan rolünü almayı düşün
+        // Burada rol kontrolü yaparak yönlendirme yapabilirsiniz
+        // Örnek: String role = await getUserRole(user.uid);
+        String role = 'admin'; // Örnek rol, bunu Firestore'dan alın
+
+        if (role == 'admin') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const DikaHomeScreen()),
+          );
+        }
+      } else {
+        // Kullanıcı oturum açmamış
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     });
   }
 

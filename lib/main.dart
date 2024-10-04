@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:toyflow/screens/SplashScreen/splashScreen.dart';
-
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // Firebase'i başlat
   runApp(const MyApp());
 }
 

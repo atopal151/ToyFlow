@@ -1,0 +1,5 @@
+<resources>
+    <string name="default_web_client_id">1:690936368109:web:someid</string>
+    <string name="firebase_database_url">https://toyflow-9f294.firebaseio.com</string>
+    <string name="ga_trackingId">G-XXXXXXXXXX</string> <!-- Eğer Google Analytics kullanıyorsan -->
+</resources>
