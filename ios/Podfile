@@ -35,9 +35,9 @@ target 'Runner' do
   pod 'Firebase/Analytics' # Firebase Analytics için
 
   # İsterseniz diğer Firebase bileşenlerini ekleyin
-  # pod 'Firebase/Auth' # Firebase Authentication
-  # pod 'Firebase/Firestore' # Firebase Firestore
-  # pod 'Firebase/Crashlytics' # Firebase Crashlytics
+  pod 'Firebase/Auth' # Firebase Authentication
+  pod 'Firebase/Firestore' # Firebase Firestore
+  pod 'Firebase/Crashlytics' # Firebase Crashlytics
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

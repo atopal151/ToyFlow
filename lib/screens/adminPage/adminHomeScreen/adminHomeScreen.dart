@@ -1,38 +1,52 @@
-// ignore_for_file: file_names, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth'u ekle
-import 'package:toyflow/screens/LoginScreen/loginScreen.dart';
+import 'package:get/get.dart';
+import 'package:toyflow/screens/adminPage/adminSettingScreen/adminSettingScreen.dart';
+import '../../../services/product_services.dart'; // Servisi içe aktar
 
-class AdminHomeScreen extends StatelessWidget {
+class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
 
-  Future<void> _logout(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut(); // Kullanıcıyı oturumdan çıkar
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()), // Giriş ekranına yönlendir
-      );
-    } catch (e) {
-      // Hata durumunda bir şey yap
-      print("Oturum kapatma hatası: $e");
-    }
+  @override
+  _AdminHomeScreenState createState() => _AdminHomeScreenState();
+}
+
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  // ProductServices kontrolörünü al
+  final ProductServices productServices = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Admin Paneli"),
+        title: Obx(() => Text(
+              productServices.userEmail.value, // Kullanıcının e-posta adresini göster
+              style: const TextStyle(fontSize: 20),
+            )),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout), // Çıkış ikonu
-            onPressed: () => _logout(context), // Oturumu kapat
+            icon: const Icon(Icons.settings),
+            onPressed: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AdminSettingScreen()),
+              ),
+            },
           ),
         ],
       ),
       body: const Center(
-        child: Text("Admin Ana Sayfası"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 20),
+            Text("Admin Ana Sayfası"),
+          ],
+        ),
       ),
     );
   }

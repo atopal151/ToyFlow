@@ -1,9 +1,13 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminHomeScreen/adminHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/dikaHomeScreen/dikaHomeScreen.dart';
-import '../registerPage/registerScreen.dart';
+
+import '../../services/product_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +16,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -22,7 +27,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   String email = '';
   String password = '';
   bool isLoading = false; // Yükleme durumunu takip etmek için
-  bool isControllerDisposed = false; // Kontrolcünün boşaltılıp boşaltılmadığını takip etmek için
+  bool isControllerDisposed =
+      false; // Kontrolcünün boşaltılıp boşaltılmadığını takip etmek için
 
   @override
   void initState() {
@@ -42,10 +48,12 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   void _startAnimation() {
-    if (!isControllerDisposed && !_controller.isAnimating) { // Kontrolcü boşaltılmadıysa ve animasyon çalışmıyorsa başlat
+    if (!isControllerDisposed && !_controller.isAnimating) {
+      // Kontrolcü boşaltılmadıysa ve animasyon çalışmıyorsa başlat
       _controller.forward(from: 0.0);
       Future.delayed(const Duration(seconds: 2), () {
-        if (!isControllerDisposed) { // Animasyon kontrolcüsü boşaltılmadıysa tekrarla
+        if (!isControllerDisposed) {
+          // Animasyon kontrolcüsü boşaltılmadıysa tekrarla
           _controller.repeat();
         }
       });
@@ -54,33 +62,59 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   Future<void> _login() async {
     setState(() {
-      isLoading = true; // Giriş işlemi başlarken yükleme durumunu ayarlıyoruz
+      isLoading = true;
     });
 
-    _startAnimation(); // Animasyonu başlat
-
     try {
+      _startAnimation();
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Kullanıcının rolünü Firestore'dan al
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
-      
-      if (userDoc.exists) {
-        String role = userDoc['role']; // 'role' alanı Firestore'daki belgenizden alınır
-        if (role == 'admin') {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AdminHomeScreen()));
+      // Giriş yapıldıktan sonra email'i güncelle
+      final ProductServices productServices = Get.find();
+      productServices.userEmail.value =
+          userCredential.user?.email ?? 'Email bulunamadı';
+
+      // Kullanıcı verisini Firestore'dan al
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        print(userData.containsKey("role"));
+        // Rol alanı mevcut mu kontrol et
+        if (userData.containsKey('role')) {
+          String role = userData['role'];
+
+          if (role == 'admin') {
+            // Eğer rol admin ise admin sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AdminHomeScreen()));
+          } else {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DikaHomeScreen()));
+          }
         } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DikaHomeScreen()));
+          // Rol bulunamadıysa hata ver
+          print("Kullanıcı rolü bulunamadı.");
         }
+      } else {
+        print("Kullanıcı veritabanında bulunamadı.");
       }
     } on FirebaseAuthException catch (e) {
       print("Giriş yapılamadı: ${e.message}");
     } finally {
       setState(() {
-        isLoading = false; // Giriş işlemi tamamlandığında yükleme durumunu kapat
+        isLoading = false;
       });
     }
   }
@@ -88,141 +122,140 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Ekranı küçültmek için
       body: SingleChildScrollView(
+        // Kaydırılabilir hale getir
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center, // Eşit kenar ortalamak için
               children: [
-                AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationZ(_animation.value),
-                      child: Image.asset(
-                        'images/iconozgn.png',
-                        width: 200.0,
-                        height: 100.0,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 40.0),
-
-                Container(
-                  width: 320.0,
-                  padding: const EdgeInsets.all(30.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20.0),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 0.9,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height *
+                      0.25, // Ekranın %25'i kadar yer ayır
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 40.0, right: 40.0, bottom: 10.0, top: 30.0),
+                    child: AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationZ(_animation.value),
+                          child: Image.asset(
+                            'images/iconozgn.png',
+                            width: 200.0,
+                            height: 100.0,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 40),
-                      TextField(
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.person, color: Colors.grey),
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            borderSide: BorderSide(
+                ),
+                SizedBox(
+                  width: 320.0,
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20.0),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 0.9,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        TextField(
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.person, color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                color: Colors.grey,
+                                width: 0.9,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                            labelText: 'Kullanıcı Adı',
+                            labelStyle: TextStyle(
                               color: Colors.grey,
-                              width: 0.9,
+                              fontSize: 13,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 0.5,
-                            ),
-                          ),
-                          labelText: 'Kullanıcı Adı',
-                          labelStyle: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              email = value;
+                            });
+                          },
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            email = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20.0),
-
-                      TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            borderSide: BorderSide(
+                        const SizedBox(height: 20.0),
+                        TextField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                color: Colors.grey,
+                                width: 0.9,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0)),
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 0.5,
+                              ),
+                            ),
+                            labelText: 'Şifre',
+                            labelStyle: TextStyle(
                               color: Colors.grey,
-                              width: 0.9,
+                              fontSize: 13,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 0.5,
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 40.0),
+                        ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  _login(); // Giriş işlemi
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF9FCE4D),
+                            minimumSize: const Size(double.infinity, 50.0),
+                          ),
+                          child: const Text(
+                            'Giriş Yap',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          labelText: 'Şifre',
-                          labelStyle: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            password = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 40.0),
-
-                      ElevatedButton(
-                        onPressed: isLoading ? null : () {
-                          _login(); // Giriş işlemi
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF9FCE4D),
-                          minimumSize: const Size(double.infinity, 50.0),
-                        ),
-                        child: const Text(
-                          'Giriş Yap',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                          );
-                        },
-                        child: const Text(
-                          'Kayıt Ol',
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(height: 40.0),
               ],
             ),
           ),

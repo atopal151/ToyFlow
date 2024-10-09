@@ -1,10 +1,12 @@
-// ignore_for_file: file_names, library_private_types_in_public_api
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Firebase Auth ekleniyor
-import '../LoginScreen/loginScreen.dart'; // Giriş ekranı
+import 'package:firebase_auth/firebase_auth.dart';
+import '../LoginScreen/loginScreen.dart';
 import '../adminPage/adminHomeScreen/adminHomeScreen.dart';
-import '../usersPage/dikaHomeScreen/dikaHomeScreen.dart'; // Kullanıcı ana sayfası
+import '../usersPage/dikaHomeScreen/dikaHomeScreen.dart';
+import '../../services/auth_service.dart'; // AuthService'ı ekleyin
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,39 +19,30 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
+  final AuthService _authService = AuthService(); // AuthService örneği
 
   @override
   void initState() {
     super.initState();
-    // Animasyon kontrolcüsü
     _controller = AnimationController(
-      duration: const Duration(seconds: 2), // Animasyon süresi
+      duration: const Duration(seconds: 2),
       vsync: this,
     );
 
-    // Animasyonu tanımla (düşüş ve hafif zıplama)
     _animation = Tween<Offset>(
-      begin: const Offset(0, -1), // Yukarıdan başla
-      end: const Offset(0, 0.1), // Normal pozisyona git (hafif zıplama)
+      begin: const Offset(0, -1),
+      end: const Offset(0, 0.1),
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.bounceOut, // Bounce etkisi
+      curve: Curves.bounceOut,
     ));
 
-    // Kontrolcüyü başlat
     _controller.forward();
 
-    // 2 saniye sonra yönlendirme
     Timer(const Duration(seconds: 2), () async {
-      // Kullanıcı oturum durumunu kontrol et
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Kullanıcı zaten oturum açmış
-        // Firestore'dan rolünü almayı düşün
-        // Burada rol kontrolü yaparak yönlendirme yapabilirsiniz
-        // Örnek: String role = await getUserRole(user.uid);
-        String role = 'admin'; // Örnek rol, bunu Firestore'dan alın
-
+        String role = await _authService.getUserRole(user.uid); // Rolü al
         if (role == 'admin') {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
@@ -60,7 +53,6 @@ class _SplashScreenState extends State<SplashScreen>
           );
         }
       } else {
-        // Kullanıcı oturum açmamış
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
@@ -70,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _controller.dispose(); // Kontrolcü temizleme
+    _controller.dispose();
     super.dispose();
   }
 
@@ -79,15 +71,15 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Center(
         child: SlideTransition(
-          position: _animation, // Animasyonu uygula
+          position: _animation,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'images/iconozgn.png', // İkonun yolu
-                width: 100.0, // Genişlik
-                height: 100.0, // Yükseklik
+                'images/iconozgn.png',
+                width: 100.0,
+                height: 100.0,
               ),
             ],
           ),
