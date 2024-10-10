@@ -11,11 +11,5 @@ class FirestoreService {
     });
   }
 
-  Future<String?> getUserRole(String userId) async {
-    DocumentSnapshot snapshot = await _firestore.collection('users').doc(userId).get();
-    if (snapshot.exists) {
-      return snapshot['role'];
-    }
-    return null;
-  }
+ 
 }

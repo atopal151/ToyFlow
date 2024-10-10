@@ -10,13 +10,22 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<User?> createUser(String email, String password) async {
+  Future<User?> createUser(String email, String password, String firstName, String lastName,String role, String workshop) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Kullanıcıyı Firestore'a ekle
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'role': role,
+        'workshop':workshop
+      });
+
       return userCredential.user;
     } catch (e) {
       print("Kullanıcı oluşturulamadı: $e");
@@ -29,7 +38,6 @@ class AuthService {
       DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
-        // Burada 'data()' metodunun geri dönüş tipini belirtiyoruz
         Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
         return data?['role'] ?? 'user'; // Varsayılan rol 'user'
       }
@@ -46,8 +54,7 @@ class AuthService {
       print("Oturum kapatıldı.");
 
       // LoginScreen'e yönlendir
-      Get.offAll(() =>
-          const LoginScreen()); // Tüm sayfa yığınını temizleyip LoginScreen'e yönlendir
+      Get.offAll(() => const LoginScreen()); // Tüm sayfa yığınını temizleyip LoginScreen'e yönlendir
     } catch (e) {
       print("Oturum kapatma hatası: $e");
     }

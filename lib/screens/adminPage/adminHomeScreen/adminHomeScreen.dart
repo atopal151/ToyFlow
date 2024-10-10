@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/adminSettingScreen.dart';
@@ -23,13 +25,26 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text(
-              productServices.userEmail.value, // Kullanıcının e-posta adresini göster
-              style: const TextStyle(fontSize: 20),
-            )),
+        title: Obx(() => Row(
+          children: [
+            const CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 25, // Avatarın büyüklüğü
+              child: Icon(
+                Icons.account_circle, // Koymak istediğin ikon
+                size: 35, // İkonun boyutu
+                color: Colors.black87, // İkonun rengi
+              ),
+            ),
+            Text(
+                  "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
+                  style: const TextStyle(fontSize: 15),
+                ),
+          ],
+        )),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.settings,color: Colors.grey,),
             onPressed: () => {
               Navigator.push(
                 context,

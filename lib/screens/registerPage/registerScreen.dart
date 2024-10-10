@@ -1,9 +1,6 @@
 // ignore_for_file: avoid_print, library_private_types_in_public_api
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
-import '../../services/firestore_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,34 +11,20 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final AuthService _authService = AuthService();
-  final FirestoreService _firestoreService = FirestoreService();
 
-  final TextEditingController _adController = TextEditingController();
-  final TextEditingController _soyadController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController();
-  final TextEditingController _workshopController = TextEditingController();
+  String? _selectedRole; // Seçilen rol
+  String? _selectedWorkshop; // Seçilen atölye
 
-  Future<void> registerUser() async {
+  // Rol ve atölye listeleri
+  final List<String> roles = ['Dokuma', 'Kesim', 'Dikim', 'Dolum', 'Paketleme'];
+  final List<String> workshops = ['Dokuma Atölyesi', 'Kesim Atölyesi', 'Dikim Atölyesi', 'Dolum Atölyesi', 'Paketleme Atölyesi'];
 
-    String ad = _adController.text;
-    String soyad = _soyadController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    String role = _roleController.text;
-    String workshop = _workshopController.text;
-
-    User? user = await _authService.createUser(email, password);
-    if (user != null) {
-      await _firestoreService.saveUserRole(user.uid, role, workshop, ad, soyad);
-      print("Kullanıcı oluşturuldu ve rol atandı.");
-      // Başka bir ekrana yönlendirme veya kullanıcıya bir mesaj gösterme
-    } else {
-      print("Kullanıcı oluşturulamadı.");
-      // Hata mesajı gösterme
-    }
-  }
+  // Yüklenme durumu için değişken
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,68 +34,150 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(30.0),
           child: Column(
             children: [
-               TextField(
-                controller: _adController,
-                decoration: const InputDecoration(labelText: "Ad"),
+              TextField(
+                controller: _firstNameController,
+                decoration: TextFieldStyles.defaultDecoration('Ad', Icons.person),
               ),
-               TextField(
-                controller: _soyadController,
-                decoration: const InputDecoration(labelText: "Soyad"),
+              const SizedBox(height: 10,),
+              TextField(
+                controller: _lastNameController,
+                decoration: TextFieldStyles.defaultDecoration('Soyad', Icons.person),
               ),
+              const SizedBox(height: 10,),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: "E-posta"),
+                decoration: TextFieldStyles.defaultDecoration('E-posta', Icons.email),
               ),
+              const SizedBox(height: 10,),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: "Şifre"),
+                decoration: TextFieldStyles.defaultDecoration('Şifre', Icons.lock),
                 obscureText: true,
               ),
-              TextField(
-                controller: _roleController,
-                decoration: const InputDecoration(labelText: "Rol"),
+              const SizedBox(height: 10,),
+              // Rol Dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedRole,
+                hint: const Text('Rol Seçin'),
+                items: roles.map((String role) {
+                  return DropdownMenuItem<String>(
+                    value: role,
+                    child: Text(role),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRole = newValue; // Seçilen rolü güncelle
+                  });
+                },
+                decoration: TextFieldStyles.defaultDecoration('Rol', Icons.work),
               ),
-              TextField(
-                controller: _workshopController,
-                decoration: const InputDecoration(labelText: "Atölye"),
+              const SizedBox(height: 10,),
+              // Atölye Dropdown
+              DropdownButtonFormField<String>(
+                value: _selectedWorkshop,
+                hint: const Text('Atölye Seçin'),
+                items: workshops.map((String workshop) {
+                  return DropdownMenuItem<String>(
+                    value: workshop,
+                    child: Text(workshop),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedWorkshop = newValue; // Seçilen atölyeyi güncelle
+                  });
+                },
+                decoration: TextFieldStyles.defaultDecoration('Atölye', Icons.business),
               ),
               const SizedBox(height: 20),
               Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  registerUser();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const  Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // İkon ve metni ortala
-                  children: [
-                     Text(
-                      'Kaydet',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // Yazı rengi
-                      ),
+                padding: const EdgeInsets.all(10.0),
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : () async { // Buton tıklanabilirliği
+                    setState(() {
+                      isLoading = true; // Yüklenme durumunu başlat
+                    });
+
+                    // Kullanıcı kaydetme işlemi
+                    await _authService.createUser(
+                      _emailController.text,
+                      _passwordController.text,
+                      _firstNameController.text,
+                      _lastNameController.text,
+                      _selectedRole ?? '', // Seçilen rolü al
+                      _selectedWorkshop ?? '', // Seçilen atölyeyi al
+                    );
+
+                    // Kayıt tamamlandığında geri dön
+                    Navigator.of(context).pop(); 
+
+                    setState(() {
+                      isLoading = false; // Yüklenme durumunu bitir
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
+                  ),
+                  child: isLoading
+                      ? const Padding(
+                        padding:  EdgeInsets.all(8.0),
+                        child:  CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                      )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center, // İkon ve metni ortala
+                          children: [
+                            Text(
+                              'Kaydet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white, // Yazı rengi
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
-            ),
-              
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class TextFieldStyles {
+  static InputDecoration defaultDecoration(String label, IconData icon) {
+    return InputDecoration(
+      prefixIcon: Icon(icon, color: Colors.grey),
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        borderSide: BorderSide(
+          color: Colors.grey,
+          width: 0.9,
+        ),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        borderSide: BorderSide(
+          color: Colors.black,
+          width: 0.5,
+        ),
+      ),
+      labelText: label,
+      labelStyle: const TextStyle(
+        color: Colors.grey,
+        fontSize: 13,
       ),
     );
   }

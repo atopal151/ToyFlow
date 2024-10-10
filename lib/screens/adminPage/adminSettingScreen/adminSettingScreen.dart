@@ -67,18 +67,24 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
           const Center(
             child: CircleAvatar(
               backgroundColor: Colors.transparent,
-              radius: 80, // Avatarın büyüklüğü
+              radius: 100, // Avatarın büyüklüğü
               child: Icon(
                 Icons.account_circle, // Koymak istediğin ikon
-                size: 80, // İkonun boyutu
+                size: 100, // İkonun boyutu
                 color: Colors.grey, // İkonun rengi
               ),
             ),
           ),
+          const Text("Hoşgeldiniz", style:  TextStyle(fontSize: 20)),
+          Obx(() => Text(
+              "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
+              style: const TextStyle(fontSize: 25),
+            )),
           Obx(() => Text(
               productServices.userEmail.value, // Kullanıcının e-posta adresini göster
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 18),
             )),
+          const SizedBox(height: 40,),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
