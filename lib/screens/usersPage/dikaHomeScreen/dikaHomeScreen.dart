@@ -1,9 +1,10 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/product_services.dart';
+
+import '../../../services/CustomAppBar.dart';
 
 class DikaHomeScreen extends StatefulWidget {
   const DikaHomeScreen({super.key});
@@ -13,53 +14,12 @@ class DikaHomeScreen extends StatefulWidget {
 }
 
 class _DikaHomeScreenState extends State<DikaHomeScreen> {
-  final AuthService _authService = Get.find();
-  final ProductServices productServices=Get.find();
+  final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Obx(() => Row(
-          children: [
-            const CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 25, // Avatarın büyüklüğü
-              child: Icon(
-                Icons.account_circle, // Koymak istediğin ikon
-                size: 35, // İkonun boyutu
-                color: Colors.black87, // İkonun rengi
-              ),
-            ),
-            Text(
-                  "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
-                  style: const TextStyle(fontSize: 15),
-                ),
-          ],
-        )), actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: const Icon(Icons.settings,color: Colors.grey,),
-              onPressed: () => {
-                
-              },
-            ),
-          ),
-        ],),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Dikim Atölyesi"),
-            IconButton(
-              icon: const Icon(Icons.logout), // Çıkış ikonu
-              onPressed: () async {
-                await _authService.logout();
-              }, // Oturumu kapat
-            ),
-          ],
-        ),
-      ),
+     appBar: CustomAppBar(workshopName: "Dikim Atölyesi"),
+      body: const Center(),
     );
   }
 }
