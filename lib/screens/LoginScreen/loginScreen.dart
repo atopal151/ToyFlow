@@ -5,11 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminHomeScreen/adminHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/PakaHomeScreen/pakaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dikaHomeScreen/dikaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dokaHomeScreen/dokaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dolaHomeScreen/dolaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/kesaHomeScreen/kesaHomeScreen.dart';
+import 'package:toyflow/screens/usersPage/PakaScreen/pakaHomeScreen.dart';
+import 'package:toyflow/screens/usersPage/dikaScreen/dikaHomeScreen.dart';
+import 'package:toyflow/screens/usersPage/dokaScreen/dokaHomeScreen.dart';
+import 'package:toyflow/screens/usersPage/dolaScreen/dolaHomeScreen.dart';
+import 'package:toyflow/screens/usersPage/kesaScreen/kesaHomeScreen.dart';
 import '../../services/product_services.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -181,14 +181,15 @@ class _LoginScreenState extends State<LoginScreen>
                           transform: Matrix4.rotationZ(_animation.value),
                           child: Image.asset(
                             'images/iconozgn.png',
-                            width: 200.0,
-                            height: 100.0,
+                            width: 100.0,
+                            height: 50.0,
                           ),
                         );
                       },
                     ),
                   ),
                 ),
+                const SizedBox(height: 50,),
                 SizedBox(
                   width: 320.0,
                   child: Container(

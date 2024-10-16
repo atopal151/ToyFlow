@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../LoginScreen/loginScreen.dart';
 import '../adminPage/adminHomeScreen/adminHomeScreen.dart';
-import '../usersPage/dikaHomeScreen/dikaHomeScreen.dart';
-import '../../services/auth_service.dart'; // AuthService'ı ekleyin
+import '../usersPage/PakaScreen/pakaHomeScreen.dart';
+import '../usersPage/dikaScreen/dikaHomeScreen.dart';
+import '../../services/auth_service.dart';
+import '../usersPage/dokaScreen/dokaHomeScreen.dart';
+import '../usersPage/dolaScreen/dolaHomeScreen.dart';
+import '../usersPage/kesaScreen/kesaHomeScreen.dart'; 
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,14 +47,41 @@ class _SplashScreenState extends State<SplashScreen>
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         String role = await _authService.getUserRole(user.uid); // Rolü al
-        if (role == 'admin') {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
-          );
-        } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const DikaHomeScreen()),
-          );
+       if (role == 'admin') {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AdminHomeScreen()));
+        } 
+        else if (role=='Dikim'){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const DikaHomeScreen()));
+        }
+        else if (role=='Dokuma'){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const DokaHomeScreen()));
+        }
+        else if (role=='Dolum'){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const DolaHomeScreen()));
+        }
+        else if (role=='Kesim'){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const KesaHomeScreen()));
+        }
+        else if (role=='Paketleme'){
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PakaHomeScreen()));
         }
       } else {
         Navigator.of(context).pushReplacement(

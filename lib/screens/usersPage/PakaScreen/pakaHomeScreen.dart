@@ -1,26 +1,26 @@
 // ignore_for_file: file_names
 
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/PakaScreen/pakaEditScreen.dart';
 import 'package:toyflow/services/product_services.dart';
 
 import '../../../services/CustomAppBar.dart';
 
-class DolaHomeScreen extends StatefulWidget {
-  const DolaHomeScreen({super.key});
+class PakaHomeScreen extends StatefulWidget {
+  const PakaHomeScreen({super.key});
 
   @override
-  State<DolaHomeScreen> createState() => _DolaHomeScreenState();
+  State<PakaHomeScreen> createState() => _PakaHomeScreenState();
 }
 
-class _DolaHomeScreenState extends State<DolaHomeScreen> {
+class _PakaHomeScreenState extends State<PakaHomeScreen> {
   final ProductServices productServices=Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
-     appBar: CustomAppBar(workshopName: "Dolum Atölyesi"),
+      
+     appBar: CustomAppBar(workshopName: "Paketleme Atölyesi",chatPage: const PakaEditScreen()),
       body: const Center(
         
       ),

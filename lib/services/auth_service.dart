@@ -10,6 +10,8 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+
   Future<User?> createUser(String email, String password, String firstName, String lastName,String role, String workshop) async {
     try {
       UserCredential userCredential =

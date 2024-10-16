@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/kesaScreen/kesaEditScreen.dart';
 import 'package:toyflow/services/product_services.dart';
 
 import '../../../services/CustomAppBar.dart';
@@ -19,7 +20,7 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
     
-     appBar: CustomAppBar(workshopName: "Kesim Atölyesi"),
+     appBar: CustomAppBar(workshopName: "Kesim Atölyesi",chatPage: const  KesaEditScreen()),
       body: const Center(
       ),
     );

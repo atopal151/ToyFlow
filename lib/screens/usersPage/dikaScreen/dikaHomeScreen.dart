@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/product_services.dart';
-
 import '../../../services/CustomAppBar.dart';
+import 'dikaEditScreen.dart';
 
 class DikaHomeScreen extends StatefulWidget {
   const DikaHomeScreen({super.key});
@@ -18,7 +18,7 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: CustomAppBar(workshopName: "Dikim Atölyesi"),
+     appBar: CustomAppBar(workshopName: "Dikim Atölyesi",chatPage: const DikaEditScreen()),
       body: const Center(),
     );
   }
