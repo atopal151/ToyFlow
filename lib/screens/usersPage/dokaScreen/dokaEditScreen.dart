@@ -11,6 +11,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(),     
       body: const Center(child: Text("Dokuma Atölyesi Edit Ekranı"),),);
   }

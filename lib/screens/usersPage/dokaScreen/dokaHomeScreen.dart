@@ -19,7 +19,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
+      backgroundColor: Colors.white,
      appBar: CustomAppBar(workshopName: "Dokuma Atölyesi",chatPage:  const DokaEditScreen()),
       body: const Center(
         

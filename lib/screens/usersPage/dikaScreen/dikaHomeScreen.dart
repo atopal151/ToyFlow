@@ -18,6 +18,7 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
      appBar: CustomAppBar(workshopName: "Dikim Atölyesi",chatPage: const DikaEditScreen()),
       body: const Center(),
     );

@@ -10,6 +10,7 @@ import 'package:toyflow/screens/usersPage/dikaScreen/dikaHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/dokaScreen/dokaHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/dolaScreen/dolaHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/kesaScreen/kesaHomeScreen.dart';
+import 'package:toyflow/services/BottomNavBar.dart';
 import '../../services/product_services.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen>
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => const AdminHomeScreen()));
+                  builder: (context) =>  BottomNavBarWithPages()));
         } 
         else if (role=='Dikim'){
           // Rol admin değilse kullanıcı sayfasına yönlendir
@@ -159,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true, // Ekranı küçültmek için
       body: SingleChildScrollView(
         child: Center(
@@ -207,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen>
                         const SizedBox(height: 10),
                         TextField(
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.person, color: Colors.grey),
+                            prefixIcon: Icon(Icons.person, color: Colors.black),
                             enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
@@ -240,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen>
                         TextField(
                           obscureText: true,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                            prefixIcon: Icon(Icons.lock, color: Colors.black),
                             enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
@@ -278,7 +280,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF9FCE4D),
+                            //backgroundColor: const Color(0xFF9FCE4D),
+                            backgroundColor: Colors.black,
                             minimumSize: const Size(double.infinity, 50.0),
                           ),
                           child: const Text(

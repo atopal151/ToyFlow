@@ -11,6 +11,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(),
       body: const Center(child: Text("Bekleyen İşler")),);
   }

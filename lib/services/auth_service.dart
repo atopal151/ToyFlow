@@ -10,9 +10,10 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  User? get currentUser => _auth.currentUser;
 
-
-  Future<User?> createUser(String email, String password, String firstName, String lastName,String role, String workshop) async {
+  Future<User?> createUser(String email, String password, String firstName,
+      String lastName, String role, String workshop, String gender) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -25,7 +26,8 @@ class AuthService {
         'firstName': firstName,
         'lastName': lastName,
         'role': role,
-        'workshop':workshop
+        'workshop': workshop,
+        'cins': gender
       });
 
       return userCredential.user;
@@ -50,13 +52,29 @@ class AuthService {
     }
   }
 
+  Future<String> getUserCins(String uid) async {
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+        return data?['cins'] ?? 'user';
+      }
+      return 'user';
+    } catch (e) {
+      print("Cinsiyet alınırken hata: $e");
+      return 'user';
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _auth.signOut(); // Firebase oturumu kapat
       print("Oturum kapatıldı.");
 
       // LoginScreen'e yönlendir
-      Get.offAll(() => const LoginScreen()); // Tüm sayfa yığınını temizleyip LoginScreen'e yönlendir
+      Get.offAll(() =>
+          const LoginScreen()); // Tüm sayfa yığınını temizleyip LoginScreen'e yönlendir
     } catch (e) {
       print("Oturum kapatma hatası: $e");
     }

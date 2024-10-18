@@ -11,6 +11,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(), 
       body: const Center(child: Text("Dolum Atölyesi Edit Ekranı"),),);
   }

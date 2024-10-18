@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:toyflow/services/BottomNavBar.dart';
 import '../LoginScreen/loginScreen.dart';
 import '../adminPage/adminHomeScreen/adminHomeScreen.dart';
 import '../usersPage/PakaScreen/pakaHomeScreen.dart';
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => const AdminHomeScreen()));
+                  builder: (context) =>  BottomNavBarWithPages()));
         } 
         else if (role=='Dikim'){
           Navigator.pushReplacement(
@@ -100,6 +101,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: SlideTransition(
           position: _animation,

@@ -19,7 +19,7 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
+      backgroundColor: Colors.white,
      appBar: CustomAppBar(workshopName: "Kesim Atölyesi",chatPage: const  KesaEditScreen()),
       body: const Center(
       ),

@@ -20,7 +20,7 @@ class _DolaHomeScreenState extends State<DolaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
+      backgroundColor: Colors.white,
      appBar: CustomAppBar(workshopName: "Dolum Atölyesi",chatPage: const DolaEditScreen()),
       body: const Center(
         

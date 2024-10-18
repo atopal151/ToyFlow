@@ -11,6 +11,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(),
       body: const Center(child: Text("Users Profile Screen"),),);
   }

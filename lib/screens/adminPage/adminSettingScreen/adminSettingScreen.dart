@@ -17,17 +17,14 @@ class AdminSettingScreen extends StatefulWidget {
 }
 
 class _AdminSettingScreenState extends State<AdminSettingScreen> {
-
   final ProductServices productServices = Get.find();
-  final AuthService _authService=Get.find();
+  final AuthService _authService = Get.find();
 
   Future<void> _logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut(); // Kullanıcıyı oturumdan çıkar
       print("Oturum kapatıldı.");
       Navigator.of(context).pushReplacement(
-
-      
         MaterialPageRoute(
             builder: (context) =>
                 const LoginScreen()), // Giriş ekranına yönlendir
@@ -41,11 +38,8 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Ayarlar", // Kullanıcının e-posta adresini göster
-          style: TextStyle(fontSize: 20),
-        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), // Geri ikonu
           onPressed: () {
@@ -55,7 +49,10 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout), // Çıkış ikonu
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.black,
+            ), // Çıkış ikonu
             onPressed: () async {
               await _authService.logout();
             }, // Oturumu kapat
@@ -63,28 +60,48 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Center(
-            child: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 100, // Avatarın büyüklüğü
-              child: Icon(
-                Icons.account_circle, // Koymak istediğin ikon
-                size: 100, // İkonun boyutu
-                color: Colors.grey, // İkonun rengi
-              ),
-            ),
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                 Expanded(
+                  flex: 2,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      Icons.account_circle,
+                      size: 80, // Simgenin boyutu
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10), // Araya boşluk eklemek için
+                Expanded(
+                  flex: 4,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Hoşgeldiniz", style: TextStyle(fontSize: 17)),
+                      Obx(() => Text(
+                            "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
+                            style: const TextStyle(fontSize: 22),
+                          )),
+                      Obx(() => Text(
+                            productServices.userEmail
+                                .value, // Kullanıcının e-posta adresini göster
+                            style: const TextStyle(fontSize: 14),
+                          )),
+                    ],
+                  ),
+                )
+              ]),
+          const SizedBox(
+            height: 50,
           ),
-          const Text("Hoşgeldiniz", style:  TextStyle(fontSize: 20)),
-          Obx(() => Text(
-              "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
-              style: const TextStyle(fontSize: 25),
-            )),
-          Obx(() => Text(
-              productServices.userEmail.value, // Kullanıcının e-posta adresini göster
-              style: const TextStyle(fontSize: 18),
-            )),
-          const SizedBox(height: 40,),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
@@ -99,7 +116,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                 backgroundColor: Colors.black,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(50),
                 ),
               ),
               child: const Row(

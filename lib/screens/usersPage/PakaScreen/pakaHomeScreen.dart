@@ -19,7 +19,7 @@ class _PakaHomeScreenState extends State<PakaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      backgroundColor: Colors.white,
      appBar: CustomAppBar(workshopName: "Paketleme Atölyesi",chatPage: const PakaEditScreen()),
       body: const Center(
         
