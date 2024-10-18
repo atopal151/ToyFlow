@@ -15,15 +15,14 @@ class PakaHomeScreen extends StatefulWidget {
 }
 
 class _PakaHomeScreenState extends State<PakaHomeScreen> {
-  final ProductServices productServices=Get.find();
+  final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-     appBar: CustomAppBar(workshopName: "Paketleme Atölyesi",chatPage: const PakaEditScreen()),
-      body: const Center(
-        
-      ),
+      appBar: CustomAppBar(
+          workshopName: "Paketleme Atölyesi", chatPage: PakaEditScreen()),
+      body: Center(),
     );
   }
 }

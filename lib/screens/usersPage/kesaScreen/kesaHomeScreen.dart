@@ -18,11 +18,11 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
   final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-     appBar: CustomAppBar(workshopName: "Kesim Atölyesi",chatPage: const  KesaEditScreen()),
-      body: const Center(
-      ),
+      appBar: CustomAppBar(
+          workshopName: "Kesim Atölyesi", chatPage: KesaEditScreen()),
+      body: Center(),
     );
   }
 }

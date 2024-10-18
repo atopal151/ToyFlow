@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class DolaEditScreen extends StatefulWidget {
@@ -10,9 +12,14 @@ class DolaEditScreen extends StatefulWidget {
 class _DolaEditScreenState extends State<DolaEditScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(), 
-      body: const Center(child: Text("Dolum Atölyesi Edit Ekranı"),),);
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
+      body: const Center(
+        child: Text("Dolum Atölyesi Edit Ekranı"),
+      ),
+    );
   }
 }

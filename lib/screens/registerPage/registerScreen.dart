@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, library_private_types_in_public_api, use_build_context_synchronously
+// ignore_for_file: avoid_print, library_private_types_in_public_api, use_build_context_synchronously, file_names
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 
@@ -39,6 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text("Personel Kaydet"),
       ),
       body: SingleChildScrollView(
@@ -93,8 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _selectedCins = newValue; // Seçilen rolü güncelle
                   });
                 },
-                decoration:
-                    TextFieldStyles.defaultDecoration('Cinsiyet', Icons.transgender),
+                decoration: TextFieldStyles.defaultDecoration(
+                    'Cinsiyet', Icons.transgender),
               ),
               const SizedBox(
                 height: 20,
@@ -152,14 +153,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                           // Kullanıcı kaydetme işlemi
                           await _authService.createUser(
-                            _emailController.text,
-                            _passwordController.text,
-                            _firstNameController.text,
-                            _lastNameController.text,
-                            _selectedRole ?? '', // Seçilen rolü al
-                            _selectedWorkshop ?? '',
-                            _selectedCins ??'' // Seçilen cinsiyeti al
-                          );
+                              _emailController.text,
+                              _passwordController.text,
+                              _firstNameController.text,
+                              _lastNameController.text,
+                              _selectedRole ?? '', // Seçilen rolü al
+                              _selectedWorkshop ?? '',
+                              _selectedCins ?? '' // Seçilen cinsiyeti al
+                              );
 
                           // Kayıt tamamlandığında geri dön
                           Navigator.of(context).pop();

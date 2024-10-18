@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, file_names
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,6 +27,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Obx(() => Row(
               children: [
                 InkWell(
@@ -37,7 +38,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           builder: (context) => const AdminSettingScreen()),
                     );
                   },
-                  child:  CircleAvatar(
+                  child: CircleAvatar(
                     backgroundColor: Colors.transparent,
                     radius: 25,
                     child: Icon(
@@ -57,7 +58,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     const Text(
                       "Yönetici", // Kullanıcının e-posta adresini göster
-                      style:  TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

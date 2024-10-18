@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, file_names
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +14,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String workshopName;
   final Widget chatPage;
 
-  CustomAppBar({required this.workshopName, required this.chatPage});
+  const CustomAppBar({super.key, required this.workshopName, required this.chatPage});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -35,63 +35,69 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Get.find<AuthService>();
-    final uid = authService.currentUser?.uid ?? ''; // Mevcut kullanıcının uid'si
+    final uid =
+        authService.currentUser?.uid ?? ''; // Mevcut kullanıcının uid'si
 
-   return AppBar(
-    title: FutureBuilder<IconData>(
-      future: _getCinsiyetIcon(uid), // Cinsiyet bilgisine göre ikon belirleniyor
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Hata: ${snapshot.error}');
-        } else {
-          IconData icon = snapshot.data ?? Icons.person; // Eğer simge bulunamazsa varsayılan 'person' ikonu kullan
-          
-          return Obx(() {
-            final productServices = Get.find<ProductServices>();
-            return Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const UsersProfileScreen()),
-                      );
-                    },
-                    child: CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 25,
-                      child: Icon(
-                        icon,
-                        size: 35,
-                        color: Colors.grey.shade700,
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: FutureBuilder<IconData>(
+        future:
+            _getCinsiyetIcon(uid), // Cinsiyet bilgisine göre ikon belirleniyor
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Hata: ${snapshot.error}');
+          } else {
+            IconData icon = snapshot.data ??
+                Icons
+                    .person; // Eğer simge bulunamazsa varsayılan 'person' ikonu kullan
+
+            return Obx(() {
+              final productServices = Get.find<ProductServices>();
+              return Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const UsersProfileScreen()),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 25,
+                        child: Icon(
+                          icon,
+                          size: 35,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${productServices.firstName.value} ${productServices.lastName.value}',
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                    Text(
-                      workshopName,
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          });
-        }
-      },
-    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${productServices.firstName.value} ${productServices.lastName.value}',
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                      Text(
+                        workshopName,
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            });
+          }
+        },
+      ),
       actions: [
         PopupMenuButton<String>(
           color: Colors.white,
@@ -105,7 +111,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 value: 'Bildirimler',
                 child: InkWell(
                   onTap: () {
-                     Navigator.push(context,MaterialPageRoute(builder: ((context) => const UsersNotificationScreen())));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) =>
+                                const UsersNotificationScreen())));
                   },
                   child: const Row(
                     children: [
@@ -121,7 +131,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 value: 'Bekleyen İşler',
                 child: InkWell(
                   onTap: () {
-                     Navigator.push(context,MaterialPageRoute(builder: ((context) => const UsersWorkScreen())));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => const UsersWorkScreen())));
                   },
                   child: const Row(
                     children: [
@@ -157,10 +170,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             GestureDetector(
               onTap: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>  const ChatScreen()),
+                  MaterialPageRoute(builder: (context) => const ChatScreen()),
                 );
               },
               child: Container(
@@ -184,11 +196,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               padding: const EdgeInsets.only(right: 20),
               child: GestureDetector(
                 onTap: () {
-                   Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>  chatPage),
-                );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => chatPage),
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, unused_element
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_element, file_names
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +40,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), // Geri ikonu
           onPressed: () {
@@ -67,7 +68,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                 Expanded(
+                Expanded(
                   flex: 2,
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,

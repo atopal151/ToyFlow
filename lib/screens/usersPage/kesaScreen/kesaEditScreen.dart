@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class KesaEditScreen extends StatefulWidget {
@@ -10,9 +12,14 @@ class KesaEditScreen extends StatefulWidget {
 class _KesaEditScreenState extends State<KesaEditScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(), 
-      body: const Center(child: Text("Kesim Atölyesi Edit Ekranı"),),);
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
+      body: const Center(
+        child: Text("Kesim Atölyesi Edit Ekranı"),
+      ),
+    );
   }
 }

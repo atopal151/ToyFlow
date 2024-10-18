@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class UsersWorkScreen extends StatefulWidget {
@@ -10,9 +12,12 @@ class UsersWorkScreen extends StatefulWidget {
 class _UsersWorkScreenState extends State<UsersWorkScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: const Center(child: Text("Bekleyen İşler")),);
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
+      body: const Center(child: Text("Bekleyen İşler")),
+    );
   }
 }

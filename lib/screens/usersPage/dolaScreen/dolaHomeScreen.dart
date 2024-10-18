@@ -1,6 +1,5 @@
 // ignore_for_file: file_names
 
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/product_services.dart';
@@ -16,15 +15,14 @@ class DolaHomeScreen extends StatefulWidget {
 }
 
 class _DolaHomeScreenState extends State<DolaHomeScreen> {
-  final ProductServices productServices=Get.find();
+  final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-     appBar: CustomAppBar(workshopName: "Dolum Atölyesi",chatPage: const DolaEditScreen()),
-      body: const Center(
-        
-      ),
+      appBar: CustomAppBar(
+          workshopName: "Dolum Atölyesi", chatPage: DolaEditScreen()),
+      body: Center(),
     );
   }
 }

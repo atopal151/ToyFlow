@@ -1,10 +1,9 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously, library_private_types_in_public_api
+// ignore_for_file: avoid_print, use_build_context_synchronously, library_private_types_in_public_api, file_names
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/adminPage/adminHomeScreen/adminHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/PakaScreen/pakaHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/dikaScreen/dikaHomeScreen.dart';
 import 'package:toyflow/screens/usersPage/dokaScreen/dokaHomeScreen.dart';
@@ -18,12 +17,10 @@ class LoginScreen extends StatefulWidget {
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
-
 }
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -63,99 +60,94 @@ class _LoginScreenState extends State<LoginScreen>
       });
     }
   }
- 
- Future<void> _login() async {
-  setState(() {
-    isLoading = true;
-  });
 
-  try {
-    _startAnimation();
-    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    // Giriş yapıldıktan sonra email'i güncelle
-    final ProductServices productServices = Get.find();
-    productServices.userEmail.value =
-        userCredential.user?.email ?? 'Email bulunamadı';
-
-    // Kullanıcı verisini Firestore'dan al
-    DocumentSnapshot userDoc = await _firestore
-        .collection('users')
-        .doc(userCredential.user!.uid)
-        .get();
-
-    if (userDoc.exists && userDoc.data() != null) {
-      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
-      // Kullanıcı verilerini güncelle
-      productServices.firstName.value = userData['firstName'] ?? 'Ad bulunamadı';
-      productServices.lastName.value = userData['lastName'] ?? 'Soyad bulunamadı';
-
-      // Rol alanı mevcut mu kontrol et
-      if (userData.containsKey('role')) {
-        String role = userData['role'];
-
-        if (role == 'admin') {
-          // Eğer rol admin ise admin sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>  BottomNavBarWithPages()));
-        } 
-        else if (role=='Dikim'){
-          // Rol admin değilse kullanıcı sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const DikaHomeScreen()));
-        }
-        else if (role=='Dokuma'){
-          // Rol admin değilse kullanıcı sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const DokaHomeScreen()));
-        }
-        else if (role=='Dolum'){
-          // Rol admin değilse kullanıcı sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const DolaHomeScreen()));
-        }
-        else if (role=='Kesim'){
-          // Rol admin değilse kullanıcı sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const KesaHomeScreen()));
-        }
-        else if (role=='Paketleme'){
-          // Rol admin değilse kullanıcı sayfasına yönlendir
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const PakaHomeScreen()));
-        }
-       
-      } else {
-        print("Kullanıcı rolü bulunamadı.");
-      }
-    } else {
-      print("Kullanıcı veritabanında bulunamadı.");
-    }
-  } on FirebaseAuthException catch (e) {
-    print("Giriş yapılamadı: ${e.message}");
-  } finally {
+  Future<void> _login() async {
     setState(() {
-      isLoading = false;
+      isLoading = true;
     });
-  }
-}
 
+    try {
+      _startAnimation();
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Giriş yapıldıktan sonra email'i güncelle
+      final ProductServices productServices = Get.find();
+      productServices.userEmail.value =
+          userCredential.user?.email ?? 'Email bulunamadı';
+
+      // Kullanıcı verisini Firestore'dan al
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        // Kullanıcı verilerini güncelle
+        productServices.firstName.value =
+            userData['firstName'] ?? 'Ad bulunamadı';
+        productServices.lastName.value =
+            userData['lastName'] ?? 'Soyad bulunamadı';
+
+        // Rol alanı mevcut mu kontrol et
+        if (userData.containsKey('role')) {
+          String role = userData['role'];
+
+          if (role == 'admin') {
+            // Eğer rol admin ise admin sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BottomNavBarWithPages()));
+          } else if (role == 'Dikim') {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DikaHomeScreen()));
+          } else if (role == 'Dokuma') {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DokaHomeScreen()));
+          } else if (role == 'Dolum') {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DolaHomeScreen()));
+          } else if (role == 'Kesim') {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const KesaHomeScreen()));
+          } else if (role == 'Paketleme') {
+            // Rol admin değilse kullanıcı sayfasına yönlendir
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PakaHomeScreen()));
+          }
+        } else {
+          print("Kullanıcı rolü bulunamadı.");
+        }
+      } else {
+        print("Kullanıcı veritabanında bulunamadı.");
+      }
+    } on FirebaseAuthException catch (e) {
+      print("Giriş yapılamadı: ${e.message}");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +183,9 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-                const SizedBox(height: 50,),
+                const SizedBox(
+                  height: 50,
+                ),
                 SizedBox(
                   width: 320.0,
                   child: Container(
@@ -277,7 +271,6 @@ class _LoginScreenState extends State<LoginScreen>
                               ? null
                               : () {
                                   _login(); // Giriş işlemi
-                                  
                                 },
                           style: ElevatedButton.styleFrom(
                             //backgroundColor: const Color(0xFF9FCE4D),

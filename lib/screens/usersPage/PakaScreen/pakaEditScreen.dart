@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class PakaEditScreen extends StatefulWidget {
@@ -10,9 +12,14 @@ class PakaEditScreen extends StatefulWidget {
 class _PakaEditScreenState extends State<PakaEditScreen> {
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: const Center(child: Text("Paketleme Atölyesi Edit Sayfası"),),);
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
+      body: const Center(
+        child: Text("Paketleme Atölyesi Edit Sayfası"),
+      ),
+    );
   }
 }

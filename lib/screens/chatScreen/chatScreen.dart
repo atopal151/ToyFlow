@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -13,6 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text(
           "Sohbetler",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
@@ -21,9 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
-              onTap: () {
-               
-              },
+              onTap: () {},
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.black,

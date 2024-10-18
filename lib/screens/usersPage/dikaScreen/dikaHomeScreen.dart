@@ -17,10 +17,11 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
   final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
-     appBar: CustomAppBar(workshopName: "Dikim Atölyesi",chatPage: const DikaEditScreen()),
-      body: const Center(),
+      appBar: CustomAppBar(
+          workshopName: "Dikim Atölyesi", chatPage: DikaEditScreen()),
+      body: Center(),
     );
   }
 }
