@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
 
 import '../../../services/product_services.dart';
-import '../../LoginScreen/loginScreen.dart';
-import '../../registerPage/registerScreen.dart';
+import '../../LoginScreen/login_screen.dart';
+import '../../registerPage/register_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
   const AdminSettingScreen({super.key});

@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/chatScreen/chatScreen.dart';
-import 'package:toyflow/screens/usersPage/usersNotificationScreen/usersNotificationScreen.dart';
-import 'package:toyflow/screens/usersPage/usersProfileScreen/UsersProfileScreen.dart';
+import 'package:toyflow/screens/chatScreen/chat_screen.dart';
+import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
+import 'package:toyflow/screens/usersPage/usersProfileScreen/users_profile_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 
-import '../screens/usersWorkScreen/UsersWorkScreen.dart';
+import '../screens/usersWorkScreen/users_work_screen.dart';
 import 'product_services.dart'; // Obx için gerekli
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {

@@ -1,11 +1,11 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, file_names
 
 import 'package:flutter/material.dart';
-import 'package:toyflow/screens/adminPage/adminHomeScreen/adminHomeScreen.dart';
-import 'package:toyflow/screens/adminPage/adminWorkShopPage/adminWorkShopScreen.dart';
-import 'package:toyflow/screens/chatScreen/chatScreen.dart';
+import 'package:toyflow/screens/adminPage/adminHomeScreen/admin_home_screen.dart';
+import 'package:toyflow/screens/adminPage/adminWorkShopPage/admin_work_shop_screen.dart';
+import 'package:toyflow/screens/chatScreen/chat_screen.dart';
 
-import '../screens/adminPage/adminSearchPage/adminSearchScreen.dart';
+import '../screens/adminPage/adminSearchPage/admin_search_screen.dart';
 
 class BottomNavBarWithPages extends StatefulWidget {
   @override

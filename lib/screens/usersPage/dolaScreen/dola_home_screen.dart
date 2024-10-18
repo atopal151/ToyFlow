@@ -2,26 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/usersPage/dokaScreen/dokaEditScreen.dart';
 import 'package:toyflow/services/product_services.dart';
 
-import '../../../services/CustomAppBar.dart';
+import '../../../services/custom_app_bar.dart';
+import 'dola_edit_screen.dart';
 
-class DokaHomeScreen extends StatefulWidget {
-  const DokaHomeScreen({super.key});
+class DolaHomeScreen extends StatefulWidget {
+  const DolaHomeScreen({super.key});
 
   @override
-  State<DokaHomeScreen> createState() => _DokaHomeScreenState();
+  State<DolaHomeScreen> createState() => _DolaHomeScreenState();
 }
 
-class _DokaHomeScreenState extends State<DokaHomeScreen> {
+class _DolaHomeScreenState extends State<DolaHomeScreen> {
   final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-          workshopName: "Dokuma Atölyesi", chatPage: DokaEditScreen()),
+          workshopName: "Dolum Atölyesi", chatPage: DolaEditScreen()),
       body: Center(),
     );
   }

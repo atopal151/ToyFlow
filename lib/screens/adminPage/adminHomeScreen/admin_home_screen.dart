@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/adminPage/adminSettingScreen/adminSettingScreen.dart';
-import 'package:toyflow/screens/usersPage/usersNotificationScreen/usersNotificationScreen.dart';
+import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
+import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
 import '../../../services/product_services.dart'; // Servisi içe aktar
 
 class AdminHomeScreen extends StatefulWidget {

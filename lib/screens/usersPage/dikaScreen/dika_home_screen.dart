@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/product_services.dart';
-import '../../../services/CustomAppBar.dart';
-import 'dikaEditScreen.dart';
+import '../../../services/custom_app_bar.dart';
+import 'dika_edit_screen.dart';
 
 class DikaHomeScreen extends StatefulWidget {
   const DikaHomeScreen({super.key});

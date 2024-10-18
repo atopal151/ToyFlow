@@ -2,26 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/usersPage/PakaScreen/pakaEditScreen.dart';
+import 'package:toyflow/screens/usersPage/kesaScreen/kesa_edit_screen.dart';
 import 'package:toyflow/services/product_services.dart';
 
-import '../../../services/CustomAppBar.dart';
+import '../../../services/custom_app_bar.dart';
 
-class PakaHomeScreen extends StatefulWidget {
-  const PakaHomeScreen({super.key});
+class KesaHomeScreen extends StatefulWidget {
+  const KesaHomeScreen({super.key});
 
   @override
-  State<PakaHomeScreen> createState() => _PakaHomeScreenState();
+  State<KesaHomeScreen> createState() => _KesaHomeScreenState();
 }
 
-class _PakaHomeScreenState extends State<PakaHomeScreen> {
+class _KesaHomeScreenState extends State<KesaHomeScreen> {
   final ProductServices productServices = Get.find();
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-          workshopName: "Paketleme Atölyesi", chatPage: PakaEditScreen()),
+          workshopName: "Kesim Atölyesi", chatPage: KesaEditScreen()),
       body: Center(),
     );
   }

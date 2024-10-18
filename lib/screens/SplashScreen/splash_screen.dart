@@ -3,14 +3,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:toyflow/services/BottomNavBar.dart';
-import '../LoginScreen/loginScreen.dart';
-import '../usersPage/PakaScreen/pakaHomeScreen.dart';
-import '../usersPage/dikaScreen/dikaHomeScreen.dart';
+import 'package:toyflow/services/bottom_nav_bar.dart';
+import '../LoginScreen/login_screen.dart';
+import '../usersPage/PakaScreen/paka_home_screen.dart';
+import '../usersPage/dikaScreen/dika_home_screen.dart';
 import '../../services/auth_service.dart';
-import '../usersPage/dokaScreen/dokaHomeScreen.dart';
-import '../usersPage/dolaScreen/dolaHomeScreen.dart';
-import '../usersPage/kesaScreen/kesaHomeScreen.dart';
+import '../usersPage/dokaScreen/doka_home_screen.dart';
+import '../usersPage/dolaScreen/dola_home_screen.dart';
+import '../usersPage/kesaScreen/kesa_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

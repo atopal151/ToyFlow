@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/usersPage/PakaScreen/pakaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dikaScreen/dikaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dokaScreen/dokaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/dolaScreen/dolaHomeScreen.dart';
-import 'package:toyflow/screens/usersPage/kesaScreen/kesaHomeScreen.dart';
-import 'package:toyflow/services/BottomNavBar.dart';
+import 'package:toyflow/screens/usersPage/PakaScreen/paka_home_screen.dart';
+import 'package:toyflow/screens/usersPage/dikaScreen/dika_home_screen.dart';
+import 'package:toyflow/screens/usersPage/dokaScreen/doka_home_screen.dart';
+import 'package:toyflow/screens/usersPage/dolaScreen/dola_home_screen.dart';
+import 'package:toyflow/screens/usersPage/kesaScreen/kesa_home_screen.dart';
+import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../../services/product_services.dart';
 
 class LoginScreen extends StatefulWidget {
