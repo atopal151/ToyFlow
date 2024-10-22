@@ -1,11 +1,13 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '13.0'
 
-# Enable modular headers for Swift compatibility
+# Use frameworks for CocoaPods
+use_frameworks!
 use_modular_headers!
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
 
 project 'Runner', {
   'Debug' => :debug,
@@ -30,14 +32,12 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
-target 'Runner' do
-  # Firebase SDKs
-  pod 'Firebase/Analytics' # Firebase Analytics için
-
-  # İsterseniz diğer Firebase bileşenlerini ekleyin
-  pod 'Firebase/Auth' # Firebase Authentication
-  pod 'Firebase/Firestore' # Firebase Firestore
-  pod 'Firebase/Crashlytics' # Firebase Crashlytics
+target 'Runner' do# Firebase SDK'ları
+  pod 'Firebase/Analytics', '10.22.0'
+  pod 'Firebase/Auth', '10.22.0'
+  pod 'Firebase/Firestore', '10.22.0'
+  pod 'Firebase/Crashlytics', '10.22.0'
+  
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:toyflow/screens/SplashScreen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:toyflow/services/product_services.dart';
-
 import 'services/auth_service.dart';
 
 Future<void> main() async {
@@ -11,7 +10,6 @@ Future<void> main() async {
   await Firebase.initializeApp(); // Firebase başlat
   Get.put(AuthService()); // Veya Get.lazyPut(() => AuthService());
   Get.put(ProductServices());
-
   runApp(const MyApp());
 }
 

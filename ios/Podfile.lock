@@ -1206,10 +1206,10 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
-  - Firebase/Analytics
-  - Firebase/Auth
-  - Firebase/Crashlytics
-  - Firebase/Firestore
+  - Firebase/Analytics (= 10.22.0)
+  - Firebase/Auth (= 10.22.0)
+  - Firebase/Crashlytics (= 10.22.0)
+  - Firebase/Firestore (= 10.22.0)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -1289,6 +1289,6 @@ SPEC CHECKSUMS:
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 6c6a9f347ae8b8dc7b57dfd1a53eeafdec5271d3
+PODFILE CHECKSUM: 401446271de1b15d74deb5234059c9f69d3928af
 
 COCOAPODS: 1.15.2
