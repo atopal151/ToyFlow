@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toyflow/screens/SplashScreen/splashScreen.dart';
+import 'package:toyflow/screens/SplashScreen/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
