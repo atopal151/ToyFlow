@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyD1LBM-3HZJRjENmvRsJ_BZHq4ANMv7X1k</string>
+	<key>GCM_SENDER_ID</key>
+	<string>690936368109</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ozguner.toyflow</string>
+	<key>PROJECT_ID</key>
+	<string>toyflow-9f294</string>
+	<key>STORAGE_BUCKET</key>
+	<string>toyflow-9f294.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:690936368109:ios:1b7156664d96966fcaf5e4</string>
+</dict>
+</plist>

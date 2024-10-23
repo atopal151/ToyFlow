@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "690936368109",
+    "project_id": "toyflow-9f294",
+    "storage_bucket": "toyflow-9f294.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690936368109:android:2dc6c2b7a442687fcaf5e4",
+        "android_client_info": {
+          "package_name": "com.ozguner.toyflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjTmFttPp2sMjzw4KmApCF5M5kimcJwIw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
