@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../LoginScreen/login_screen.dart';
@@ -7,10 +7,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
