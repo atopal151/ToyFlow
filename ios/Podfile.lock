@@ -1168,6 +1168,9 @@ PODS:
   - Firebase/Firestore (11.2.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 11.2.0)
+  - Firebase/Storage (11.2.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 11.2.0)
   - firebase_analytics (11.3.3):
     - Firebase/Analytics (= 11.2.0)
     - firebase_core
@@ -1178,6 +1181,10 @@ PODS:
     - Flutter
   - firebase_core (3.6.0):
     - Firebase/CoreOnly (= 11.2.0)
+    - Flutter
+  - firebase_storage (12.3.4):
+    - Firebase/Storage (= 11.2.0)
+    - firebase_core
     - Flutter
   - FirebaseAnalytics (11.2.0):
     - FirebaseAnalytics/AdIdSupport (= 11.2.0)
@@ -1242,6 +1249,13 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
   - FirebaseSharedSwift (11.4.0)
+  - FirebaseStorage (11.2.0):
+    - FirebaseAppCheckInterop (~> 11.0)
+    - FirebaseAuthInterop (~> 11.0)
+    - FirebaseCore (~> 11.0)
+    - FirebaseCoreExtension (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GTMSessionFetcher/Core (~> 3.4)
   - Flutter (1.0.0)
   - GoogleAppMeasurement (11.2.0):
     - GoogleAppMeasurement/AdIdSupport (= 11.2.0)
@@ -1395,6 +1409,7 @@ DEPENDENCIES:
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
 
 SPEC REPOS:
@@ -1413,6 +1428,7 @@ SPEC REPOS:
     - FirebaseFirestoreInternal
     - FirebaseInstallations
     - FirebaseSharedSwift
+    - FirebaseStorage
     - GoogleAppMeasurement
     - GoogleUtilities
     - "gRPC-C++"
@@ -1432,6 +1448,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_storage:
+    :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
 
@@ -1443,6 +1461,7 @@ SPEC CHECKSUMS:
   firebase_analytics: fbc57838bdb94eef1e0ff504f127d974ff2981ad
   firebase_auth: 0c77e299a8f2d1c74d1b1f6b78b3d4d802c19f47
   firebase_core: 2bedc3136ec7c7b8561c6123ed0239387b53f2af
+  firebase_storage: cee0d3d2e947db11289bbb57ed73a447ea111ec1
   FirebaseAnalytics: c36efd5710c60c17558650fa58c2066eca7e9265
   FirebaseAppCheckInterop: 1b9643ae2f1ee214488caa2f8e32b7bc2f0f3735
   FirebaseAuth: 2a198b8cdbbbd457f08d74df7040feb0a0e7777a
@@ -1454,6 +1473,7 @@ SPEC CHECKSUMS:
   FirebaseFirestoreInternal: ad9b9ee2d3d430c8f31333a69b3b6737a7206232
   FirebaseInstallations: 6ef4a1c7eb2a61ee1f74727d7f6ce2e72acf1414
   FirebaseSharedSwift: 505dae2d05969dbf6d43749a642bb1bf230f0252
+  FirebaseStorage: 9353f926690b2329957860abfcbc8b4074fe45e8
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   GoogleAppMeasurement: 76d4f8b36b03bd8381fa9a7fe2cc7f99c0a2e93a
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
