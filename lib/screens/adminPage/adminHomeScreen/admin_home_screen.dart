@@ -38,13 +38,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           builder: (context) => const AdminSettingScreen()),
                     );
                   },
-                  child: CircleAvatar(
+                  child: const CircleAvatar(
                     backgroundColor: Colors.transparent,
                     radius: 25,
                     child: Icon(
                       Icons.face,
                       size: 35,
-                      color: Colors.grey.shade700,
+                      color: Colors.black,
                     ),
                   ),
                 ),

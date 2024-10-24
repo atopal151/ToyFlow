@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -83,21 +82,51 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: SlideTransition(
-          position: _animation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                'images/iconozgn.png',
-                width: 100.0,
-                height: 100.0,
+      body: Column(
+        children: [
+          Expanded(
+            flex: 5,
+            child: Center(
+              child: SlideTransition(
+                position: _animation,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'images/iconozgn.png',
+                      width: 100.0,
+                      height: 100.0,
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
-        ),
+          const Expanded(
+            flex: 1,
+            child: Center(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "®",
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    "Özgüner Oyuncak",
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

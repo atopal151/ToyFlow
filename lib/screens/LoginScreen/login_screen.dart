@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,44 +21,43 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String email = '';
   String password = '';
   bool isLoading = false; // Yükleme durumunu takip etmek için
-  bool isControllerDisposed =
-      false; // Kontrolcünün boşaltılıp boşaltılmadığını takip etmek için
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    _animation = Tween<double>(begin: 0, end: 2 * 3.14159).animate(_controller);
   }
 
   @override
   void dispose() {
-    isControllerDisposed = true;
-    _controller.dispose();
     super.dispose();
   }
 
-  void _startAnimation() {
-    if (!isControllerDisposed && !_controller.isAnimating) {
-      _controller.forward(from: 0.0);
-      Future.delayed(const Duration(seconds: 2), () {
-        if (!isControllerDisposed) {
-          _controller.repeat();
-        }
-      });
-    }
+
+// AlertDialog gösteren metod
+  void _showAlertDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Tamam"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dialogu kapat
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _login() async {
@@ -65,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     try {
-      _startAnimation();
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -152,39 +152,34 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true, // Ekranı küçültmek için
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 100,
+              ),
+              Expanded(
+                flex: 1,
+                child: SizedBox(
                   height: MediaQuery.of(context).size.height *
                       0.25, // Ekranın %25'i kadar yer ayır
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 40.0, right: 40.0, bottom: 10.0, top: 30.0),
-                    child: AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationZ(_animation.value),
-                          child: Image.asset(
-                            'images/iconozgn.png',
-                            width: 100.0,
-                            height: 50.0,
-                          ),
-                        );
-                      },
+                    child: Image.asset(
+                      'images/iconozgn.png',
+                      width: 100.0,
+                      height: 50.0,
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 50,
-                ),
-                SizedBox(
+              ),
+              Expanded(
+                flex: 2,
+                child: SizedBox(
                   width: 320.0,
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
@@ -197,11 +192,13 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 10),
                         TextField(
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.person, color: Colors.black),
+                            prefixIcon: Icon(Icons.person, color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
@@ -234,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen>
                         TextField(
                           obscureText: true,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.black),
+                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
                             enabledBorder: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0)),
@@ -264,32 +261,94 @@ class _LoginScreenState extends State<LoginScreen>
                           },
                         ),
                         const SizedBox(height: 40.0),
-                        ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  _login(); // Giriş işlemi
-                                },
-                          style: ElevatedButton.styleFrom(
-                            //backgroundColor: const Color(0xFF9FCE4D),
-                            backgroundColor: Colors.black,
-                            minimumSize: const Size(double.infinity, 50.0),
-                          ),
-                          child: const Text(
-                            'Giriş Yap',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                        Row(
+                          children: [
+                            const Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: Text(
+                                  "Şifreni mi unuttun?",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                              ),
                             ),
-                          ),
+                            Expanded(
+                              flex: 1,
+                              child: InkWell(
+                                onTap: isLoading
+                                    ? null
+                                    : () {
+                                        setState(() {
+                                          // Butona tıkladığında yükleme durumunu başlat
+                                          isLoading = true;
+                                        });
+                                        _login(); // Giriş işlemini başlat
+                                      },
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50.0,
+                                  decoration: BoxDecoration(
+                                    color: isLoading
+                                        ? Colors.grey
+                                        : const Color(
+                                            0xFF9FCE4D), // Yükleme durumuna göre renk
+                                    borderRadius: BorderRadius.circular(50.0),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 0.20,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: isLoading
+                                      ? const CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
+                                        )
+                                      : const Text(
+                                          'Giriş Yap',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 40.0),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 100,
+              ),
+              const Expanded(
+                flex: 1,
+                child: Center(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "®",
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        "Özgüner Oyuncak",
+                        style: TextStyle(
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),

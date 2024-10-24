@@ -73,7 +73,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         child: Icon(
                           icon,
                           size: 35,
-                          color: Colors.grey.shade700,
+                          color: Colors.black,
                         ),
                       ),
                     ),

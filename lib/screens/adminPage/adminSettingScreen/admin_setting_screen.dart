@@ -140,6 +140,44 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                 ],
               ),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RegisterScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, 
+                children: [
+                  Icon(
+                    Icons.inventory, 
+                    color: Colors.white, 
+                  ),
+                  SizedBox(width: 8), 
+                  Text(
+                    'Stok Ekle',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, 
+                    ),
+                  ),
+                ],
+              ),
+            ),
           )
         ],
       ),
