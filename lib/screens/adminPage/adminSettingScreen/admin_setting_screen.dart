@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/adminPage/stockPage/stock_add_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 
 import '../../../services/product_services.dart';
@@ -148,7 +149,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const RegisterScreen()),
+                      builder: (context) => const StockAddScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
