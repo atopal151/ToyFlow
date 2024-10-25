@@ -1,4 +1,4 @@
-package com.example.toyflow
+package com.ozguner.toyflow
 
 import io.flutter.embedding.android.FlutterActivity
 

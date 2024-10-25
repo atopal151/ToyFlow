@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element
+// ignore_for_file: unused_element, use_build_context_synchronously, unused_catch_clause, unnecessary_overrides
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -136,10 +136,14 @@ class _LoginScreenState extends State<LoginScreen>
           print("Kullanıcı rolü bulunamadı.");
         }
       } else {
-        print("Kullanıcı veritabanında bulunamadı.");
+         ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Bu kullanıcı bulunamadı")),
+        );
       }
     } on FirebaseAuthException catch (e) {
-      print("Giriş yapılamadı: ${e.message}");
+       ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")),
+        );
     } finally {
       setState(() {
         isLoading = false;
@@ -178,146 +182,148 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               ),
               Expanded(
-                flex: 2,
-                child: SizedBox(
-                  width: 320.0,
-                  child: Container(
-                    padding: const EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 0.9,
+                flex: 3,
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    width: 320.0,
+                    child: Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 0.9,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 10),
-                        TextField(
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.person, color: Colors.grey),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                              borderSide: BorderSide(
-                                color: Colors.grey,
-                                width: 0.9,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 0.5,
-                              ),
-                            ),
-                            labelText: 'Kullanıcı Adı',
-                            labelStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              email = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 20.0),
-                        TextField(
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                              borderSide: BorderSide(
-                                color: Colors.grey,
-                                width: 0.9,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                              borderSide: BorderSide(
-                                color: Colors.black,
-                                width: 0.5,
-                              ),
-                            ),
-                            labelText: 'Şifre',
-                            labelStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              password = value;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 40.0),
-                        Row(
-                          children: [
-                            const Expanded(
-                              flex: 1,
-                              child: Center(
-                                child: Text(
-                                  "Şifreni mi unuttun?",
-                                  style: TextStyle(fontSize: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 10),
+                          TextField(
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.person, color: Colors.grey),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 0.9,
                                 ),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                              labelText: 'Kullanıcı Adı',
+                              labelStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: InkWell(
-                                onTap: isLoading
-                                    ? null
-                                    : () {
-                                        setState(() {
-                                          // Butona tıkladığında yükleme durumunu başlat
-                                          isLoading = true;
-                                        });
-                                        _login(); // Giriş işlemini başlat
-                                      },
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 50.0,
-                                  decoration: BoxDecoration(
-                                    color: isLoading
-                                        ? Colors.grey
-                                        : const Color(
-                                            0xFF9FCE4D), // Yükleme durumuna göre renk
-                                    borderRadius: BorderRadius.circular(50.0),
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 0.20,
-                                    ),
+                            onChanged: (value) {
+                              setState(() {
+                                email = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 20.0),
+                          TextField(
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 0.9,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                                borderSide: BorderSide(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                              labelText: 'Şifre',
+                              labelStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                password = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 40.0),
+                          Row(
+                            children: [
+                              const Expanded(
+                                flex: 1,
+                                child: Center(
+                                  child: Text(
+                                    "Şifreni mi unuttun?",
+                                    style: TextStyle(fontSize: 10),
                                   ),
-                                  alignment: Alignment.center,
-                                  child: isLoading
-                                      ? const CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  Colors.white),
-                                        )
-                                      : const Text(
-                                          'Giriş Yap',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              Expanded(
+                                flex: 1,
+                                child: InkWell(
+                                  onTap: isLoading
+                                      ? null
+                                      : () {
+                                          setState(() {
+                                            // Butona tıkladığında yükleme durumunu başlat
+                                            isLoading = true;
+                                          });
+                                          _login(); // Giriş işlemini başlat
+                                        },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 50.0,
+                                    decoration: BoxDecoration(
+                                      color: isLoading
+                                          ? Colors.grey
+                                          : const Color(
+                                              0xFF9FCE4D), // Yükleme durumuna göre renk
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: 0.20,
+                                      ),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: isLoading
+                                        ? const CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                          )
+                                        : const Text(
+                                            'Giriş Yap',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
