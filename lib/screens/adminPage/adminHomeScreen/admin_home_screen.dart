@@ -38,13 +38,16 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           builder: (context) => const AdminSettingScreen()),
                     );
                   },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    radius: 25,
-                    child: Icon(
-                      Icons.face,
-                      size: 35,
-                      color: Colors.black,
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 23,
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundImage:
+                            AssetImage('images/profil.webp'), // Profil resmi
+                      ),
                     ),
                   ),
                 ),

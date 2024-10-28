@@ -215,7 +215,7 @@ class TextFieldStyles {
       hintText: hintText, // Placeholder metni
       contentPadding: const EdgeInsets.symmetric(
           vertical: 0, horizontal: 20), // İç boşluklar
-      suffixIcon: Icon(icon, color: Colors.black), // Sağ tarafa yaslı ikon
+      suffixIcon: Icon(icon, color: Colors.grey.shade500), // Sağ tarafa yaslı ikon
       enabledBorder: const OutlineInputBorder(
         borderRadius:
             BorderRadius.all(Radius.circular(30.0)), // Tam daire border radius

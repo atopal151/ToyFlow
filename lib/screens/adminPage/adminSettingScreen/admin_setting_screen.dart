@@ -1,13 +1,10 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, unused_element, file_names
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/stockPage/stock_add_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
-
 import '../../../services/product_services.dart';
-import '../../LoginScreen/login_screen.dart';
 import '../../registerPage/register_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
@@ -18,23 +15,10 @@ class AdminSettingScreen extends StatefulWidget {
 }
 
 class _AdminSettingScreenState extends State<AdminSettingScreen> {
-  final ProductServices productServices = Get.find();
-  final AuthService _authService = Get.find();
+  final ProductServices _productServices = Get.find();
+  final AuthService _authService=Get.find();
 
-  Future<void> _logout(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut(); // Kullanıcıyı oturumdan çıkar
-      print("Oturum kapatıldı.");
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-            builder: (context) =>
-                const LoginScreen()), // Giriş ekranına yönlendir
-      );
-    } catch (e) {
-      // Hata durumunda bir şey yap
-      print("Oturum kapatma hatası: $e");
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -42,144 +26,113 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Geri ikonu
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(
-                context); // Geri tuşuna basıldığında önceki sayfaya dön
+            Navigator.pop(context);
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.logout,
-              color: Colors.black,
-            ), // Çıkış ikonu
-            onPressed: () async {
-              await _authService.logout();
-            }, // Oturumu kapat
-          ),
-        ],
+       
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+          const CircleAvatar(
+            radius: 40,
+            backgroundImage: AssetImage('images/profil.webp'), // Profil resmi
+          ),
+          const SizedBox(height: 10),
+          Text(
+            _productServices.firstName.value + _productServices.lastName.value,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            _productServices.userEmail.value,
+            style: const TextStyle(color: Colors.grey, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.grey[200],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: const Text('Profili Düzenle'),
+          ),
+          const SizedBox(height: 30),
+          // Ayarlar Listesi
+          const SizedBox(height: 30),
+          // Menü Seçenekleri
+          Expanded(
+            child: ListView(
               children: [
-                Expanded(
-                  flex: 2,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Icon(
-                      Icons.account_circle,
-                      size: 80, // Simgenin boyutu
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
+                ListTile(
+                  leading: const Icon(Icons.person_add, color: Colors.blue),
+                  title: const Text('Kullanıcı Ekle'),
+                  subtitle: const Text('Yeni bir kullanıcı ekleyin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterScreen()),
+                    );
+                  },
                 ),
-                const SizedBox(width: 10), // Araya boşluk eklemek için
-                Expanded(
-                  flex: 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Hoşgeldiniz", style: TextStyle(fontSize: 17)),
-                      Obx(() => Text(
-                            "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
-                            style: const TextStyle(fontSize: 22),
-                          )),
-                      Obx(() => Text(
-                            productServices.userEmail
-                                .value, // Kullanıcının e-posta adresini göster
-                            style: const TextStyle(fontSize: 14),
-                          )),
-                    ],
-                  ),
-                )
-              ]),
-          const SizedBox(
-            height: 50,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const RegisterScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
+                ListTile(
+                  leading: const Icon(Icons.inventory, color: Colors.orange),
+                  title: const Text('Stok Ekle'),
+                  subtitle: const Text('Yeni stok öğesi ekleyin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const StockAddScreen()),
+                    );
+                  },
                 ),
-              ),
-              child: const Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // İkon ve metni ortala
-                children: [
-                  Icon(
-                    Icons.person_add, // Person Plus iconu
-                    color: Colors.white, // İkon rengi
-                  ),
-                  SizedBox(width: 8), // İkon ile metin arasına boşluk
-                  Text(
-                    'Kullanıcı Ekle',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Yazı rengi
-                    ),
-                  ),
-                ],
-              ),
+                ListTile(
+                  leading: const Icon(Icons.history, color: Colors.green),
+                  title: const Text('Geçmişi Görüntüle'),
+                  subtitle: const Text('Tüm işlemlerin geçmişini inceleyin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    // Geçmişi görüntüle ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings, color: Colors.purple),
+                  title: const Text('Ayarları Güncelle'),
+                  subtitle: const Text('Yönetici ayarlarını güncelleyin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    // Ayarları güncelleme ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.report, color: Colors.teal),
+                  title: const Text('Raporları Görüntüle'),
+                  subtitle: const Text('Detaylı raporları görüntüleyin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    // Raporları görüntüle ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading:
+                      const Icon(Icons.logout_rounded, color: Colors.orange),
+                  title: const Text('Çıkış Yap'),
+                  onTap: () async {
+                    _authService.logout();
+                  },
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const StockAddScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, 
-                children: [
-                  Icon(
-                    Icons.inventory, 
-                    color: Colors.white, 
-                  ),
-                  SizedBox(width: 8), 
-                  Text(
-                    'Stok Ekle',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, 
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
         ],
       ),
     );

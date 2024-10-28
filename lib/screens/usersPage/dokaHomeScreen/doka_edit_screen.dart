@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'DokaServices/doka_services.dart';
+import 'DokaServices/dropdown_selector.dart';
+import 'DokaServices/text_field_with_counter.dart';
 
 class DokaEditScreen extends StatefulWidget {
   const DokaEditScreen({super.key});
@@ -10,11 +15,32 @@ class DokaEditScreen extends StatefulWidget {
 }
 
 class _DokaEditScreenState extends State<DokaEditScreen> {
+  final DokaServices _dokaServices = DokaServices();
+
+  //kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
   String? _selectedMalzeme; // Seçilen ürün
   String? _selectedRenk; // Seçilen renk
+  //eklenecek stok
+  final TextEditingController _miktarKumasController = TextEditingController();
+  String? _selectedKumasRenk; // Seçilen Kumaş renk
+  String? _selectedDonumMalzeme; // Seçilen ürün
+  //Fire stok
+  final TextEditingController _fireMiktarController = TextEditingController();
+  String? _selectedFireMalzeme; // Seçilen ürün
+  String? _selectedFireRenk; // Seçilen renk
+
   List<String> _urunler = []; // Ürün listesi
   List<String> _renkler = []; // Renk listesi
+
+  final List<String> _kumaslar = [
+    'Polar Fleece Kumaş',
+    'Mikrofiber Peluş Kumaş',
+    'Süet Kumaş',
+    'Minky Kumaş',
+    'Tüylü Kumaş',
+    'Velboa Kumaş'
+  ]; // Ürün listesi
 
   @override
   void initState() {
@@ -24,64 +50,17 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
 
   Future<void> _fetchData() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('ipler').get();
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('ipler').get();
 
       setState(() {
-        _urunler = snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _renkler = snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
+        _urunler =
+            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
+        _renkler =
+            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
-    }
-  }
-
-  Future<void> _saveData() async {
-    if (_selectedMalzeme == null || _selectedRenk == null || _miktarController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-      );
-      return;
-    }
-
-    int miktar = int.tryParse(_miktarController.text) ?? 0;
-
-    try {
-      // Seçilen ürün ve renkten veritabanında var mı kontrol et
-      QuerySnapshot existingRecord = await FirebaseFirestore.instance
-          .collection('ipler')
-          .where('urun', isEqualTo: _selectedMalzeme)
-          .where('renk', isEqualTo: _selectedRenk)
-          .get();
-
-      if (existingRecord.docs.isNotEmpty) {
-        // Eğer ürün ve renk mevcutsa, miktardan düş
-        DocumentSnapshot doc = existingRecord.docs.first;
-        int currentMiktar = doc['miktar'] ?? 0;
-
-        if (currentMiktar >= miktar) {
-          await FirebaseFirestore.instance.collection('ipler').doc(doc.id).update({
-            'miktar': currentMiktar - miktar,
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Stok güncellendi.")),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Yetersiz stok miktarı.")),
-          );
-        }
-      } else {
-        // Ürün ve renk mevcut değilse, kullanıcıya uyarı ver
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
-        );
-      }
-    } catch (e) {
-      print("Kaydetme sırasında hata oluştu: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu.")),
-      );
     }
   }
 
@@ -92,87 +71,52 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
+            /*---------------------------------------------------*/
             // Ürün seçme dropdown
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: DropdownButtonFormField<String>(
-                value: _selectedMalzeme,
-                hint: const Text('Kullanılan Ürünü Seçin'),
-                items: _urunler.map((String urun) {
-                  return DropdownMenuItem<String>(
-                    value: urun,
-                    child: Text(urun),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedMalzeme = newValue;
-                  });
-                },
-                decoration: TextFieldStyles.defaultDecoration('Malzeme', Icons.cut),
-              ),
+            DropdownSelector(
+              hintText: 'Kullanılan ipliği seç',
+              items: _urunler,
+              selectedValue: _selectedMalzeme,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedMalzeme = newValue;
+                });
+              },
+              icon: Icons.cut,
             ),
-            const SizedBox(height: 20),
             // Renk seçme dropdown
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: DropdownButtonFormField<String>(
-                value: _selectedRenk,
-                hint: const Text('Renk Seçin'),
-                items: _renkler.map((String renk) {
-                  return DropdownMenuItem<String>(
-                    value: renk,
-                    child: Text(renk),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedRenk = newValue;
-                  });
-                },
-                decoration: TextFieldStyles.defaultDecoration('Renk', Icons.color_lens),
-              ),
+            DropdownSelector(
+              hintText: 'İp rengini seç',
+              items: _renkler,
+              selectedValue: _selectedRenk,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRenk = newValue;
+                });
+              },
+              icon: Icons.color_lens,
             ),
-            const SizedBox(height: 20),
             // Miktar girme
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _miktarController,
-                      decoration: TextFieldStyles.defaultDecoration('Ürün Miktarı', Icons.shopping_cart),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.remove),
-                    onPressed: () {
-                      int currentValue = int.tryParse(_miktarController.text) ?? 0;
-                      currentValue = currentValue > 0 ? currentValue - 1 : 0;
-                      _miktarController.text = currentValue.toString();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      int currentValue = int.tryParse(_miktarController.text) ?? 0;
-                      currentValue += 1;
-                      _miktarController.text = currentValue.toString();
-                    },
-                  ),
-                ],
-              ),
+            TextFieldWithCounter(
+              controller: _miktarController,
+              hintText: 'Miktar Gir',
+              icon: Icons.shopping_cart,
             ),
-            const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: _saveData,
+                onPressed: () {
+                  _dokaServices.decreaseStock(
+                    context: context,
+                    malzeme: _selectedMalzeme!,
+                    renk: _selectedRenk!,
+                    miktar: int.parse(_miktarController.text),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   shadowColor: Colors.transparent,
@@ -196,35 +140,165 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                 ),
               ),
             ),
+
+            /*---------------------------------------------------*/
+            const Padding(
+              padding: EdgeInsets.only(left: 15.0, right: 15.0,bottom:8),
+              child: Divider(),
+            ),
+
+            /*---------------------------------------------------*/
+            // Ürün seçme dropdown
+            DropdownSelector(
+              hintText: 'Dönüştürülen kumaşı seç',
+              items: _kumaslar,
+              selectedValue: _selectedDonumMalzeme,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDonumMalzeme = newValue;
+                });
+              },
+              icon: Icons.cut,
+            ),
+            // Renk seçme dropdown
+            DropdownSelector(
+              hintText: 'Kumaş rengini seç',
+              items: _renkler,
+              selectedValue: _selectedKumasRenk,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedKumasRenk = newValue;
+                });
+              },
+              icon: Icons.color_lens,
+            ),
+            // Miktar girme
+            TextFieldWithCounter(
+              controller: _miktarKumasController,
+              hintText: 'Miktar Gir',
+              icon: Icons.shopping_cart,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _dokaServices.addOrUpdateKumasStock(
+                    context: context,
+                    kumas: _selectedDonumMalzeme!,
+                    kumasRenk: _selectedKumasRenk!,
+                    miktar: int.parse(_miktarKumasController.text),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 8),
+                    Text(
+                      'Stok kaydı gir',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            /*---------------------------------------------------*/
+            const Padding(
+              padding: EdgeInsets.only(left: 15.0, right: 15.0,bottom:8),
+              child: Divider(),
+            ),
+
+            /*---------------------------------------------------*/
+            // Ürün seçme dropdown
+
+             DropdownSelector(
+              hintText: 'Fire düşülecek ipliği seç',
+              items: _urunler,
+              selectedValue: _selectedFireMalzeme,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireMalzeme = newValue;
+                });
+              },
+              icon: Icons.cut,
+            ),
+            // Renk seçme dropdown
+
+            DropdownSelector(
+              hintText: 'İp rengini seç',
+              items: _renkler,
+              selectedValue: _selectedFireRenk,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireRenk = newValue;
+                });
+              },
+              icon: Icons.color_lens,
+            ),
+          
+            // Miktar girme
+            TextFieldWithCounter(
+              controller: _fireMiktarController,
+              hintText: 'Miktar Gir',
+              icon: Icons.shopping_cart,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  _dokaServices.decreaseStock(
+                    context: context,
+                    malzeme: _selectedFireMalzeme!,
+                    renk: _selectedFireRenk!,
+                    miktar: int.parse(_fireMiktarController.text),
+                  );
+                  _dokaServices.addFireEntry(
+                    malzeme: _selectedFireMalzeme!,
+                    renk: _selectedFireRenk!,
+                    miktar: int.parse(_fireMiktarController.text),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 8),
+                    Text(
+                      'Fire kaydı gir',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            /*---------------------------------------------------*/
           ],
         ),
       ),
-    );
-  }
-}
-
-class TextFieldStyles {
-  static InputDecoration defaultDecoration(String hintText, IconData icon) {
-    return InputDecoration(
-      hintText: hintText,
-      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-      suffixIcon: Icon(icon, color: Colors.black, size: 18.0),
-      enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-        borderSide: BorderSide(
-          color: Colors.grey,
-          width: 0.9,
-        ),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-        borderSide: BorderSide(
-          color: Colors.black,
-          width: 0.9,
-        ),
-      ),
-      filled: true,
-      fillColor: Colors.white,
     );
   }
 }
