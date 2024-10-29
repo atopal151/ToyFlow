@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -35,18 +33,18 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animation = Tween<Offset>(
       begin: const Offset(0, -1),
-      end: const Offset(0, 0.1),
+      end: const Offset(0, 0),
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.bounceOut,
+      curve: Curves.easeOut,
     ));
 
     _controller.forward();
 
-    Timer(const Duration(seconds: 2), () async {
+    Timer(const Duration(seconds: 3), () async {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        String role = await _authService.getUserRole(user.uid); // Rolü al
+        String role = await _authService.getUserRole(user.uid);
         if (role == 'admin') {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => BottomNavBarWithPages()));
@@ -83,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF2A4D45), // Yeni arka plan rengi
       body: Column(
         children: [
           Expanded(
@@ -99,6 +97,16 @@ class _SplashScreenState extends State<SplashScreen>
                       'images/iconozgn.png',
                       width: 100.0,
                       height: 100.0,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    const Text(
+                      'Welcome to Toy Flow',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
@@ -108,23 +116,12 @@ class _SplashScreenState extends State<SplashScreen>
           const Expanded(
             flex: 1,
             child: Center(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "®",
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                  Text(
-                    "Özgüner Oyuncak",
-                    style: TextStyle(
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
+              child: Text(
+                "Özgüner Oyuncak",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                ),
               ),
             ),
           )

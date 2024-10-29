@@ -82,6 +82,11 @@ flutter:
    - images/iconozgn.png
    - images/profil.webp
    - images/empty.webp
+   - images/kadin.webp
+   - images/erkek.webp
+   - images/box.webp
+   - images/iplik.webp
+   - images/kumas.webp
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

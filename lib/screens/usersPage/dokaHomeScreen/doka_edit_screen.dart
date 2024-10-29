@@ -67,10 +67,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -118,7 +115,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: const Color.fromARGB(255, 84, 182, 221),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -142,12 +139,10 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             ),
 
             /*---------------------------------------------------*/
-            const Padding(
-              padding: EdgeInsets.only(left: 15.0, right: 15.0,bottom:8),
-              child: Divider(),
-            ),
 
-            /*---------------------------------------------------*/
+            const SizedBox(
+              height: 20,
+            ),
             // Ürün seçme dropdown
             DropdownSelector(
               hintText: 'Dönüştürülen kumaşı seç',
@@ -191,7 +186,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.green.shade400,
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -214,16 +209,14 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               ),
             ),
 
-            /*---------------------------------------------------*/
-            const Padding(
-              padding: EdgeInsets.only(left: 15.0, right: 15.0,bottom:8),
-              child: Divider(),
+          const SizedBox(
+              height: 20,
             ),
 
             /*---------------------------------------------------*/
             // Ürün seçme dropdown
 
-             DropdownSelector(
+            DropdownSelector(
               hintText: 'Fire düşülecek ipliği seç',
               items: _urunler,
               selectedValue: _selectedFireMalzeme,
@@ -247,7 +240,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
-          
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
@@ -272,7 +265,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: const Color.fromARGB(255, 223, 99, 90),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

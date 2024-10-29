@@ -11,9 +11,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const Text(
           "Sohbetler",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
@@ -24,18 +22,15 @@ class _ChatScreenState extends State<ChatScreen> {
             child: GestureDetector(
               onTap: () {},
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
+                decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 103, 168, 105),
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1.0,
-                  ),
+                  
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: const Icon(
                   Icons.chat_bubble,
-                  size: 15,
+                  size: 19,
                   color: Colors.white,
                 ),
               ),

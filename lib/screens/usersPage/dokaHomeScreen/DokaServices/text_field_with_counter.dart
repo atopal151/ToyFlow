@@ -36,17 +36,47 @@ class _TextFieldWithCounterState extends State<TextFieldWithCounter> {
       children: [
         Expanded(
           child: Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0,top:8),
-            child: TextField(
-              controller: widget.controller,
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                suffixIcon: Icon(widget.icon, color: Colors.black, size: 18.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white, // Arka plan rengi beyaz
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4), // Gölgenin pozisyonu
+                  ),
+                ],
               ),
-              keyboardType: TextInputType.number,
+              child: TextField(
+                controller: widget.controller,
+                decoration: InputDecoration(
+                  hintText: widget.hintText,
+                  hintStyle: TextStyle(color: Colors.grey[700]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: Colors.white,
+                        size: 18.0,
+                      ),
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                keyboardType: TextInputType.number,
+              ),
             ),
           ),
         ),
