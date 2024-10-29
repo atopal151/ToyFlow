@@ -35,6 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         authService.currentUser?.uid ?? ''; // Mevcut kullanıcının uid'si
 
     return AppBar(
+      
       title: FutureBuilder<String>(
         future: _getCinsiyetImagePath(
             uid), // Cinsiyet bilgisine göre resim belirleniyor

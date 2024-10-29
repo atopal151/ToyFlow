@@ -115,7 +115,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 84, 182, 221),
+                  backgroundColor: const Color.fromARGB(255, 86, 157, 185),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -186,7 +186,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade400,
+                  backgroundColor: const Color.fromARGB(255, 111, 183, 117),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

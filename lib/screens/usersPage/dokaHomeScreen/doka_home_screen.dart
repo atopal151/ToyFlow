@@ -42,6 +42,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: const CustomAppBar(
         workshopName: "Dokuma Atölyesi",
         chatPage: DokaEditScreen(),
@@ -186,7 +187,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                         Row(
                                           children: [
                                             const Icon(Icons.color_lens,
-                                                color: Colors.amber, size: 16),
+                                                color: Color.fromARGB(255, 207, 124, 118), size: 16),
                                             const SizedBox(width: 4),
                                             Text(
                                               ' ${work['kumas_renk'] ?? 'Bilinmiyor'}',
@@ -195,7 +196,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                             ),
                                             const SizedBox(width: 10),
                                             const Icon(Icons.layers_sharp,
-                                                color: Colors.blueGrey,
+                                                color: Color.fromARGB(255, 98, 148, 173),
                                                 size: 16),
                                             const SizedBox(width: 4),
                                             Text(

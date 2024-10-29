@@ -1,5 +1,4 @@
-// ignore_for_file: unused_element, use_build_context_synchronously, unused_catch_clause, unnecessary_overrides
-
+// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,46 +18,12 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   String email = '';
   String password = '';
-  bool isLoading = false; // Yükleme durumunu takip etmek için
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-
-// AlertDialog gösteren metod
-  void _showAlertDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Tamam"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dialogu kapat
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  bool isLoading = false;
 
   Future<void> _login() async {
     setState(() {
@@ -71,79 +36,59 @@ class _LoginScreenState extends State<LoginScreen>
         password: password,
       );
 
-      // Giriş yapıldıktan sonra email'i güncelle
       final ProductServices productServices = Get.find();
       productServices.userEmail.value =
           userCredential.user?.email ?? 'Email bulunamadı';
 
-      // Kullanıcı verisini Firestore'dan al
       DocumentSnapshot userDoc = await _firestore
           .collection('users')
           .doc(userCredential.user!.uid)
           .get();
-
       if (userDoc.exists && userDoc.data() != null) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
-        // Kullanıcı verilerini güncelle
         productServices.firstName.value =
             userData['firstName'] ?? 'Ad bulunamadı';
         productServices.lastName.value =
             userData['lastName'] ?? 'Soyad bulunamadı';
 
-        // Rol alanı mevcut mu kontrol et
         if (userData.containsKey('role')) {
           String role = userData['role'];
+          Widget destination;
 
-          if (role == 'admin') {
-            // Eğer rol admin ise admin sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BottomNavBarWithPages()));
-          } else if (role == 'Dikim') {
-            // Rol admin değilse kullanıcı sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const DikaHomeScreen()));
-          } else if (role == 'Dokuma') {
-            // Rol admin değilse kullanıcı sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const DokaHomeScreen()));
-          } else if (role == 'Dolum') {
-            // Rol admin değilse kullanıcı sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const DolaHomeScreen()));
-          } else if (role == 'Kesim') {
-            // Rol admin değilse kullanıcı sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const KesaHomeScreen()));
-          } else if (role == 'Paketleme') {
-            // Rol admin değilse kullanıcı sayfasına yönlendir
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const PakaHomeScreen()));
+          switch (role) {
+            case 'admin':
+              destination = BottomNavBarWithPages();
+              break;
+            case 'Dikim':
+              destination = const DikaHomeScreen();
+              break;
+            case 'Dokuma':
+              destination = const DokaHomeScreen();
+              break;
+            case 'Dolum':
+              destination = const DolaHomeScreen();
+              break;
+            case 'Kesim':
+              destination = const KesaHomeScreen();
+              break;
+            case 'Paketleme':
+              destination = const PakaHomeScreen();
+              break;
+            default:
+              destination = const LoginScreen();
+              break;
           }
-        } else {
-          print("Kullanıcı rolü bulunamadı.");
+
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => destination));
         }
       } else {
-         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Bu kullanıcı bulunamadı")),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Bu kullanıcı bulunamadı")));
       }
-    } on FirebaseAuthException catch (e) {
-       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")),
-        );
+    } on FirebaseAuthException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")));
     } finally {
       setState(() {
         isLoading = false;
@@ -154,206 +99,158 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true, // Ekranı küçültmek için
+      // Koyu yeşil arka plan
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 100,
-              ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height *
-                      0.25, // Ekranın %25'i kadar yer ayır
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 40.0, right: 40.0, bottom: 10.0, top: 30.0),
-                    child: Image.asset(
-                      'images/iconozgn.png',
-                      width: 100.0,
-                      height: 50.0,
+              const Spacer(flex: 1),
+              // Logo ve başlık
+              Column(
+                children: [
+                  Image.asset(
+                    'images/iconozgn.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'ToyFlow`a',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: SingleChildScrollView(
-                  child: SizedBox(
-                    width: 320.0,
-                    child: Container(
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.0),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 0.9,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 10),
-                          TextField(
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.person, color: Colors.grey),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                borderSide: BorderSide(
-                                  color: Colors.grey,
-                                  width: 0.9,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 0.5,
-                                ),
-                              ),
-                              labelText: 'Kullanıcı Adı',
-                              labelStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                email = value;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 20.0),
-                          TextField(
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                borderSide: BorderSide(
-                                  color: Colors.grey,
-                                  width: 0.9,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                borderSide: BorderSide(
-                                  color: Colors.black,
-                                  width: 0.5,
-                                ),
-                              ),
-                              labelText: 'Şifre',
-                              labelStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                              ),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                password = value;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 40.0),
-                          Row(
-                            children: [
-                              const Expanded(
-                                flex: 1,
-                                child: Center(
-                                  child: Text(
-                                    "Şifreni mi unuttun?",
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: InkWell(
-                                  onTap: isLoading
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            // Butona tıkladığında yükleme durumunu başlat
-                                            isLoading = true;
-                                          });
-                                          _login(); // Giriş işlemini başlat
-                                        },
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 50.0,
-                                    decoration: BoxDecoration(
-                                      color: isLoading
-                                          ? Colors.grey
-                                          : const Color(
-                                              0xFF9FCE4D), // Yükleme durumuna göre renk
-                                      borderRadius: BorderRadius.circular(50.0),
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                        width: 0.20,
-                                      ),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: isLoading
-                                        ? const CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Colors.white),
-                                          )
-                                        : const Text(
-                                            'Giriş Yap',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                  const Text(
+                    'Hoşgeldin',
+                    style: TextStyle(
+                      fontSize: 28,
+                     color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                  
+                ],
+              ),
+              const Spacer(flex: 1),
+              // Giriş alanları
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // Arka plan rengini beyaz yapıyoruz
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 8), // Gölgenin pozisyonu
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(
-                height: 100,
-              ),
-              const Expanded(
-                flex: 1,
-                child: Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "®",
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 10, right: 10, top: 20),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          filled: true,
+                          fillColor: Colors.grey[100],
+                          prefixIcon:
+                              const Icon(Icons.person, color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            email = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, bottom: 20),
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'Şifre',
+                          filled: true,
+                          fillColor: Colors.grey[100],
+                          prefixIcon:
+                              const Icon(Icons.lock, color: Colors.grey),
+                          suffixIcon:
+                              const Icon(Icons.visibility, color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                               Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : const Text(
+                                'Giriş Yap',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        // Şifreni unuttun işlemi
+                      },
+                      child: const Text(
+                        "Şifreni mi unuttun?",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 12,
+                          color: Colors.black54,
                         ),
                       ),
-                      Text(
-                        "Özgüner Oyuncak",
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
+              ),
+              const Spacer(flex: 2),
+              // Alt kısımda marka ismi
+              const Text(
+                "Özgüner Oyuncak",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                ),
+              ),
+              const Spacer(flex: 1),
             ],
           ),
         ),

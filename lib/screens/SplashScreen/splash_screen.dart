@@ -81,7 +81,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2A4D45), // Yeni arka plan rengi
       body: Column(
         children: [
           Expanded(
@@ -97,15 +96,12 @@ class _SplashScreenState extends State<SplashScreen>
                       'images/iconozgn.png',
                       width: 100.0,
                       height: 100.0,
-                      color: Colors.white,
                     ),
                     const SizedBox(height: 20),
-                    
                     const Text(
-                      'Welcome to Toy Flow',
+                      'Toy Flow`a Hoşgeldin',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white70,
                       ),
                     ),
                   ],
@@ -120,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen>
                 "Özgüner Oyuncak",
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.white70,
+                  color: Colors.black45,
                 ),
               ),
             ),
