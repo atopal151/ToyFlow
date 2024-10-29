@@ -48,7 +48,7 @@ class DropdownSelector extends StatelessWidget {
             suffixIcon: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black,
                   shape: BoxShape.circle,
                 ),

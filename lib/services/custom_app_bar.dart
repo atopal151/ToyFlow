@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/chatScreen/chat_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../screens/usersPage/usersProfileScreen/users_profile.dart';
 import 'product_services.dart';

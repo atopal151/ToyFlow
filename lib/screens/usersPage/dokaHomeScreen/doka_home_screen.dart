@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -196,7 +198,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                             ),
                                             const SizedBox(width: 10),
                                             const Icon(Icons.layers_sharp,
-                                                color: Color.fromARGB(255, 98, 148, 173),
+                                                color: Color.fromARGB(255, 81, 124, 146),
                                                 size: 16),
                                             const SizedBox(width: 4),
                                             Text(
