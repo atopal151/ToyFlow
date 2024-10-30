@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:toyflow/services/record_services.dart'; // RecordServices sınıfını import edin
 
-import '../../registerPage/registerServices/dropdown_style_file.dart';
-import '../../registerPage/registerServices/textbox_style_file.dart';
+import '../registerPage/registerServices/dropdown_style_file.dart';
+import '../registerPage/registerServices/textbox_style_file.dart';
 
 class StockAddScreen extends StatefulWidget {
   const StockAddScreen({super.key});

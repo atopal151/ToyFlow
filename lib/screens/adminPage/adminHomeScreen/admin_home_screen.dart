@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
 import 'package:toyflow/screens/moverScreen/mover_screen.dart';
-import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
 import '../../../services/product_services.dart'; // Servisi içe aktar
 
 class AdminHomeScreen extends StatefulWidget {
@@ -31,11 +30,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AdminSettingScreen()),
-                    );
+                    Get.to(() => const AdminSettingScreen());
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
@@ -71,11 +66,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MoverScreen()),
-                );
+                Get.to(() => const MoverScreen());
+                
               },
               child: Container(
                 decoration: BoxDecoration(

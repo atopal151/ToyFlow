@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
+import '../../../services/auth_service.dart';
 import 'registerServices/dropdown_style_file.dart';
 import 'registerServices/textbox_style_file.dart';
 

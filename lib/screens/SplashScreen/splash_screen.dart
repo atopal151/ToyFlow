@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../LoginScreen/login_screen.dart';
 import '../usersPage/PakaHomeScreen/paka_home_screen.dart';
@@ -19,65 +20,35 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _animation;
-  final AuthService _authService = AuthService(); // AuthService örneği
+class _SplashScreenState extends State<SplashScreen> {
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-
-    _animation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: const Offset(0, 0),
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
-
-    _controller.forward();
-
-    Timer(const Duration(seconds: 3), () async {
+    
+    // 3 saniye bekledikten sonra yönlendirme işlemi
+    Timer(const Duration(seconds: 1), () async {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         String role = await _authService.getUserRole(user.uid);
         if (role == 'admin') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => BottomNavBarWithPages()));
+          Get.off(() => BottomNavBarWithPages());
         } else if (role == 'Dikim') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const DikaHomeScreen()));
+          Get.off(() => const DikaHomeScreen());
         } else if (role == 'Dokuma') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const DokaHomeScreen()));
+          Get.off(() => const DokaHomeScreen());
         } else if (role == 'Dolum') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const DolaHomeScreen()));
+          Get.off(() => const DolaHomeScreen());
         } else if (role == 'Kesim') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const KesaHomeScreen()));
+          Get.off(() => const KesaHomeScreen());
         } else if (role == 'Paketleme') {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const PakaHomeScreen()));
+          Get.off(() => const PakaHomeScreen());
         }
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
+        Get.off(() => const LoginScreen());
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -88,41 +59,41 @@ class _SplashScreenState extends State<SplashScreen>
           Expanded(
             flex: 5,
             child: Center(
-              child: SlideTransition(
-                position: _animation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'images/iconozgn.png',
-                      width: 100.0,
-                      height: 100.0,
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Toy Flow`a Hoşgeldin',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/iconozgn.png',
+                    width: 100.0,
+                    height: 100.0,
+                  ),
+                ],
               ),
             ),
           ),
           const Expanded(
             flex: 1,
             child: Center(
-              child: Text(
-                "Özgüner Oyuncak",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black45,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    "Özgüner Oyuncak",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black45,
+                    ),
+                  ),
+                  Text(
+                    'Toy Flow',
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -39,7 +39,7 @@ class UsersProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            _productService.firstName.value + _productService.lastName.value,
+            "${_productService.firstName.value} ${_productService.lastName.value}",
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           Text(

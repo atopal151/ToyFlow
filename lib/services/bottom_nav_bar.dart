@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:toyflow/screens/adminPage/adminHomeScreen/admin_home_screen.dart';
 import 'package:toyflow/screens/adminPage/adminWorkShopPage/admin_work_shop_screen.dart';
 import 'package:toyflow/screens/chatScreen/chat_screen.dart';
-
 import '../screens/adminPage/adminSearchPage/admin_search_screen.dart';
 
 class BottomNavBarWithPages extends StatefulWidget {
@@ -39,19 +38,19 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
         child: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.home_work_outlined, 0),
+              icon: _buildAnimatedIcon(Icons.home_work_outlined, 0),
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.cut_outlined, 1),
+              icon: _buildAnimatedIcon(Icons.cut_outlined, 1),
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.chat_bubble_outline, 2),
+              icon: _buildAnimatedIcon(Icons.chat_bubble_outline, 2),
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: _buildIcon(Icons.search_outlined, 3),
+              icon: _buildAnimatedIcon(Icons.search_outlined, 3),
               label: '',
             ),
           ],
@@ -68,19 +67,22 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
     );
   }
 
-  // İkonu oluşturmak için yardımcı metot
-  Widget _buildIcon(IconData icon, int index) {
+  // Yayılma (pulse) ve zıplama animasyonlu ikon metodu
+  Widget _buildAnimatedIcon(IconData icon, int index) {
     bool isSelected = _selectedIndex == index;
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      margin: EdgeInsets.only(bottom: isSelected ? 10 : 0), // Zıplama etkisi
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isSelected ? Colors.black : Colors.transparent,
       ),
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(isSelected ? 12.0 : 8.0), // Seçildiğinde genişleyen alan
       child: Icon(
         icon,
         color: isSelected ? Colors.white : Colors.black,
-        size: isSelected ? 20 : 18,
+        size: isSelected ? 22 : 18, // İkon büyüklüğü
       ),
     );
   }

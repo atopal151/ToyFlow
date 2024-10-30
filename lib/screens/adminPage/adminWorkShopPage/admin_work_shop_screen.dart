@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:toyflow/screens/adminPage/adminWorkShopPage/work_detail_screen.dart';
 
 class AdminWorkShopScreen extends StatefulWidget {
   const AdminWorkShopScreen({super.key});
@@ -10,12 +11,31 @@ class AdminWorkShopScreen extends StatefulWidget {
 class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
   // ToyFlow atölye bilgileri, her biri için özel bir arka plan görseliyle
   final List<Map<String, dynamic>> workshops = [
-    {'title': 'Dokuma Atölyesi', 'icon': Icons.abc_sharp, 'image': 'images/dokuma.webp'},
-    {'title': 'Kesim Atölyesi', 'icon': Icons.cut, 'image': 'images/kesim.webp'},
-    {'title': 'Dikim Atölyesi', 'icon': Icons.ad_units, 'image': 'images/dikim.webp'},
-    {'title': 'Dolum Atölyesi', 'icon': Icons.local_florist, 'image': 'images/dolum.webp'},
-    {'title': 'Paketleme Atölyesi', 'icon': Icons.archive, 'image': 'images/paketleme.webp'},
-    {'title': 'Favoriler', 'icon': Icons.star, 'image': 'images/box.webp'},
+    {
+      'title': 'Dokuma Atölyesi',
+      'icon': Icons.abc_sharp,
+      'image': 'images/dokuma.webp'
+    },
+    {
+      'title': 'Kesim Atölyesi',
+      'icon': Icons.cut,
+      'image': 'images/kesim.webp'
+    },
+    {
+      'title': 'Dikim Atölyesi',
+      'icon': Icons.ad_units,
+      'image': 'images/dikim.webp'
+    },
+    {
+      'title': 'Dolum Atölyesi',
+      'icon': Icons.local_florist,
+      'image': 'images/dolum.webp'
+    },
+    {
+      'title': 'Paketleme Atölyesi',
+      'icon': Icons.archive,
+      'image': 'images/paketleme.webp'
+    },
   ];
 
   @override
@@ -41,13 +61,20 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
             final workshop = workshops[index];
             return GestureDetector(
               onTap: () {
-                // Tıklama olayında yapılacak işlemler (örn: sayfa yönlendirme)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        WorkDetailScreen(selectedWorkshop: workshop['title']),
+                  ),
+                );
               },
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
-                    image: AssetImage(workshop['image']), // Atölye için arka plan görseli
+                    image: AssetImage(
+                        workshop['image']), // Atölye için arka plan görseli
                     fit: BoxFit.cover,
                     colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.3), // Görseli koyulaştırma
@@ -63,13 +90,8 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
                   ],
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(
-                      workshop['icon'],
-                      size: 40,
-                      color: Colors.white,
-                    ),
                     const SizedBox(height: 8),
                     Text(
                       workshop['title'],

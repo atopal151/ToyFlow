@@ -227,19 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        // Şifreni unuttun işlemi
-                      },
-                      child: const Text(
-                        "Şifreni mi unuttun?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),
