@@ -61,35 +61,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                       profileImagePath: imagePath,
                                     )));
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color:
-                              Colors.white, // Arka plan rengini beyaz yapıyoruz
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 3,
-                              offset: const Offset(0, 0), // Gölgenin pozisyonu
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: imagePath.isNotEmpty
-                              ? AssetImage(imagePath)
-                              : null, // Belirlenen resim varsa, yoksa null
-                          backgroundColor: Colors
-                              .grey.shade200, // Varsayılan arka plan rengi
-                          child: imagePath.isEmpty
-                              ? Icon(
-                                  Icons.person, // Resim yoksa varsayılan ikon
-                                  size: 35,
-                                  color: Colors.grey.shade900,
-                                )
-                              : null,
-                        ),
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundImage: imagePath.isNotEmpty
+                            ? AssetImage(imagePath)
+                            : null, // Belirlenen resim varsa, yoksa null
+                        backgroundColor: Colors
+                            .grey.shade200, // Varsayılan arka plan rengi
+                        child: imagePath.isEmpty
+                            ? Icon(
+                                Icons.person, // Resim yoksa varsayılan ikon
+                                size: 35,
+                                color: Colors.grey.shade900,
+                              )
+                            : null,
                       ),
                     ),
                   ),
@@ -132,14 +117,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   color: Colors.black,
                   width: 0.5,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    spreadRadius: 0.9,
-                    blurRadius: 10,
-                    offset: const Offset(0, 4), // Gölgenin pozisyonu
-                  ),
-                ],
+                
               ),
               padding: const EdgeInsets.all(8.0),
               child: const Icon(

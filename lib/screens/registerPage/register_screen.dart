@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import 'registerServices/dropdown_style_file.dart';
+import 'registerServices/textbox_style_file.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -38,171 +40,132 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const Text("Personel Kaydet"),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _firstNameController,
-                decoration:
-                    TextFieldStyles.defaultDecoration('Ad', Icons.person),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: _lastNameController,
-                decoration:
-                    TextFieldStyles.defaultDecoration('Soyad', Icons.person),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: _emailController,
-                decoration:
-                    TextFieldStyles.defaultDecoration('E-posta', Icons.email),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration:
-                    TextFieldStyles.defaultDecoration('Şifre', Icons.lock),
-                obscureText: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButtonFormField<String>(
-                value: _selectedCins,
-                hint: const Text('Cinsiyet Seçin'),
-                items: cins.map((String cinsi) {
-                  return DropdownMenuItem<String>(
-                    value: cinsi,
-                    child: Text(cinsi),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCins = newValue; // Seçilen rolü güncelle
-                  });
-                },
-                decoration: TextFieldStyles.defaultDecoration(
-                    'Cinsiyet', Icons.transgender),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              // Rol Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedRole,
-                hint: const Text('Rol Seçin'),
-                items: roles.map((String role) {
-                  return DropdownMenuItem<String>(
-                    value: role,
-                    child: Text(role),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedRole = newValue; // Seçilen rolü güncelle
-                  });
-                },
-                decoration:
-                    TextFieldStyles.defaultDecoration('Rol', Icons.work),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              // Atölye Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedWorkshop,
-                hint: const Text('Atölye Seçin'),
-                items: workshops.map((String workshop) {
-                  return DropdownMenuItem<String>(
-                    value: workshop,
-                    child: Text(workshop),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedWorkshop = newValue; // Seçilen atölyeyi güncelle
-                  });
-                },
-                decoration: TextFieldStyles.defaultDecoration(
-                    'Atölye', Icons.cut_outlined),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          // Buton tıklanabilirliği
-                          setState(() {
-                            isLoading = true; // Yüklenme durumunu başlat
-                          });
+        child: Column(
+          children: [
+            TextFieldWithRegister(
+              controller: _firstNameController,
+              hintText: 'Ad',
+              icon: Icons.person,
+            ),
+            TextFieldWithRegister(
+              controller: _lastNameController,
+              hintText: 'Soyad',
+              icon: Icons.person,
+            ),
+            TextFieldWithRegister(
+              controller: _emailController,
+              hintText: 'Email',
+              icon: Icons.email,
+            ),
+            TextFieldWithRegister(
+              controller: _passwordController,
+              hintText: 'Şifre',
+              icon: Icons.lock,
+            ),
 
-                          // Kullanıcı kaydetme işlemi
-                          await _authService.createUser(
-                              _emailController.text,
-                              _passwordController.text,
-                              _firstNameController.text,
-                              _lastNameController.text,
-                              _selectedRole ?? '', // Seçilen rolü al
-                              _selectedWorkshop ?? '',
-                              _selectedCins ?? '' // Seçilen cinsiyeti al
-                              );
+            // cinsiyet Dropdown
+            DropdownRegisterSelector(
+              hintText: 'Cinsiyet Seçin',
+              items: cins,
+              selectedValue: _selectedCins,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCins = newValue;
+                });
+              },
+              icon: Icons.transgender,
+            ),
 
-                          // Kayıt tamamlandığında geri dön
-                          Navigator.of(context).pop();
+            // rol Dropdown
+          DropdownRegisterSelector(
+              hintText: 'Rol Seç',
+              items: roles,
+              selectedValue: _selectedRole,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRole = newValue;
+                });
+              },
+              icon: Icons.work,
+            ),
+            // Atölye Dropdown
+            DropdownRegisterSelector(
+              hintText: 'Atölye Seç',
+              items: workshops,
+              selectedValue: _selectedWorkshop,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedWorkshop = newValue;
+                });
+              },
+              icon: Icons.cut,
+            ),
+           
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        // Buton tıklanabilirliği
+                        setState(() {
+                          isLoading = true; // Yüklenme durumunu başlat
+                        });
 
-                          setState(() {
-                            isLoading = false; // Yüklenme durumunu bitir
-                          });
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
+                        // Kullanıcı kaydetme işlemi
+                        await _authService.createUser(
+                            _emailController.text,
+                            _passwordController.text,
+                            _firstNameController.text,
+                            _lastNameController.text,
+                            _selectedRole ?? '', // Seçilen rolü al
+                            _selectedWorkshop ?? '',
+                            _selectedCins ?? '' // Seçilen cinsiyeti al
+                            );
+
+                        // Kayıt tamamlandığında geri dön
+                        Navigator.of(context).pop();
+
+                        setState(() {
+                          isLoading = false; // Yüklenme durumunu bitir
+                        });
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
                   ),
-                  child: isLoading
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center, // İkon ve metni ortala
-                          children: [
-                            Text(
-                              'Kaydet',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white, // Yazı rengi
-                              ),
-                            ),
-                          ],
-                        ),
                 ),
+                child: isLoading
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center, // İkon ve metni ortala
+                        children: [
+                          Text(
+                            'Kaydet',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Yazı rengi
+                            ),
+                          ),
+                        ],
+                      ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -215,7 +178,8 @@ class TextFieldStyles {
       hintText: hintText, // Placeholder metni
       contentPadding: const EdgeInsets.symmetric(
           vertical: 0, horizontal: 20), // İç boşluklar
-      suffixIcon: Icon(icon, color: Colors.grey.shade500), // Sağ tarafa yaslı ikon
+      suffixIcon:
+          Icon(icon, color: Colors.grey.shade500), // Sağ tarafa yaslı ikon
       enabledBorder: const OutlineInputBorder(
         borderRadius:
             BorderRadius.all(Radius.circular(30.0)), // Tam daire border radius

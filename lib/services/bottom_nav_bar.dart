@@ -61,7 +61,7 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           elevation: 0,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
         ),
       ),
       body: _pages[_selectedIndex],

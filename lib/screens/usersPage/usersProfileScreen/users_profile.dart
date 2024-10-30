@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/chatScreen/chat_screen.dart';
-import 'package:toyflow/screens/usersPage/dokaHomeScreen/doka_mover_screen.dart';
+import 'package:toyflow/screens/moverScreen/mover_screen.dart';
 import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/product_services.dart';
@@ -33,23 +33,9 @@ class UsersProfileScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           // Profil Resmi ve Kullanıcı Bilgisi
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white, // Arka plan rengini beyaz yapıyoruz
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: const Offset(0, 8), // Gölgenin pozisyonu
-                ),
-              ],
-            ),
-            child: CircleAvatar(
-              radius: 40,
-              backgroundImage: AssetImage(profileImagePath), // Profil resmi
-            ),
+          CircleAvatar(
+            radius: 40,
+            backgroundImage: AssetImage(profileImagePath), // Profil resmi
           ),
           const SizedBox(height: 10),
           Text(
@@ -169,7 +155,7 @@ class UsersProfileScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const DokaMoverScreen()),
+                          builder: (context) => const MoverScreen()),
                     );
                     // Üretim raporları ekranına yönlendirme
                   },

@@ -1,12 +1,49 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:toyflow/services/auth_service.dart';
+import 'package:toyflow/services/record_services.dart';
 
 class DokaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final RecordServices _recordServices = Get.find();
+  final AuthService _authService = Get.find();
+  User? user = FirebaseAuth.instance.currentUser;
+  String? userRole;
 
-  // Stok ekleme veya mevcut stoğu güncelleme
+  DokaServices() {
+    _initializeUserRole();
+  }
+
+  // Kullanıcı rolünü bir defa al ve userRole değişkenine ata
+  Future<void> _initializeUserRole() async {
+    if (user != null) {
+      userRole = await _authService.getUserRole(user!.uid);
+    }
+  }
+
+  Future<void> _recordMovement({
+    required String malzeme,
+    required String renk,
+    required int miktar,
+    required String islemTuru,
+    required String aciklama,
+  }) async {
+    if (userRole != null) {
+      await _recordServices.movementRecord(
+        malzeme: malzeme,
+        renk: renk,
+        miktar: miktar,
+        islemTuru: islemTuru,
+        atelye: userRole!,
+        aciklama: aciklama,
+      );
+    } else {
+      print("Kullanıcı oturumu açık değil veya rol alınamadı.");
+    }
+  }
+
   Future<void> addOrUpdateKumasStock({
     required BuildContext context,
     required String kumas,
@@ -39,7 +76,6 @@ class DokaServices {
         DocumentSnapshot existingDoc = querySnapshot.docs.first;
         int existingMiktar = existingDoc['miktar'];
         int yeniMiktar = existingMiktar + miktar;
-
         await _firestore
             .collection('dokuma_stok')
             .doc(existingDoc.id)
@@ -48,7 +84,8 @@ class DokaServices {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Mevcut stoğa $miktar kilo eklendi!')),
         );
-        await addMovementRecord(
+
+        await _recordMovement(
           malzeme: kumas,
           renk: kumasRenk,
           miktar: miktar,
@@ -66,7 +103,8 @@ class DokaServices {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Yeni stok başarıyla kaydedildi!')),
         );
-        await addMovementRecord(
+
+        await _recordMovement(
           malzeme: kumas,
           renk: kumasRenk,
           miktar: miktar,
@@ -83,7 +121,6 @@ class DokaServices {
     }
   }
 
-  // Stok düşme işlemi
   Future<void> decreaseStock({
     required BuildContext context,
     required String malzeme,
@@ -115,7 +152,8 @@ class DokaServices {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Stok başarıyla güncellendi.")),
           );
-          await addMovementRecord(
+
+          await _recordMovement(
             malzeme: malzeme,
             renk: renk,
             miktar: miktar,
@@ -139,53 +177,35 @@ class DokaServices {
     }
   }
 
-  // Fire kaydı
   Future<void> addFireEntry({
     required String malzeme,
     required String renk,
     required int miktar,
   }) async {
+
+    
     try {
+
+      
       await _firestore.collection('dokuma_fire').add({
         'malzeme': malzeme,
         'renk': renk,
         'miktar': miktar,
         'tarih': FieldValue.serverTimestamp(),
       });
-      await addMovementRecord(
+
+      await _recordMovement(
         malzeme: malzeme,
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama:
-            'Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yapıldı!',
+        aciklama: 'Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yapıldı!',
       );
+
       print("Fire kaydı başarıyla eklendi.");
     } catch (e) {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
-    }
-  }
-
-  Future<void> addMovementRecord({
-    required String malzeme,
-    required String renk,
-    required int miktar,
-    required String islemTuru,
-    required String aciklama,
-  }) async {
-    try {
-      await _firestore.collection('dokuma_mover').add({
-        'malzeme': malzeme,
-        'renk': renk,
-        'miktar': miktar,
-        'islemTuru': islemTuru,
-        'aciklama': aciklama,
-        'tarih': FieldValue.serverTimestamp(),
-      });
-      print('Hareket kaydı başarıyla eklendi.');
-    } catch (e) {
-      print('Hareket kaydı sırasında hata oluştu: $e');
     }
   }
 }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/stockPage/stock_add_screen.dart';
+import 'package:toyflow/screens/moverScreen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../../../services/product_services.dart';
 import '../../registerPage/register_screen.dart';
@@ -23,9 +24,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -39,7 +38,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
         children: [
           const CircleAvatar(
             radius: 40,
-            backgroundImage: AssetImage('images/profil.webp'), // Profil resmi
+            backgroundImage: AssetImage('images/erkek.webp'), // Profil resmi
           ),
           const SizedBox(height: 10),
           Text(
@@ -54,8 +53,8 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.grey[200],
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -70,9 +69,19 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
             child: ListView(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.person_add, color: Colors.blue),
+                  leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 111, 178, 131),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                   title: const Text('Kullanıcı Ekle'),
-                  subtitle: const Text('Yeni bir kullanıcı ekleyin'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Navigator.push(
@@ -83,9 +92,19 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.inventory, color: Colors.orange),
+                  leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 79, 130, 218),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.inventory_2,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                   title: const Text('Stok Ekle'),
-                  subtitle: const Text('Yeni stok öğesi ekleyin'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Navigator.push(
@@ -96,27 +115,61 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.history, color: Colors.green),
+                  leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 196, 137, 107),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.history,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                   title: const Text('Geçmişi Görüntüle'),
-                  subtitle: const Text('Tüm işlemlerin geçmişini inceleyin'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    // Geçmişi görüntüle ekranına yönlendirme
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MoverScreen()),
+                    );
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.settings, color: Colors.purple),
-                  title: const Text('Ayarları Güncelle'),
-                  subtitle: const Text('Yönetici ayarlarını güncelleyin'),
+                  leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 178, 165, 82),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add_business,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                  title: const Text('Yeni Ürün Kalemi Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     // Ayarları güncelleme ekranına yönlendirme
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.report, color: Colors.teal),
+                  leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 131, 156, 180),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.report,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                   title: const Text('Raporları Görüntüle'),
-                  subtitle: const Text('Detaylı raporları görüntüleyin'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     // Raporları görüntüle ekranına yönlendirme
@@ -124,7 +177,18 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                 ),
                 ListTile(
                   leading:
-                      const Icon(Icons.logout_rounded, color: Colors.orange),
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 182, 100, 100),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                   title: const Text('Çıkış Yap'),
                   onTap: () async {
                     _authService.logout();

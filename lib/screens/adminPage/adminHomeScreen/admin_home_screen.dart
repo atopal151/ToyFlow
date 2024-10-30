@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
+import 'package:toyflow/screens/moverScreen/mover_screen.dart';
 import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
 import '../../../services/product_services.dart'; // Servisi içe aktar
 
@@ -25,9 +26,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: Obx(() => Row(
               children: [
                 InkWell(
@@ -46,7 +45,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       child: CircleAvatar(
                         radius: 40,
                         backgroundImage:
-                            AssetImage('images/profil.webp'), // Profil resmi
+                            AssetImage('images/erkek.webp'), // Profil resmi
                       ),
                     ),
                   ),
@@ -57,7 +56,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   children: [
                     Text(
                       "${productServices.firstName.value} ${productServices.lastName.value}", // Kullanıcının e-posta adresini göster
-                      style: const TextStyle(fontSize: 15),
+                      style: const TextStyle(fontSize: 15,fontWeight:FontWeight.bold),
                     ),
                     const Text(
                       "Yönetici", // Kullanıcının e-posta adresini göster
@@ -75,7 +74,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const UsersNotificationScreen()),
+                      builder: (context) => const MoverScreen()),
                 );
               },
               child: Container(

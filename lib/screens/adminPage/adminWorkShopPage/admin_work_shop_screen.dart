@@ -8,18 +8,84 @@ class AdminWorkShopScreen extends StatefulWidget {
 }
 
 class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
+  // ToyFlow atölye bilgileri, her biri için özel bir arka plan görseliyle
+  final List<Map<String, dynamic>> workshops = [
+    {'title': 'Dokuma Atölyesi', 'icon': Icons.abc_sharp, 'image': 'images/dokuma.webp'},
+    {'title': 'Kesim Atölyesi', 'icon': Icons.cut, 'image': 'images/kesim.webp'},
+    {'title': 'Dikim Atölyesi', 'icon': Icons.ad_units, 'image': 'images/dikim.webp'},
+    {'title': 'Dolum Atölyesi', 'icon': Icons.local_florist, 'image': 'images/dolum.webp'},
+    {'title': 'Paketleme Atölyesi', 'icon': Icons.archive, 'image': 'images/paketleme.webp'},
+    {'title': 'Favoriler', 'icon': Icons.star, 'image': 'images/box.webp'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text(
-            "Atölyeler",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-          )),
-      body: const Center(
-        child: Text("WorkShop"),
+        title: const Text(
+          "Atölyeler",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // İki sütunlu grid
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1, // Kare görünüm
+          ),
+          itemCount: workshops.length,
+          itemBuilder: (context, index) {
+            final workshop = workshops[index];
+            return GestureDetector(
+              onTap: () {
+                // Tıklama olayında yapılacak işlemler (örn: sayfa yönlendirme)
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                    image: AssetImage(workshop['image']), // Atölye için arka plan görseli
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3), // Görseli koyulaştırma
+                      BlendMode.darken,
+                    ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      workshop['icon'],
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      workshop['title'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
