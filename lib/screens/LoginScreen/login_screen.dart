@@ -1,17 +1,7 @@
 // login_screen.dart
-// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get/get.dart';
-import 'package:toyflow/services/bottom_nav_bar.dart';
-import '../../services/product_services.dart';
-import '../usersPage/PakaHomeScreen/paka_home_screen.dart';
-import '../usersPage/dikaHomeScreen/dika_home_screen.dart';
-import '../usersPage/dokaHomeScreen/doka_home_screen.dart';
-import '../usersPage/dolaHomeScreen/dola_home_screen.dart';
-import '../usersPage/kesaHomeScreen/kesa_home_screen.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,8 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthService _authServices = AuthService(); // AuthServices örneği
   String email = '';
   String password = '';
   bool isLoading = false;
@@ -32,70 +21,15 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    await _authServices.login(
+      email: email,
+      password: password,
+      context: context,
+    );
 
-      final ProductServices productServices = Get.find();
-      productServices.userEmail.value =
-          userCredential.user?.email ?? 'Email bulunamadı';
-
-      DocumentSnapshot userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-      if (userDoc.exists && userDoc.data() != null) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        productServices.firstName.value =
-            userData['firstName'] ?? 'Ad bulunamadı';
-        productServices.lastName.value =
-            userData['lastName'] ?? 'Soyad bulunamadı';
-
-        if (userData.containsKey('role')) {
-          String role = userData['role'];
-          Widget destination;
-
-          switch (role) {
-            case 'admin':
-              destination = BottomNavBarWithPages();
-              break;
-            case 'Dikim':
-              destination = const DikaHomeScreen();
-              break;
-            case 'Dokuma':
-              destination = const DokaHomeScreen();
-              break;
-            case 'Dolum':
-              destination = const DolaHomeScreen();
-              break;
-            case 'Kesim':
-              destination = const KesaHomeScreen();
-              break;
-            case 'Paketleme':
-              destination = const PakaHomeScreen();
-              break;
-            default:
-              destination = const LoginScreen();
-              break;
-          }
-
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => destination));
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Bu kullanıcı bulunamadı")));
-      }
-    } on FirebaseAuthException catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")));
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override

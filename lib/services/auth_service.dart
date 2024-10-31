@@ -3,14 +3,90 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../screens/LoginScreen/login_screen.dart';
+import '../screens/usersPage/PakaHomeScreen/paka_home_screen.dart';
+import '../screens/usersPage/dikaHomeScreen/dika_home_screen.dart';
+import '../screens/usersPage/dokaHomeScreen/doka_home_screen.dart';
+import '../screens/usersPage/dolaHomeScreen/dola_home_screen.dart';
+import '../screens/usersPage/kesaHomeScreen/kesa_home_screen.dart';
+import 'product_services.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   User? get currentUser => _auth.currentUser;
+ Future<void> login({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final ProductServices productServices = Get.find();
+      // Kullanıcı bilgilerini güncelle
+      productServices.userEmail.value =
+          userCredential.user?.email ?? 'Email bulunamadı';
+
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+      if (userDoc.exists && userDoc.data() != null) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        productServices.firstName.value =
+            userData['firstName'] ?? 'Ad bulunamadı';
+        productServices.lastName.value =
+            userData['lastName'] ?? 'Soyad bulunamadı';
+
+        if (userData.containsKey('role')) {
+          String role = userData['role'];
+          Widget destination;
+
+          switch (role) {
+            case 'admin':
+              destination = BottomNavBarWithPages();
+              break;
+            case 'Dikim':
+              destination = const DikaHomeScreen();
+              break;
+            case 'Dokuma':
+              destination = const DokaHomeScreen();
+              break;
+            case 'Dolum':
+              destination = const DolaHomeScreen();
+              break;
+            case 'Kesim':
+              destination = const KesaHomeScreen();
+              break;
+            case 'Paketleme':
+              destination = const PakaHomeScreen();
+              break;
+            default:
+              destination = const LoginScreen();
+              break;
+          }
+
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => destination));
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Bu kullanıcı bulunamadı")));
+      }
+    } on FirebaseAuthException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")));
+    }
+  }
+
 
   Future<User?> createUser(String email, String password, String firstName,
       String lastName, String role, String workshop, String gender) async {

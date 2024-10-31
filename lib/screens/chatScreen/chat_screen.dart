@@ -23,7 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onTap: () {},
               child: Container(
                 decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 103, 168, 105),
+                      color: Colors.black,
                   shape: BoxShape.circle,
                   
                 ),

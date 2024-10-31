@@ -171,33 +171,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
-class TextFieldStyles {
-  static InputDecoration defaultDecoration(String hintText, IconData icon) {
-    return InputDecoration(
-      hintText: hintText, // Placeholder metni
-      contentPadding: const EdgeInsets.symmetric(
-          vertical: 0, horizontal: 20), // İç boşluklar
-      suffixIcon:
-          Icon(icon, color: Colors.grey.shade500), // Sağ tarafa yaslı ikon
-      enabledBorder: const OutlineInputBorder(
-        borderRadius:
-            BorderRadius.all(Radius.circular(30.0)), // Tam daire border radius
-        borderSide: BorderSide(
-          color: Colors.grey,
-          width: 0.3, // Dış kenar çizgisi genişliği
-        ),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(
-            Radius.circular(30.0)), // Odaklanmışken de dairesel köşeler
-        borderSide: BorderSide(
-          color: Colors.black,
-          width: 0.9, // Odaklanmış durumdaki kenar çizgisi genişliği
-        ),
-      ),
-      filled: true, // TextField dolu görünsün
-      fillColor: Colors.grey[200], // Arka plan rengi
-    );
-  }
-}
