@@ -23,13 +23,13 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
     return FirebaseFirestore.instance
         .collection('dokuma_stok')
-        .orderBy('kumas')
+        .orderBy('urun')
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
         return {
-          'kumas': doc['kumas'],
-          'kumas_renk': doc['kumas_renk'],
+          'urun': doc['urun'],
+          'renk': doc['renk'],
           'miktar': doc['miktar'],
           'tarih': doc['tarih'],
         };
@@ -44,7 +44,6 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: const CustomAppBar(
         workshopName: "Dokuma Atölyesi",
         chatPage: DokaEditScreen(),
@@ -125,7 +124,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                   return Obx(() {
                     // searchQuery'ye göre veriyi filtrele
                     final dokumaStokList = snapshot.data!
-                        .where((work) => work['kumas']
+                        .where((work) => work['urun']
                             .toString()
                             .toLowerCase()
                             .contains(searchQuery.value.toLowerCase()))
@@ -180,7 +179,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          work['kumas'] ?? 'Kumaş Yok',
+                                          work['urun'] ?? 'Kumaş Yok',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,
@@ -189,16 +188,19 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                         Row(
                                           children: [
                                             const Icon(Icons.color_lens,
-                                                color: Color.fromARGB(255, 207, 124, 118), size: 16),
+                                                color: Color.fromARGB(
+                                                    255, 207, 124, 118),
+                                                size: 16),
                                             const SizedBox(width: 4),
                                             Text(
-                                              ' ${work['kumas_renk'] ?? 'Bilinmiyor'}',
+                                              ' ${work['renk'] ?? 'Bilinmiyor'}',
                                               style:
                                                   const TextStyle(fontSize: 12),
                                             ),
                                             const SizedBox(width: 10),
                                             const Icon(Icons.layers_sharp,
-                                                color: Color.fromARGB(255, 81, 124, 146),
+                                                color: Color.fromARGB(
+                                                    255, 81, 124, 146),
                                                 size: 16),
                                             const SizedBox(width: 4),
                                             Text(
@@ -211,18 +213,6 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                       ],
                                     ),
                                   ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.black,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 12,
-                                  ),
                                 ),
                               ],
                             ),

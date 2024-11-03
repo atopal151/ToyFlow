@@ -7,14 +7,14 @@ import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/record_services.dart';
 
-class DokaServices {
+class DikaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
   String? userRole;
 
-  DokaServices() {
+  DikaServices() {
     _initializeUserRole();
   }
 
@@ -24,10 +24,11 @@ class DokaServices {
       userRole = await _authService.getUserRole(user!.uid);
     }
   }
-
+//-----hareket kayıt-------
   Future<void> _recordMovement({
     required String malzeme,
     required String renk,
+    String? boyut,
     required int miktar,
     required String islemTuru,
     required String aciklama,
@@ -45,14 +46,15 @@ class DokaServices {
       print("Kullanıcı oturumu açık değil veya rol alınamadı.");
     }
   }
-
-  Future<void> addOrUpdateKumasStock({
+ //--------kayıt ekleme -----------
+  Future<void> addOrUpdateUrunStock({
     required BuildContext context,
-    required String kumas,
-    required String kumasRenk,
+    required String urun,
+    required String boyut,
+    required String urunRenk,
     required int miktar,
   }) async {
-    if (kumas.isEmpty || kumasRenk.isEmpty || miktar <= 0) {
+    if (urun.isEmpty || urunRenk.isEmpty || boyut.isEmpty ||miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
       );
@@ -69,9 +71,10 @@ class DokaServices {
 
     try {
       QuerySnapshot querySnapshot = await _firestore
-          .collection('dokuma_stok')
-          .where('urun', isEqualTo: kumas)
-          .where('renk', isEqualTo: kumasRenk)
+          .collection('dikim_stok')
+          .where('urun', isEqualTo: urun)
+          .where('renk', isEqualTo: urunRenk)
+          .where('boyut', isEqualTo: boyut)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -79,7 +82,7 @@ class DokaServices {
         int existingMiktar = existingDoc['miktar'];
         int yeniMiktar = existingMiktar + miktar;
         await _firestore
-            .collection('dokuma_stok')
+            .collection('dikim_stok')
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar});
 
@@ -88,16 +91,18 @@ class DokaServices {
         );
 
         await _recordMovement(
-          malzeme: kumas,
-          renk: kumasRenk,
+          malzeme: urun,
+          renk: urunRenk,
+          boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: 'Mevcut stoğa $miktar kilo $kumasRenk $kumas eklendi!',
+          aciklama: 'Mevcut stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
         );
       } else {
-        await _firestore.collection('dokuma_stok').add({
-          'urun': kumas,
-          'renk': kumasRenk,
+        await _firestore.collection('dikim_stok').add({
+          'urun': urun,
+          'renk': urunRenk,
+          'boyut': boyut,
           'miktar': miktar,
           'tarih': FieldValue.serverTimestamp(),
         });
@@ -107,11 +112,12 @@ class DokaServices {
         );
 
         await _recordMovement(
-          malzeme: kumas,
-          renk: kumasRenk,
+          malzeme: urun,
+          renk: urunRenk,
+          boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: 'Yeni stoğa $miktar kilo $kumasRenk $kumas eklendi!',
+          aciklama: 'Yeni stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
         );
       }
     } catch (e) {
@@ -123,13 +129,15 @@ class DokaServices {
     }
   }
 
+//-----stok düşümü-------
   Future<void> decreaseStock({
     required BuildContext context,
     required String malzeme,
+    required String boyut,
     required String renk,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty || renk.isEmpty || miktar <= 0) {
+    if (malzeme.isEmpty || renk.isEmpty ||renk.isEmpty ||renk.isEmpty  || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );
@@ -138,8 +146,9 @@ class DokaServices {
 
     try {
       QuerySnapshot existingRecord = await _firestore
-          .collection('ipler')
+          .collection('kesim_stok')
           .where('urun', isEqualTo: malzeme)
+          .where('boyut', isEqualTo: boyut)
           .where('renk', isEqualTo: renk)
           .get();
 
@@ -148,7 +157,7 @@ class DokaServices {
         int currentMiktar = doc['miktar'] ?? 0;
 
         if (currentMiktar >= miktar) {
-          await _firestore.collection('ipler').doc(doc.id).update({
+          await _firestore.collection('kesim_stok').doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
           ScaffoldMessenger.of(context).showSnackBar(
@@ -157,10 +166,11 @@ class DokaServices {
 
           await _recordMovement(
             malzeme: malzeme,
+            boyut: boyut,
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: 'Stoktan $miktar kilo $renk $malzeme düşüldü.',
+            aciklama: 'Stoktan $miktar kilo $renk $boyut $malzeme düşüldü.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -178,9 +188,11 @@ class DokaServices {
       );
     }
   }
-
+//----fire kayıt alanı-----
   Future<void> addFireEntry({
     required String malzeme,
+
+    required String boyut,
     required String renk,
     required int miktar,
   }) async {
@@ -189,8 +201,9 @@ class DokaServices {
     try {
 
       
-      await _firestore.collection('dokuma_fire').add({
-        'malzeme': malzeme,
+      await _firestore.collection('dikim_fire').add({
+        'urun': malzeme,
+        'boyut': boyut,
         'renk': renk,
         'miktar': miktar,
         'tarih': FieldValue.serverTimestamp(),
@@ -198,10 +211,11 @@ class DokaServices {
 
       await _recordMovement(
         malzeme: malzeme,
+        boyut: boyut,
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: 'Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yapıldı!',
+        aciklama: 'Fire kaydı olarak $miktar adet $renk $boyut $malzeme düşümü yapıldı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");

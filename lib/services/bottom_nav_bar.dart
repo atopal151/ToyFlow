@@ -30,39 +30,37 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            splashFactory: NoSplash.splashFactory,
-            highlightColor: Colors.transparent,
-          ),
-          child: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: _buildAnimatedIcon(Icons.home_work_outlined, 0),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildAnimatedIcon(Icons.cut_outlined, 1),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildAnimatedIcon(Icons.chat_bubble_outline, 2),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildAnimatedIcon(Icons.search_outlined, 3),
-                label: '',
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-          ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: _buildAnimatedIcon(Icons.home_work_outlined, 0),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildAnimatedIcon(Icons.cut_outlined, 1),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildAnimatedIcon(Icons.chat_bubble_outline, 2),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildAnimatedIcon(Icons.search_outlined, 3),
+              label: '',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
         ),
       ),
       body: _pages[_selectedIndex],

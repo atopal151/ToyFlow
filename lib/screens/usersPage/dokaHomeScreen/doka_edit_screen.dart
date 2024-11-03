@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'DokaServices/doka_services.dart';
-import 'DokaServices/dropdown_selector.dart';
-import 'DokaServices/text_field_with_counter.dart';
+import '../../../services/user_services/dropdown_selector.dart';
+import '../../../services/user_services/text_field_with_counter.dart';
 
 class DokaEditScreen extends StatefulWidget {
   const DokaEditScreen({super.key});

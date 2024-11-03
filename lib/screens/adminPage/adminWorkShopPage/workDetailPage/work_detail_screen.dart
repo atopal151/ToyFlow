@@ -1,8 +1,15 @@
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'work_module/dropdown_work_selector.dart';
 import 'work_module/work_data_service.dart';
 import 'work_module/work_shop_list_item.dart'; // Liste öğesi için ayrı dosya
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class WorkDetailScreen extends StatefulWidget {
   final String selectedWorkshop;
@@ -18,6 +25,63 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   String? _selectedWorkshop;
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
+ 
+ 
+ Future<void> generatePdf(List<Map<String, dynamic>> data) async {
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.Page(
+      build: (pw.Context context) {
+        return pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text("Atölye Verileri", style: const pw.TextStyle(fontSize: 24)),
+            pw.SizedBox(height: 20),
+            pw.Table.fromTextArray(
+              context: context,
+              data: <List<String>>[
+                <String>['Ürün', 'Tarih', 'Miktar'],
+                ...data.map((work) => [
+                      work['urun'] ?? 'Bilinmiyor',
+                      work['tarih'] != null
+                          ? DateFormat('dd.MM.yyyy').format(
+                              (work['tarih'] as Timestamp).toDate(),
+                            )
+                          : 'Bilinmiyor',
+                      work['miktar']?.toString() ?? 'Bilinmiyor',
+                    ])
+              ],
+            ),
+          ],
+        );
+      },
+    ),
+  );
+
+  // Cihazın platformunu kontrol edin ve Android'de Downloads klasörüne kaydedin
+  Directory? directory;
+  if (Platform.isAndroid) {
+    directory = Directory('/storage/emulated/0/Download');
+  } else if (Platform.isIOS) {
+    directory = await getApplicationDocumentsDirectory();
+  }
+
+  if (directory != null) {
+    final file = File("${directory.path}/atolye_verileri.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    // Dosya kaydedildiğinde kullanıcıya bilgi ver
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('PDF başarıyla kaydedildi: ${file.path}')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Klasör bulunamadı')),
+    );
+  }
+}
+
 
   @override
   void initState() {
@@ -32,22 +96,58 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: InkWell(
+              onTap: () async {
+                // Workshop verilerini al ve PDF olarak kaydet
+                final snapshot =
+                    await WorkshopDataService.getWorkshopData(_selectedWorkshop)
+                        .first;
+                await generatePdf(snapshot);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('PDF başarıyla kaydedildi')),
+                );
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.picture_as_pdf,
+                    color: Colors.white,
+                    size: 20.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          Expanded(
-            flex: 1,
-            child: DropdownWorkSelector(
-              hintText: 'Atölye Seç',
-              items: WorkshopDataService.workshops,
-              selectedValue: _selectedWorkshop,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedWorkshop = newValue;
-                });
-              },
-              icon: Icons.cut,
-            ),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: DropdownWorkSelector(
+                  hintText: 'Atölye Seç',
+                  items: WorkshopDataService.workshops,
+                  selectedValue: _selectedWorkshop,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedWorkshop = newValue;
+                    });
+                  },
+                  icon: Icons.cut,
+                ),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -86,7 +186,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                   // Obx sadece burada, liste verilerini filtrelemek için kullanılıyor.
                   return Obx(() {
                     final filteredData = snapshot.data!
-                        .where((work) => work['kumas']
+                        .where((work) => work['urun']
                             .toString()
                             .toLowerCase()
                             .contains(searchQuery.value.toLowerCase()))

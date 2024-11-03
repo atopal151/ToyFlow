@@ -10,9 +10,21 @@ class WorkshopListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String eklemeTarihi = 'Bilinmiyor';
-    if (work['tarih'] != null) {
+    String miktarTarihi = 'Bilinmiyor';
+
+    // 'tarih' alanını String formatına dönüştürme
+    if (work['tarih'] is Timestamp) {
       DateTime dateTime = (work['tarih'] as Timestamp).toDate();
       eklemeTarihi = DateFormat('dd.MM.yyyy').format(dateTime);
+    }
+
+    // 'miktar' alanını String formatına dönüştürme
+    if (work['miktar'] is Timestamp) {
+      DateTime miktarDateTime = (work['miktar'] as Timestamp).toDate();
+      miktarTarihi = DateFormat('dd.MM.yyyy').format(miktarDateTime);
+    } else {
+      // Eğer miktar bir sayı ise direkt 'miktarTarihi' olarak atıyoruz
+      miktarTarihi = work['miktar'].toString();
     }
 
     return Padding(
@@ -38,7 +50,7 @@ class WorkshopListItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset(
-                    'images/kumas.webp',
+                    'images/depo.webp',
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,
@@ -49,15 +61,31 @@ class WorkshopListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      work['kumas'] ?? 'Kumaş Yok',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      work['urun'] ?? 'Ürün Yok',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14),
                     ),
-                    // Other fields...
+                    if (work['boyut'] != null)
+                      Text(
+                        "${work['boyut']} cm",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 12),
+                      ),
+                    Text(
+                      eklemeTarihi, // 'tarih' değeri
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 10),
+                    ),
+                    Text(
+                      "$miktarTarihi Adet", // 'miktar' değeri
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                    // Diğer alanlar...
                   ],
                 ),
               ],
             ),
-            const Icon(Icons.arrow_forward_ios, size: 12),
           ],
         ),
       ),

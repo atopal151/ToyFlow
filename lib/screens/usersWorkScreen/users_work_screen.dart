@@ -31,9 +31,56 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       _userRole = await _authService.getUserRole(user.uid);
 
       if (_userRole == 'Dokuma') {
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('dokuma_work')
-            .get();
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('dokuma_work').get();
+
+        setState(() {
+          _works = querySnapshot.docs.map((doc) {
+            return {
+              'id': doc.id,
+              ...doc.data() as Map<String, dynamic>,
+            };
+          }).toList();
+        });
+      } else if (_userRole == 'Kesim') {
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('dokuma_stok').get();
+
+        setState(() {
+          _works = querySnapshot.docs.map((doc) {
+            return {
+              'id': doc.id,
+              ...doc.data() as Map<String, dynamic>,
+            };
+          }).toList();
+        });
+      } else if (_userRole == 'Dikim') {
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('kesim_stok').get();
+
+        setState(() {
+          _works = querySnapshot.docs.map((doc) {
+            return {
+              'id': doc.id,
+              ...doc.data() as Map<String, dynamic>,
+            };
+          }).toList();
+        });
+      } else if (_userRole == 'Dolum') {
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('dikim_stok').get();
+
+        setState(() {
+          _works = querySnapshot.docs.map((doc) {
+            return {
+              'id': doc.id,
+              ...doc.data() as Map<String, dynamic>,
+            };
+          }).toList();
+        });
+      } else if (_userRole == 'Paketleme') {
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('dolum_stok').get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -45,7 +92,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Bu kullanıcı için geçerli bir iş yok.")),
+          const SnackBar(
+              content: Text("Bu kullanıcı için geçerli bir iş yok.")),
         );
       }
     } else {
@@ -77,7 +125,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -99,7 +148,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
-                            'images/iplik.webp', // Görsel dosyanızın yolu
+                            'images/dolum.webp', // Görsel dosyanızın yolu
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
@@ -121,25 +170,37 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  const Icon(Icons.color_lens, color: Colors.amber, size: 16),
+                                  const Icon(Icons.color_lens,
+                                      color: Colors.amber, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
                                     work['renk'] ?? 'Bilinmiyor',
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(width: 10),
-                                  const Icon(Icons.layers, color: Colors.blueGrey, size: 16),
+                                  const Icon(Icons.layers,
+                                      color: Colors.blueGrey, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '${work['miktar'] ?? 0} adet',
+                                    '${work['miktar'] ?? 0} Kg/adet',
                                     style: const TextStyle(fontSize: 12),
                                   ),
+                                   const SizedBox(width: 10),
+                                  const Icon(Icons.straighten,
+                                      color: Colors.blueGrey, size: 16),
+                                  const SizedBox(width: 4),
+                                  if (work['boyut'] != null)
+                                    Text(
+                                      "${work['boyut']} cm",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 12),
+                                    ),
                                 ],
                               ),
                             ],
                           ),
                         ),
-                       
                       ],
                     ),
                   ),

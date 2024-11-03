@@ -113,7 +113,12 @@ class _MoverScreenState extends State<MoverScreen> {
                   itemBuilder: (context, index) {
                     final hareket = hareketler[index];
                     final timestamp = hareket['tarih'] as Timestamp?;
-                    final tarih = timestamp != null ? timestamp.toDate() : null;
+                    final DateTime? tarih;
+                    if (timestamp != null) {
+                      tarih = timestamp.toDate();
+                    } else {
+                      tarih = null;
+                    }
                     final formattedDate = tarih != null
                         ? '${tarih.day.toString().padLeft(2, '0')}/${tarih.month.toString().padLeft(2, '0')}/${tarih.year} ${tarih.hour.toString().padLeft(2, '0')}:${tarih.minute.toString().padLeft(2, '0')}'
                         : 'Tarih yok';

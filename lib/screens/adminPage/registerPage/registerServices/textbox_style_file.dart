@@ -75,7 +75,6 @@ class _TextFieldWithRegisterState extends State<TextFieldWithRegister> {
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                 ),
-                keyboardType: TextInputType.number,
               ),
             ),
           ),
