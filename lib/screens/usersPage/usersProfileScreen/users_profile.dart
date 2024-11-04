@@ -6,6 +6,7 @@ import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notifica
 import '../../../services/auth_service.dart';
 import '../../../services/product_services.dart';
 import '../../usersWorkScreen/users_work_screen.dart';
+import '../fireler/fire_takip.dart';
 
 class UsersProfileScreen extends StatelessWidget {
   final ProductServices _productService = Get.find();
@@ -164,7 +165,31 @@ class UsersProfileScreen extends StatelessWidget {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 222, 108, 100),
+                      color: Color.fromARGB(255, 235, 85, 72),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  title: const Text('Firelerim'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const FireTakip()),
+                    );
+                    // Üretim raporları ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 173, 121, 117),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

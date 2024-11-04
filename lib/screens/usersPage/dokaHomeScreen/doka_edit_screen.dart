@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -17,20 +15,22 @@ class DokaEditScreen extends StatefulWidget {
 class _DokaEditScreenState extends State<DokaEditScreen> {
   final DokaServices _dokaServices = DokaServices();
 
-  //kullanılan stok
+  // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
-  String? _selectedMalzeme; // Seçilen ürün
-  String? _selectedRenk; // Seçilen renk
-  //eklenecek stok
-  final TextEditingController _miktarKumasController = TextEditingController();
-  String? _selectedKumasRenk; // Seçilen Kumaş renk
-  String? _selectedDonumMalzeme; // Seçilen ürün
-  //Fire stok
-  final TextEditingController _fireMiktarController = TextEditingController();
-  String? _selectedFireMalzeme; // Seçilen ürün
-  String? _selectedFireRenk; // Seçilen renk
+  String? _selectedMalzeme; // Seçilen iplik
+  String? _selectedRenk; // Seçilen iplik rengi
 
-  List<String> _urunler = []; // Ürün listesi
+  // eklenecek kumaş stok
+  final TextEditingController _miktarDonumController = TextEditingController();
+  String? _selectedDonumRenk; // Seçilen kumaş rengi
+  String? _selectedDonumMalzeme; // Seçilen kumaş
+
+  // fire stok
+  final TextEditingController _fireMiktarController = TextEditingController();
+  String? _selectedFireMalzeme; // Seçilen fire ipliği
+  String? _selectedFireRenk; // Seçilen fire rengi
+
+  List<String> _urunler = []; // İplik listesi
   List<String> _renkler = []; // Renk listesi
 
   final List<String> _kumaslar = [
@@ -40,29 +40,55 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
     'Minky Kumaş',
     'Tüylü Kumaş',
     'Velboa Kumaş'
-  ]; // Ürün listesi
+  ]; // Kumaş listesi
 
+  final List<String> _renk = [
+    'Kırmızı',
+    'Siyah',
+    'Beyaz',
+    'Turuncu',
+    'Pembe',
+    'Gri'
+  ]; // Kumaş listesi
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
   }
 
+  // İplik verilerini Firebase'den çek
   Future<void> _fetchData() async {
     try {
       QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('ipler').get();
+          await FirebaseFirestore.instance.collection('dokuma_work').get();
 
       setState(() {
         _urunler =
             snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
     }
   }
+
+ Future<void> _fetchColors(String selectedIplik) async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('dokuma_work')
+        .where('urun', isEqualTo: selectedIplik)
+        .get();
+
+    setState(() {
+      _renkler = snapshot.docs
+          .map((doc) => doc['renk'] as String)
+          .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+          .toList();
+    });
+  } catch (e) {
+    print("Renk verileri alınırken hata oluştu: $e");
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +98,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
         child: Column(
           children: [
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
+            // Kullanılan iplik seçme dropdown
             DropdownSelector(
               hintText: 'Kullanılan ipliği seç',
               items: _urunler,
@@ -80,11 +106,12 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
+                  _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
             ),
-            // Renk seçme dropdown
+            // İp rengi seçme dropdown
             DropdownSelector(
               hintText: 'İp rengini seç',
               items: _renkler,
@@ -143,7 +170,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             const SizedBox(
               height: 20,
             ),
-            // Ürün seçme dropdown
+            // Dönüştürülen kumaşı seç
             DropdownSelector(
               hintText: 'Dönüştürülen kumaşı seç',
               items: _kumaslar,
@@ -155,21 +182,21 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               },
               icon: Icons.cut,
             ),
-            // Renk seçme dropdown
+            // Kumaş rengini seç
             DropdownSelector(
               hintText: 'Kumaş rengini seç',
-              items: _renkler,
-              selectedValue: _selectedKumasRenk,
+              items: _renk,
+              selectedValue: _selectedDonumRenk,
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedKumasRenk = newValue;
+                  _selectedDonumRenk = newValue;
                 });
               },
               icon: Icons.color_lens,
             ),
-            // Miktar girme
+            // Miktar gir
             TextFieldWithCounter(
-              controller: _miktarKumasController,
+              controller: _miktarDonumController,
               hintText: 'Miktar Gir',
               icon: Icons.shopping_cart,
             ),
@@ -181,8 +208,8 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   _dokaServices.addOrUpdateKumasStock(
                     context: context,
                     kumas: _selectedDonumMalzeme!,
-                    kumasRenk: _selectedKumasRenk!,
-                    miktar: int.parse(_miktarKumasController.text),
+                    kumasRenk: _selectedDonumRenk!,
+                    miktar: int.parse(_miktarDonumController.text),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -209,13 +236,12 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               ),
             ),
 
-          const SizedBox(
+            const SizedBox(
               height: 20,
             ),
 
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
-
+            // Fire düşülecek ipliği seç
             DropdownSelector(
               hintText: 'Fire düşülecek ipliği seç',
               items: _urunler,
@@ -223,12 +249,12 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
+                  _fetchColors(newValue!); // Fire ipliğine göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
             ),
-            // Renk seçme dropdown
-
+            // Fire rengi seç
             DropdownSelector(
               hintText: 'İp rengini seç',
               items: _renkler,
@@ -240,8 +266,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
-
-            // Miktar girme
+            // Miktar gir
             TextFieldWithCounter(
               controller: _fireMiktarController,
               hintText: 'Miktar Gir',

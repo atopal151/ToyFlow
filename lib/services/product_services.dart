@@ -9,6 +9,7 @@ class ProductServices extends GetxController {
   var userEmail = ''.obs;
   var firstName = ''.obs; // Ad
   var lastName = ''.obs; // Soyad
+  var role = ''.obs; // Rol
 
   @override
   void onInit() {
@@ -33,9 +34,12 @@ class ProductServices extends GetxController {
           Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
           firstName.value = data['firstName'] ?? 'Ad bulunamadı'; // Ad
           lastName.value = data['lastName'] ?? 'Soyad bulunamadı'; // Soyad
+          role.value = data['role'] ?? 'Rol bulunamadı'; // Soyad
         } else {
           firstName.value = 'Ad bulunamadı';
           lastName.value = 'Soyad bulunamadı';
+
+          role.value = 'Rol bulunamadı';
         }
       } catch (e) {
         print("Firestore'dan veri alınırken hata: $e");
@@ -46,6 +50,7 @@ class ProductServices extends GetxController {
       userEmail.value = 'Oturum açmamış'; // Kullanıcı oturumu açık değilse
       firstName.value = 'Ad bulunamadı';
       lastName.value = 'Soyad bulunamadı';
+      role.value = 'Rol bulunamadı';
     }
   }
 }

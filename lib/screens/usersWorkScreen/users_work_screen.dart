@@ -161,7 +161,22 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                work['urun'] ?? 'Ürün Yok',
+                                _userRole == 'Dokuma' && work['urun'] != null
+                                    ? 'Dokunacak ${work['urun']}'
+                                    : _userRole == 'Paketleme' &&
+                                            work['urun'] != null
+                                        ? 'Paketlenecek ${work['urun']}'
+                                        : _userRole == 'Dolum' &&
+                                                work['urun'] != null
+                                            ? 'Doldurulacak ${work['urun']}'
+                                            : _userRole == 'Dikim' &&
+                                                    work['urun'] != null
+                                                ? 'Dikilecek ${work['urun']}'
+                                                : _userRole == 'Kesim' &&
+                                                        work['urun'] != null
+                                                    ? 'Kesilecek ${work['urun']}'
+                                                    : (work['urun'] ??
+                                                        'Ürün Yok'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
@@ -185,7 +200,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                     '${work['miktar'] ?? 0} Kg/adet',
                                     style: const TextStyle(fontSize: 12),
                                   ),
-                                   const SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   const Icon(Icons.straighten,
                                       color: Colors.blueGrey, size: 16),
                                   const SizedBox(width: 4),

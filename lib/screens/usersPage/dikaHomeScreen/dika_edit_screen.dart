@@ -21,11 +21,12 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
   final TextEditingController _miktarController = TextEditingController();
   String? _selectedMalzeme; // Seçilen ürün
   String? _selectedRenk; // Seçilen renk
-  //eklenecek stok
-  final TextEditingController _miktarKumasController = TextEditingController();
-
   String? _selectedBoyut; // Seçilen Kumaş renk
-  String? _selectedKumasRenk; // Seçilen Kumaş renk
+  //eklenecek stok
+  final TextEditingController _miktarDonumController = TextEditingController();
+
+  String? _selectedDonumBoyut; // Seçilen Kumaş renk
+  String? _selectedDonumRenk; // Seçilen Kumaş renk
   String? _selectedDonumMalzeme; // Seçilen ürün
   //Fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
@@ -36,6 +37,35 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
   List<String> _urunler = []; // Ürün listesi
   List<String> _renkler = []; // Renk listesi
   List<String> _boyutlar = []; // Renk listesi
+
+  final List<String> _donusumUrun = [
+    'Çilek Tavşan',
+    'Havuç Tavşan',
+    'Kapşonlu Panda',
+    'Su Samuru',
+    'Bambu Panda',
+    'Peluş Ayı'
+  ]; // Ürün listesi
+
+  final List<String> _boyut = [
+    '30',
+    '40',
+    '50',
+    '60',
+    '70',
+    '80',
+    '90',
+    '100'
+  ]; // Ürün listesi
+
+  final List<String> _renk = [
+    'Kırmızı',
+    'Siyah',
+    'Beyaz',
+    'Turuncu',
+    'Pembe',
+    'Gri'
+  ]; // K
 
   @override
   void initState() {
@@ -61,6 +91,43 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
     }
   }
 
+  Future<void> _fetchColors(String selectedMalzeme) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('kesim_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .get();
+
+      setState(() {
+        _renkler = snapshot.docs
+            .map((doc) => doc['renk'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('kesim_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .where('renk', isEqualTo: selectedRenk)
+          .get();
+
+      setState(() {
+        _boyutlar = snapshot.docs
+            .map((doc) => doc['boyut'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,22 +144,13 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
+                  _fetchColors(
+                      newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
             ),
-            // Renk seçme dropdown
-            DropdownSelector(
-              hintText: 'Ürün boyutunu seç',
-              items: _boyutlar,
-              selectedValue: _selectedBoyut,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedBoyut = newValue;
-                });
-              },
-              icon: Icons.color_lens,
-            ),
+
             // Renk seçme dropdown
             DropdownSelector(
               hintText: 'Ürün rengini seç',
@@ -104,6 +162,22 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                 });
               },
               icon: Icons.color_lens,
+            ),
+            // boyut seçme dropdown
+            DropdownSelector(
+              hintText: 'Ürün boyutunu seç',
+              items: _boyutlar,
+              selectedValue: _selectedBoyut,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedBoyut = newValue;
+                  if (_selectedMalzeme != null && _selectedRenk != null) {
+                    _fetchBoyut(_selectedMalzeme!,
+                        _selectedRenk!); // Ürün ve renge göre boyutları getir
+                  }
+                });
+              },
+              icon: Icons.height,
             ),
             // Miktar girme
             TextFieldWithCounter(
@@ -156,7 +230,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
             // Ürün seçme dropdown
             DropdownSelector(
               hintText: 'Dönüştürülen ürünü seç',
-              items: _urunler,
+              items: _donusumUrun,
               selectedValue: _selectedDonumMalzeme,
               onChanged: (String? newValue) {
                 setState(() {
@@ -168,11 +242,11 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
             // Renk seçme dropdown
             DropdownSelector(
               hintText: 'Ürün rengini seç',
-              items: _renkler,
-              selectedValue: _selectedKumasRenk,
+              items: _renk,
+              selectedValue: _selectedDonumRenk,
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedKumasRenk = newValue;
+                  _selectedDonumRenk = newValue;
                 });
               },
               icon: Icons.color_lens,
@@ -180,18 +254,18 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
             // boyut seçme dropdown
             DropdownSelector(
               hintText: ' Ürünün boyutunu seç',
-              items: _boyutlar,
-              selectedValue: _selectedBoyut,
+              items: _boyut,
+              selectedValue: _selectedDonumBoyut,
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedBoyut = newValue;
+                  _selectedDonumBoyut = newValue;
                 });
               },
               icon: Icons.height,
             ),
             // Miktar girme
             TextFieldWithCounter(
-              controller: _miktarKumasController,
+              controller: _miktarDonumController,
               hintText: 'Miktar Gir',
               icon: Icons.shopping_cart,
             ),
@@ -203,9 +277,9 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _kesaServices.addOrUpdateUrunStock(
                     context: context,
                     urun: _selectedDonumMalzeme!,
-                    urunRenk: _selectedKumasRenk!,
-                    boyut: _selectedBoyut!,
-                    miktar: int.parse(_miktarKumasController.text),
+                    urunRenk: _selectedDonumRenk!,
+                    boyut: _selectedDonumBoyut!,
+                    miktar: int.parse(_miktarDonumController.text),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -246,21 +320,11 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
+                  _fetchColors(
+                      newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
-            ),
-            // boyut seçme dropdown
-            DropdownSelector(
-              hintText: ' Ürünün boyutunu seç',
-              items: _boyutlar,
-              selectedValue: _selectedFireBoyut,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedFireBoyut = newValue;
-                });
-              },
-              icon: Icons.height,
             ),
 
             // Renk seçme dropdown
@@ -276,7 +340,18 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
-
+// boyut seçme dropdown
+            DropdownSelector(
+              hintText: ' Ürünün boyutunu seç',
+              items: _boyutlar,
+              selectedValue: _selectedFireBoyut,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireBoyut = newValue;
+                });
+              },
+              icon: Icons.height,
+            ),
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
@@ -288,8 +363,6 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                 
-
                   // Null kontrolü
                   if (_selectedFireMalzeme == null ||
                       _selectedFireBoyut == null ||

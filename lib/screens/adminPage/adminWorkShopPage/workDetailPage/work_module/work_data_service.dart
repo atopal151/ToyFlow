@@ -17,11 +17,11 @@ class WorkshopDataService {
       case 'Kesim Atölyesi':
         return _getCollectionData('kesim_stok', ['urun', 'renk','boyut','miktar', 'tarih']);
       case 'Dikim Atölyesi':
-        return _getCollectionData('dikim_stok', ['urun', 'dikim_adet', 'tarih']);
+        return _getCollectionData('dikim_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
       case 'Dolum Atölyesi':
-        return _getCollectionData('dolum_stok', ['urun', 'dolum_adet', 'tarih']);
+        return _getCollectionData('dolum_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
       case 'Paketleme Atölyesi':
-        return _getCollectionData('paketleme_stok', ['urun', 'paket_adet', 'tarih']);
+        return _getCollectionData('paketleme_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
       default:
         return _getCollectionData('favoriler', ['urun', 'favori_adet', 'tarih']);
     }

@@ -22,10 +22,10 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   String? _selectedMalzeme; // Seçilen ürün
   String? _selectedRenk; // Seçilen renk
   //eklenecek stok
-  final TextEditingController _miktarKumasController = TextEditingController();
+  final TextEditingController _miktarDonumController = TextEditingController();
 
-  String? _selectedBoyut; // Seçilen Kumaş renk
-  String? _selectedKumasRenk; // Seçilen Kumaş renk
+  String? _selectedDonumBoyut; // Seçilen Kumaş renk
+  String? _selectedDonumRenk; // Seçilen Kumaş renk
   String? _selectedDonumMalzeme; // Seçilen ürün
   //Fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
@@ -55,6 +55,14 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
     '100'
   ]; // Ürün listesi
 
+final List<String> _renk = [
+    'Kırmızı',
+    'Siyah',
+    'Beyaz',
+    'Turuncu',
+    'Pembe',
+    'Gri'
+  ]; // K
   @override
   void initState() {
     super.initState();
@@ -69,13 +77,29 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
       setState(() {
         _urunler =
             snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
     }
   }
+
+ Future<void> _fetchColors(String selectedMalzeme) async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('dokuma_stok')
+        .where('urun', isEqualTo: selectedMalzeme)
+        .get();
+
+    setState(() {
+      _renkler = snapshot.docs
+          .map((doc) => doc['renk'] as String)
+          .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+          .toList();
+    });
+  } catch (e) {
+    print("Renk verileri alınırken hata oluştu: $e");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +117,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
+                   _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
@@ -171,11 +196,11 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
             // Renk seçme dropdown
             DropdownSelector(
               hintText: 'Ürün rengini seç',
-              items: _renkler,
-              selectedValue: _selectedKumasRenk,
+              items: _renk,
+              selectedValue: _selectedDonumRenk,
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedKumasRenk = newValue;
+                  _selectedDonumRenk = newValue;
                 });
               },
               icon: Icons.color_lens,
@@ -184,17 +209,17 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
             DropdownSelector(
               hintText: ' Ürünün boyutunu seç',
               items: _boyut,
-              selectedValue: _selectedBoyut,
+              selectedValue: _selectedDonumBoyut,
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedBoyut = newValue;
+                  _selectedDonumBoyut = newValue;
                 });
               },
               icon: Icons.height,
             ),
             // Miktar girme
             TextFieldWithCounter(
-              controller: _miktarKumasController,
+              controller: _miktarDonumController,
               hintText: 'Miktar Gir',
               icon: Icons.shopping_cart,
             ),
@@ -206,9 +231,9 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   _kesaServices.addOrUpdateUrunStock(
                     context: context,
                     urun: _selectedDonumMalzeme!,
-                    urunRenk: _selectedKumasRenk!,
-                    boyut: _selectedBoyut!,
-                    miktar: int.parse(_miktarKumasController.text),
+                    urunRenk: _selectedDonumRenk!,
+                    boyut: _selectedDonumBoyut!,
+                    miktar: int.parse(_miktarDonumController.text),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -249,6 +274,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
+                   _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,

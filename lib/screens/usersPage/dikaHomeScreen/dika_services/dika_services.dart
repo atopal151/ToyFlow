@@ -5,10 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
+import 'package:toyflow/services/product_services.dart';
 import 'package:toyflow/services/record_services.dart';
 
 class DikaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProductServices _productServices=Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -87,7 +89,7 @@ class DikaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mevcut stoğa $miktar kilo eklendi!')),
+          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
@@ -96,7 +98,7 @@ class DikaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: 'Mevcut stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
         );
       } else {
         await _firestore.collection('dikim_stok').add({
@@ -117,7 +119,7 @@ class DikaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: 'Yeni stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value}  Yeni stoğa $miktar adet $urunRenk $boyut cm $urun ekledi!',
         );
       }
     } catch (e) {
@@ -170,7 +172,7 @@ class DikaServices {
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: 'Stoktan $miktar kilo $renk $boyut $malzeme düşüldü.',
+            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $boyut cm $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -215,7 +217,7 @@ class DikaServices {
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: 'Fire kaydı olarak $miktar adet $renk $boyut $malzeme düşümü yapıldı!',
+        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar adet $renk $boyut cm $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");

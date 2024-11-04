@@ -163,68 +163,78 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        'images/kesim.webp', // Profil resmi
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    'images/dokuma.webp', // Profil resmi
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  // Expanded kullanarak metnin alanı aşmamasını sağlıyoruz
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Kesilmiş ${work['urun']}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                        softWrap:
+                                            true, // Alt satıra geçmesini sağlar
+                                        maxLines:
+                                            2, // En fazla 2 satır gösterir
+                                        overflow: TextOverflow
+                                            .ellipsis, // 2 satırı aşarsa üç nokta ekler
                                       ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          work['urun'] ?? 'Ürün Yok',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.color_lens,
+                                            color: Color.fromARGB(
+                                                255, 207, 124, 118),
+                                            size: 16,
                                           ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.color_lens,
-                                                color: Color.fromARGB(
-                                                    255, 207, 124, 118),
-                                                size: 16),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              ' ${work['renk'] ?? 'Bilinmiyor'}',
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            const Icon(Icons.straighten,
-                                                color: Color.fromARGB(
-                                                    255, 227, 148, 83),
-                                                size: 16),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              ' ${work['boyut'] ?? 'Bilinmiyor'} cm ',
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            const Icon(Icons.layers_sharp,
-                                                color: Color.fromARGB(
-                                                    255, 81, 124, 146),
-                                                size: 16),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              ' ${work['miktar'] ?? 'Bilinmiyor'} adet',
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            ' ${work['renk'] ?? 'Bilinmiyor'}',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          const Icon(
+                                            Icons.layers_sharp,
+                                            color: Color.fromARGB(
+                                                255, 81, 124, 146),
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            ' ${work['miktar'] ?? 'Bilinmiyor'} adet',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),const SizedBox(width: 10),
+                                          const Icon(
+                                            Icons.straighten,
+                                            color: Color.fromARGB(
+                                                255, 207, 124, 118),
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                              ' ${work['boyut'] != null ? "${work['boyut']} cm" : 'Bilinmiyor'}',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

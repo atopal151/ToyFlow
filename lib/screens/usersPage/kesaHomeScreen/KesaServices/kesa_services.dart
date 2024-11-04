@@ -7,8 +7,11 @@ import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/record_services.dart';
 
+import '../../../../services/product_services.dart';
+
 class KesaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProductServices _productServices=Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -87,7 +90,7 @@ class KesaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mevcut stoğa $miktar kilo eklendi!')),
+          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
@@ -96,7 +99,7 @@ class KesaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: 'Mevcut stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
         );
       } else {
         await _firestore.collection('kesim_stok').add({
@@ -117,7 +120,7 @@ class KesaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: 'Yeni stoğa $miktar adet $urunRenk $boyut $urun eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
         );
       }
     } catch (e) {
@@ -167,7 +170,7 @@ class KesaServices {
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: 'Stoktan $miktar kilo $renk $malzeme düşüldü.',
+            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +211,7 @@ class KesaServices {
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: 'Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yapıldı!',
+        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");

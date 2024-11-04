@@ -7,8 +7,11 @@ import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/record_services.dart';
 
+import '../../../../services/product_services.dart';
+
 class DokaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProductServices _productServices=Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -84,7 +87,7 @@ class DokaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mevcut stoğa $miktar kilo eklendi!')),
+          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
@@ -92,7 +95,7 @@ class DokaServices {
           renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: 'Mevcut stoğa $miktar kilo $kumasRenk $kumas eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumasRenk $kumas ekledi!',
         );
       } else {
         await _firestore.collection('dokuma_stok').add({
@@ -111,7 +114,7 @@ class DokaServices {
           renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: 'Yeni stoğa $miktar kilo $kumasRenk $kumas eklendi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumasRenk $kumas ekledi!',
         );
       }
     } catch (e) {
@@ -138,7 +141,7 @@ class DokaServices {
 
     try {
       QuerySnapshot existingRecord = await _firestore
-          .collection('ipler')
+          .collection('dokuma_work')
           .where('urun', isEqualTo: malzeme)
           .where('renk', isEqualTo: renk)
           .get();
@@ -148,7 +151,7 @@ class DokaServices {
         int currentMiktar = doc['miktar'] ?? 0;
 
         if (currentMiktar >= miktar) {
-          await _firestore.collection('ipler').doc(doc.id).update({
+          await _firestore.collection('dokuma_work').doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
           ScaffoldMessenger.of(context).showSnackBar(
@@ -160,7 +163,7 @@ class DokaServices {
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: 'Stoktan $miktar kilo $renk $malzeme düşüldü.',
+            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -190,7 +193,7 @@ class DokaServices {
 
       
       await _firestore.collection('dokuma_fire').add({
-        'malzeme': malzeme,
+        'urun': malzeme,
         'renk': renk,
         'miktar': miktar,
         'tarih': FieldValue.serverTimestamp(),
@@ -201,7 +204,7 @@ class DokaServices {
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: 'Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yapıldı!',
+        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");
