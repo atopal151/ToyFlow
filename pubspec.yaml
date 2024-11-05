@@ -99,6 +99,8 @@ flutter:
    - images/kesim.webp
    - images/paketleme.webp
    - images/emptydata.webp
+   - images/emptymov.webp
+   - images/fullmov.webp
    - assets/fonts/Roboto-Regular.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see

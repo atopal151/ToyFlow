@@ -166,7 +166,7 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image.asset(
-                                    'images/dokuma.webp', // Profil resmi
+                                    'images/dikim.webp', // Profil resmi
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,

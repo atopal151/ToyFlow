@@ -1,8 +1,12 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
 import 'package:toyflow/screens/moverScreen/mover_screen.dart';
 import '../../../services/product_services.dart';
+import '../adminWorkShopPage/workDetailPage/work_detail_screen.dart';
+import 'adminhome_services/adminhome_services.dart'; // AdminHomeService için eklenmiştir
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -13,7 +17,70 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
+  final AdminHomeService adminHomeService =
+      AdminHomeService(); // AdminHomeService instance
+
+  int dokumaAllStock = 0;
+  int kesimAllStock = 0;
+  int dikimAllStock = 0;
+  int dolumAllStock = 0;
+  int paketlemeAllStock = 0;
+
   String selectedFilter = "Gün"; // Varsayılan filtre
+  int dokumaAtolyesiStock = 0; // Dokuma Atölyesi stoğunu tutacak değişken
+  int kesimAtolyesiStock =
+      0; // Geçici veri, diğer atölyeler için örnek değerler
+  int dikimAtolyesiStock = 0;
+  int dolumAtolyesiStock = 0;
+  int paketlemeAtolyesiStock = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStockData();
+  }
+
+  Future<void> _loadStockData() async {
+    int dokumaStock =
+        await adminHomeService.fetchDailyStockOperations("Dokuma");
+    print("Dokuma stok: $dokumaStock"); // Debugging için
+
+    int kesimStock = await adminHomeService.fetchDailyStockOperations("Kesim");
+    print("Kesim stok: $kesimStock"); // Debugging için
+
+    int dikimStock = await adminHomeService.fetchDailyStockOperations("Dikim");
+    print("Dikim stok: $dikimStock"); // Debugging için
+
+    int dolumStock = await adminHomeService.fetchDailyStockOperations("Dolum");
+    print("Dolum stok: $dolumStock"); // Debugging için
+
+    int paketlemeStock =
+        await adminHomeService.fetchDailyStockOperations("Paketleme");
+    print("Paketleme stok: $paketlemeStock"); // Debugging için
+
+    int dokuma = await adminHomeService.fetchStockFromCollection("dokuma_stok");
+    int kesim = await adminHomeService.fetchStockFromCollection("kesim_stok");
+    int dikim = await adminHomeService.fetchStockFromCollection("dikim_stok");
+    int dolum = await adminHomeService.fetchStockFromCollection("dolum_stok");
+    int paketleme =
+        await adminHomeService.fetchStockFromCollection("paketleme_stok");
+
+    if (mounted) {
+      setState(() {
+        dokumaAtolyesiStock = dokumaStock;
+        kesimAtolyesiStock = kesimStock;
+        dikimAtolyesiStock = dikimStock;
+        dolumAtolyesiStock = dolumStock;
+        paketlemeAtolyesiStock = paketlemeStock;
+
+        dokumaAllStock = dokuma;
+        kesimAllStock = kesim;
+        dikimAllStock = dikim;
+        dolumAllStock = dolum;
+        paketlemeAllStock = paketleme;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,45 +132,61 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             
+              const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     "Günlük Aktivite",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _loadStockData();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Padding(
+                        // ignore: unnecessary_const
+                        padding: const EdgeInsets.all(3.0),
+                        child: Icon(
+                          Icons.refresh, // Atölye ikonunu dinamik olarak göster
+                          color: Colors.white,
+                          size: 11,
+                        ),
+                      ),
                     ),
                   ),
-                  DropdownButton<String>(
-                    value: selectedFilter,
-                    items: ["Gün", "Ay", "Yıl"].map((String filter) {
-                      return DropdownMenuItem<String>(
-                        value: filter,
-                        child: Text(filter),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          selectedFilter = newValue;
-                        });
-                      }
-                    },
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _buildInfoCard(
+                        "Dokuma Atölyesi",
+                        " $dokumaAllStock kg",
+                        "Günlük işlem: +$dokumaAtolyesiStock kg/adet"),
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                      child: _buildInfoCard(
-                          "Dokuma Atölyesi", "3900 Adet", "+155 adet")),
-                  Expanded(
-                      child: _buildInfoCard(
-                          "Kesim Atöylesi", "1090 Adet", "+299 adet")),
+                    child: _buildInfoCard(
+                        "Kesim Atölyesi",
+                        " $kesimAllStock Adet",
+                        "Günlük İşlem: +$kesimAtolyesiStock kg/adet"),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -111,11 +194,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                      child: _buildInfoCard(
-                          "Dikim Atölyesi", "3123 Adet", "+1596 adet")),
-                  Expanded(
-                      child: _buildInfoCard(
-                          "Dolum Atölyesi", "1009 Adet", "+212 adet")),
+                    child: _buildInfoCard(
+                        "Dikim Atölyesi",
+                        " $dikimAllStock Adet",
+                        "Günlük İşlem: +$dikimAtolyesiStock kg/adet"),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -123,13 +206,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                      child: _buildInfoCard(
-                          "Paketleme Atölyesi", "3200 Adet", "+155 adet")),
+                    child: _buildInfoCard(
+                        "Dolum Atölyesi",
+                        " $dolumAllStock Adet",
+                        "Günlük İşlem: +$dolumAtolyesiStock kg/adet"),
+                  ),
                 ],
               ),
-
               const SizedBox(height: 10),
-               const Text(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _buildInfoCard(
+                        "Paketleme Atölyesi",
+                        " $paketlemeAllStock Adet",
+                        "Günlük İşlem: +$paketlemeAtolyesiStock kg/adet"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              const Text(
                 "Depo Stok Miktarları",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -152,7 +249,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 children: [
                   Expanded(
                     child: _buildStockCardButton(
-                      roomName: "İstabul Depo",
+                      roomName: "İstanbul Depo",
                       occupancy: "İstanbul/......",
                       temperature: "29.10.2024",
                     ),
@@ -251,18 +348,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child:  Row(
+                      child: Row(
                         children: [
-                           const Icon(Icons.refresh, size: 16),
-                           const SizedBox(width: 4),
+                          const Icon(Icons.refresh, size: 16),
+                          const SizedBox(width: 4),
                           Text(
                             'Son güncelleme: $temperature',
-                            style:  const TextStyle(fontSize: 10),
+                            style: const TextStyle(fontSize: 10),
                           ),
                         ],
                       ),
                     ),
-                    
                   ],
                 ),
               ],
@@ -274,6 +370,32 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Widget _buildInfoCard(String title, String count, String percentage) {
+    // Atölye bilgileri listesi
+    final List<Map<String, dynamic>> workshops = [
+      {
+        'title': 'Dokuma Atölyesi',
+      },
+      {
+        'title': 'Kesim Atölyesi',
+      },
+      {
+        'title': 'Dikim Atölyesi',
+      },
+      {
+        'title': 'Dolum Atölyesi',
+      },
+      {
+        'title': 'Paketleme Atölyesi',
+      },
+    ];
+
+    // İlgili atölyeyi bulma
+    final workshop = workshops.firstWhere(
+      (workshop) => workshop['title'] == title,
+      orElse: () =>
+          {'image': 'images/default.webp', 'icon': Icons.help_outline},
+    );
+
     return Container(
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -289,30 +411,79 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+          // Atölye Resmi
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(
+              percentage != "Günlük İşlem: +0 kg/adet"
+                  ? "images/fullmov.webp"
+                  : "images/emptymov.webp",
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
           ),
-          const SizedBox(height: 4),
-          const Text(
-            "Toplam Stok",
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w300),
+          const SizedBox(width: 10),
+
+          // Bilgi Bölümü
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Toplam Stok: $count",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  percentage,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: percentage != 'Günlük İşlem: +0 kg/adet'
+                        ? Colors.green
+                        : Colors.red,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            count,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            percentage,
-            style: TextStyle(
-              fontSize: 12,
-              color: percentage.startsWith('+') ? Colors.green : Colors.red,
+
+          // İkon Butonu
+          InkWell(
+            onTap: () {
+              Get.to(
+                  () => WorkDetailScreen(selectedWorkshop: workshop['title']));
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              child: const Padding(
+                // ignore: unnecessary_const
+                padding: const EdgeInsets.all(3.0),
+                child: Icon(
+                  Icons
+                      .arrow_forward_ios, // Atölye ikonunu dinamik olarak göster
+                  color: Colors.white,
+                  size: 11,
+                ),
+              ),
             ),
           ),
         ],

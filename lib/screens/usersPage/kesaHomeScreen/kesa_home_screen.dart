@@ -166,7 +166,7 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image.asset(
-                                    'images/dokuma.webp', // Profil resmi
+                                    'images/kesim.webp', // Profil resmi
                                     width: 60,
                                     height: 60,
                                     fit: BoxFit.cover,

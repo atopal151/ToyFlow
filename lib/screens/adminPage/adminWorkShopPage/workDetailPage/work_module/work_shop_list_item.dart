@@ -65,19 +65,24 @@ class WorkshopListItem extends StatelessWidget {
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 14),
                     ),
+                    Text(
+                      "Renk: " + work['renk'],
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 12),
+                    ),
                     if (work['boyut'] != null)
                       Text(
-                        "${work['boyut']} cm",
+                        "Boyut: ${work['boyut']} cm",
                         style: const TextStyle(
                             fontWeight: FontWeight.w500, fontSize: 12),
                       ),
                     Text(
-                      eklemeTarihi, // 'tarih' değeri
+                      "Son Güncelleme: " + eklemeTarihi, // 'tarih' değeri
                       style: const TextStyle(
                           fontWeight: FontWeight.w400, fontSize: 10),
                     ),
                     Text(
-                      "$miktarTarihi Adet", // 'miktar' değeri
+                      "Miktar: $miktarTarihi Adet", // 'miktar' değeri
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 12),
                     ),
