@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/PakaHomeScreen/paka_transfer.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../screens/usersPage/usersProfileScreen/users_profile.dart';
 import 'product_services.dart';
@@ -34,7 +35,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         authService.currentUser?.uid ?? ''; // Mevcut kullanıcının uid'si
 
     return AppBar(
-      
       title: FutureBuilder<String>(
         future: _getCinsiyetImagePath(
             uid), // Cinsiyet bilgisine göre resim belirleniyor
@@ -66,8 +66,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         backgroundImage: imagePath.isNotEmpty
                             ? AssetImage(imagePath)
                             : null, // Belirlenen resim varsa, yoksa null
-                        backgroundColor: Colors
-                            .grey.shade200, // Varsayılan arka plan rengi
+                        backgroundColor:
+                            Colors.grey.shade200, // Varsayılan arka plan rengi
                         child: imagePath.isEmpty
                             ? Icon(
                                 Icons.person, // Resim yoksa varsayılan ikon
@@ -117,7 +117,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   color: Colors.black,
                   width: 0.5,
                 ),
-                
               ),
               padding: const EdgeInsets.all(8.0),
               child: const Icon(
@@ -128,6 +127,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
+
+        // Eğer workshopName "Paketleme Atölyesi" ise bu ikonu ekle
+        if (workshopName == "Paketleme Atölyesi")
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: GestureDetector(
+              onTap: () {
+                Get.to(()=>const PakaTransfer());
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 0.5,
+                  ),
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: const Icon(
+                  Icons.local_shipping, // Ekstra ikon olarak "add" ikonu
+                  size: 15,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

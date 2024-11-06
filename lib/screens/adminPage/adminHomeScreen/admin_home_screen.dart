@@ -173,7 +173,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     child: _buildInfoCard(
                         "Dokuma Atölyesi",
                         " $dokumaAllStock kg",
-                        "Günlük işlem: +$dokumaAtolyesiStock kg/adet"),
+                        "Günlük İşlem: +$dokumaAtolyesiStock kg/adet"),
                   ),
                 ],
               ),

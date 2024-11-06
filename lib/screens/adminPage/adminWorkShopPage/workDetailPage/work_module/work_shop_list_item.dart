@@ -50,9 +50,9 @@ class WorkshopListItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset(
-                    'images/depo.webp',
+                    'images/fullmov.webp',
                     width: 60,
-                    height: 60,
+                    height: 100,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -65,27 +65,76 @@ class WorkshopListItem extends StatelessWidget {
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 14),
                     ),
-                    Text(
-                      "Renk: " + work['renk'],
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w400, fontSize: 12),
+                    const SizedBox(
+                      height: 5,
                     ),
-                    if (work['boyut'] != null)
-                      Text(
-                        "Boyut: ${work['boyut']} cm",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 12),
+                    Text(
+                      "$miktarTarihi Adet", // 'miktar' değeri
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 97, 190, 106)),
+                    ),
+
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.color_lens,
+                          color: Color.fromARGB(255, 81, 124, 146),
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          "Renk: " + work['renk'],
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 12),
+                        ),
+                        const SizedBox(width: 10),
+                        if (work['boyut'] != null)
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.height,
+                                color: Color.fromARGB(255, 81, 124, 146),
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                "Boyut: ${work['boyut']} cm",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 4),
+                    if (work['aksesuar'] != null)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.style,
+                            color: Color.fromARGB(255, 81, 124, 146),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Aksesuar: ${work['aksesuar']}",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 12),
+                          ),
+                        ],
                       ),
+
+                    const SizedBox(height: 6),
                     Text(
                       "Son Güncelleme: " + eklemeTarihi, // 'tarih' değeri
                       style: const TextStyle(
                           fontWeight: FontWeight.w400, fontSize: 10),
                     ),
-                    Text(
-                      "Miktar: $miktarTarihi Adet", // 'miktar' değeri
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
+
                     // Diğer alanlar...
                   ],
                 ),

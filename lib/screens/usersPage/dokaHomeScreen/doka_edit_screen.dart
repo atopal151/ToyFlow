@@ -100,7 +100,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             /*---------------------------------------------------*/
             // Kullanılan iplik seçme dropdown
             DropdownSelector(
-              hintText: 'Kullanılan ipliği seç',
+              hintText: 'Kullanılan İplik',
               items: _urunler,
               selectedValue: _selectedMalzeme,
               onChanged: (String? newValue) {
@@ -113,7 +113,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             ),
             // İp rengi seçme dropdown
             DropdownSelector(
-              hintText: 'İp rengini seç',
+              hintText: 'Renk',
               items: _renkler,
               selectedValue: _selectedRenk,
               onChanged: (String? newValue) {
@@ -126,7 +126,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -172,7 +172,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             ),
             // Dönüştürülen kumaşı seç
             DropdownSelector(
-              hintText: 'Dönüştürülen kumaşı seç',
+              hintText: 'Dönüştürülen Ürün',
               items: _kumaslar,
               selectedValue: _selectedDonumMalzeme,
               onChanged: (String? newValue) {
@@ -184,7 +184,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             ),
             // Kumaş rengini seç
             DropdownSelector(
-              hintText: 'Kumaş rengini seç',
+              hintText: 'Renk',
               items: _renk,
               selectedValue: _selectedDonumRenk,
               onChanged: (String? newValue) {
@@ -197,7 +197,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             // Miktar gir
             TextFieldWithCounter(
               controller: _miktarDonumController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -224,7 +224,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   children: [
                     SizedBox(width: 8),
                     Text(
-                      'Stok kaydı gir',
+                      'Stok Ekle',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -243,7 +243,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             /*---------------------------------------------------*/
             // Fire düşülecek ipliği seç
             DropdownSelector(
-              hintText: 'Fire düşülecek ipliği seç',
+              hintText: 'Fire Ürün',
               items: _urunler,
               selectedValue: _selectedFireMalzeme,
               onChanged: (String? newValue) {
@@ -256,7 +256,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             ),
             // Fire rengi seç
             DropdownSelector(
-              hintText: 'İp rengini seç',
+              hintText: 'Renk',
               items: _renkler,
               selectedValue: _selectedFireRenk,
               onChanged: (String? newValue) {
@@ -269,7 +269,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
             // Miktar gir
             TextFieldWithCounter(
               controller: _fireMiktarController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -301,7 +301,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   children: [
                     SizedBox(width: 8),
                     Text(
-                      'Fire kaydı gir',
+                      'Fire Ekle',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

@@ -138,7 +138,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             /*---------------------------------------------------*/
             // Ürün seçme dropdown
             DropdownSelector(
-              hintText: 'Kullanılan ürünü seç',
+              hintText: 'Kullanılan Ürün',
               items: _urunler,
               selectedValue: _selectedMalzeme,
               onChanged: (String? newValue) {
@@ -153,7 +153,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
 
             // Renk seçme dropdown
             DropdownSelector(
-              hintText: 'Ürün rengini seç',
+              hintText: 'Renk',
               items: _renkler,
               selectedValue: _selectedRenk,
               onChanged: (String? newValue) {
@@ -165,7 +165,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
             // boyut seçme dropdown
             DropdownSelector(
-              hintText: 'Ürün boyutunu seç',
+              hintText: 'Boyut',
               items: _boyutlar,
               selectedValue: _selectedBoyut,
               onChanged: (String? newValue) {
@@ -182,7 +182,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -229,7 +229,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
             // Ürün seçme dropdown
             DropdownSelector(
-              hintText: 'Dönüştürülen ürünü seç',
+              hintText: 'Dönüştürülen Ürün',
               items: _donusumUrun,
               selectedValue: _selectedDonumMalzeme,
               onChanged: (String? newValue) {
@@ -241,7 +241,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
             // Renk seçme dropdown
             DropdownSelector(
-              hintText: 'Ürün rengini seç',
+              hintText: 'Renk',
               items: _renk,
               selectedValue: _selectedDonumRenk,
               onChanged: (String? newValue) {
@@ -253,7 +253,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
             // boyut seçme dropdown
             DropdownSelector(
-              hintText: ' Ürünün boyutunu seç',
+              hintText: ' Boyut',
               items: _boyut,
               selectedValue: _selectedDonumBoyut,
               onChanged: (String? newValue) {
@@ -266,7 +266,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarDonumController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -294,7 +294,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   children: [
                     SizedBox(width: 8),
                     Text(
-                      'Stok kaydı gir',
+                      'Stok Ekle',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -314,7 +314,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             // Ürün seçme dropdown
 
             DropdownSelector(
-              hintText: 'Fire düşülecek ürünü seç',
+              hintText: 'Fire Ürün',
               items: _urunler,
               selectedValue: _selectedFireMalzeme,
               onChanged: (String? newValue) {
@@ -330,7 +330,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             // Renk seçme dropdown
 
             DropdownSelector(
-              hintText: 'Ürün rengini seç',
+              hintText: 'Renk',
               items: _renkler,
               selectedValue: _selectedFireRenk,
               onChanged: (String? newValue) {
@@ -342,7 +342,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
 // boyut seçme dropdown
             DropdownSelector(
-              hintText: ' Ürünün boyutunu seç',
+              hintText: 'Boyut',
               items: _boyutlar,
               selectedValue: _selectedFireBoyut,
               onChanged: (String? newValue) {
@@ -355,7 +355,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
-              hintText: 'Miktar Gir',
+              hintText: 'Miktar',
               icon: Icons.shopping_cart,
             ),
 
@@ -402,7 +402,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   children: [
                     SizedBox(width: 8),
                     Text(
-                      'Fire kaydı gir',
+                      'Fire Ekle',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

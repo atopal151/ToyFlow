@@ -21,7 +21,7 @@ class WorkshopDataService {
       case 'Dolum Atölyesi':
         return _getCollectionData('dolum_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
       case 'Paketleme Atölyesi':
-        return _getCollectionData('paketleme_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
+        return _getCollectionData('paketleme_stok', ['urun', 'renk' ,'boyut','aksesuar','miktar', 'tarih']);
       default:
         return _getCollectionData('favoriler', ['urun', 'favori_adet', 'tarih']);
     }
