@@ -1,12 +1,13 @@
 // ignore_for_file: unrelated_type_equality_checks
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
 import 'package:toyflow/screens/moverScreen/mover_screen.dart';
 import '../../../services/product_services.dart';
 import '../adminWorkShopPage/workDetailPage/work_detail_screen.dart';
-import 'adminhome_services/adminhome_services.dart'; // AdminHomeService için eklenmiştir
+import 'adminhome_services/adminhome_services.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -17,8 +18,7 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
-  final AdminHomeService adminHomeService =
-      AdminHomeService(); // AdminHomeService instance
+  final AdminHomeService adminHomeService = AdminHomeService();
 
   int dokumaAllStock = 0;
   int kesimAllStock = 0;
@@ -27,9 +27,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int paketlemeAllStock = 0;
 
   String selectedFilter = "Gün"; // Varsayılan filtre
-  int dokumaAtolyesiStock = 0; // Dokuma Atölyesi stoğunu tutacak değişken
-  int kesimAtolyesiStock =
-      0; // Geçici veri, diğer atölyeler için örnek değerler
+  int dokumaAtolyesiStock = 0;
+  int kesimAtolyesiStock = 0;
   int dikimAtolyesiStock = 0;
   int dolumAtolyesiStock = 0;
   int paketlemeAtolyesiStock = 0;
@@ -41,29 +40,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _loadStockData() async {
-    int dokumaStock =
-        await adminHomeService.fetchDailyStockOperations("Dokuma");
-    print("Dokuma stok: $dokumaStock"); // Debugging için
-
+    int dokumaStock = await adminHomeService.fetchDailyStockOperations("Dokuma");
     int kesimStock = await adminHomeService.fetchDailyStockOperations("Kesim");
-    print("Kesim stok: $kesimStock"); // Debugging için
-
     int dikimStock = await adminHomeService.fetchDailyStockOperations("Dikim");
-    print("Dikim stok: $dikimStock"); // Debugging için
-
     int dolumStock = await adminHomeService.fetchDailyStockOperations("Dolum");
-    print("Dolum stok: $dolumStock"); // Debugging için
-
-    int paketlemeStock =
-        await adminHomeService.fetchDailyStockOperations("Paketleme");
-    print("Paketleme stok: $paketlemeStock"); // Debugging için
+    int paketlemeStock = await adminHomeService.fetchDailyStockOperations("Paketleme");
 
     int dokuma = await adminHomeService.fetchStockFromCollection("dokuma_stok");
     int kesim = await adminHomeService.fetchStockFromCollection("kesim_stok");
     int dikim = await adminHomeService.fetchStockFromCollection("dikim_stok");
     int dolum = await adminHomeService.fetchStockFromCollection("dolum_stok");
-    int paketleme =
-        await adminHomeService.fetchStockFromCollection("paketleme_stok");
+    int paketleme = await adminHomeService.fetchStockFromCollection("paketleme_stok");
 
     if (mounted) {
       setState(() {
@@ -118,10 +105,51 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {
-              Get.to(() => const MoverScreen());
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('movers')
+                .where('okundu', isEqualTo: false) // Sadece okunmamış olanlar
+                .snapshots(),
+            builder: (context, snapshot) {
+              int unreadCount = 0;
+              if (snapshot.hasData) {
+                unreadCount = snapshot.data!.docs.length;
+              }
+
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.black,size: 30,),
+                    onPressed: () {
+                      Get.to(() => const MoverScreen());
+                    },
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          unreadCount.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
             },
           ),
         ],
@@ -139,9 +167,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     "Günlük Aktivite",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   InkWell(
                     onTap: () {
                       _loadStockData();
@@ -153,10 +179,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: const Padding(
-                        // ignore: unnecessary_const
-                        padding: const EdgeInsets.all(3.0),
+                        padding: EdgeInsets.all(3.0),
                         child: Icon(
-                          Icons.refresh, // Atölye ikonunu dinamik olarak göster
+                          Icons.refresh,
                           color: Colors.white,
                           size: 11,
                         ),
@@ -166,109 +191,25 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoCard(
-                        "Dokuma Atölyesi",
-                        " $dokumaAllStock kg",
-                        "Günlük İşlem: +$dokumaAtolyesiStock kg/adet"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoCard(
-                        "Kesim Atölyesi",
-                        " $kesimAllStock Adet",
-                        "Günlük İşlem: +$kesimAtolyesiStock kg/adet"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoCard(
-                        "Dikim Atölyesi",
-                        " $dikimAllStock Adet",
-                        "Günlük İşlem: +$dikimAtolyesiStock kg/adet"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoCard(
-                        "Dolum Atölyesi",
-                        " $dolumAllStock Adet",
-                        "Günlük İşlem: +$dolumAtolyesiStock kg/adet"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _buildInfoCard(
-                        "Paketleme Atölyesi",
-                        " $paketlemeAllStock Adet",
-                        "Günlük İşlem: +$paketlemeAtolyesiStock kg/adet"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
+              // Buraya atölye kartları ekleniyor
+              _buildAtolyeRow("Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
+              const SizedBox(height: 10,),
+              _buildAtolyeRow("Kesim Atölyesi", kesimAllStock, kesimAtolyesiStock),
+              const SizedBox(height: 10,),
+              _buildAtolyeRow("Dikim Atölyesi", dikimAllStock, dikimAtolyesiStock),
+              const SizedBox(height: 10,),
+              _buildAtolyeRow("Dolum Atölyesi", dolumAllStock, dolumAtolyesiStock),
+              const SizedBox(height: 10,),
+              _buildAtolyeRow("Paketleme Atölyesi", paketlemeAllStock, paketlemeAtolyesiStock),
+              const SizedBox(height: 20),
               const Text(
                 "Depo Stok Miktarları",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                    child: _buildStockCardButton(
-                      roomName: "Denizli Depo",
-                      occupancy: "Denizli/.......",
-                      temperature: "30.10.2024",
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                    child: _buildStockCardButton(
-                      roomName: "İstanbul Depo",
-                      occupancy: "İstanbul/......",
-                      temperature: "29.10.2024",
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                    child: _buildStockCardButton(
-                      roomName: "Almanya Depo",
-                      occupancy: "Almanya/.....",
-                      temperature: "31.10.2024",
-                    ),
-                  ),
-                ],
-              ),
+              // Depo kartları burada eklenir
+              _buildDepoRow("Denizli Depo", "Denizli/.......", "30.10.2024"),
+              _buildDepoRow("İstanbul Depo", "İstanbul/......", "29.10.2024"),
+              _buildDepoRow("Almanya Depo", "Almanya/.....", "31.10.2024"),
             ],
           ),
         ),
@@ -276,18 +217,119 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  // Hızlı Erişim Butonu
-  Widget _buildQuickAccessButton(IconData icon, String label) {
-    return Column(
+  Widget _buildAtolyeRow(String title, int totalStock, int dailyStock) {
+    return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: const Color.fromARGB(255, 207, 186, 124),
-          radius: 25,
-          child: Icon(icon, color: Colors.white),
+        Expanded(
+          child: _buildInfoCard(
+              title, " $totalStock Adet", "Günlük İşlem: +$dailyStock kg/adet"),
         ),
-        const SizedBox(height: 5),
-        Text(label, style: const TextStyle(fontSize: 12)),
       ],
+    );
+  }
+
+  Widget _buildDepoRow(String roomName, String occupancy, String temperature) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Expanded(
+          child: _buildStockCardButton(
+            roomName: roomName,
+            occupancy: occupancy,
+            temperature: temperature,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(String title, String count, String percentage) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => WorkDetailScreen(selectedWorkshop: title));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 3,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                percentage != "Günlük İşlem: +0 kg/adet"
+                    ? "images/fullmov.webp"
+                    : "images/emptymov.webp",
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Text(
+                        "Toplam Stok: ",
+                        style:  TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      Text(count)
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    percentage,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: percentage != 'Günlük İşlem: +0 kg/adet'
+                          ? const Color.fromARGB(255, 83, 158, 86)
+                          : const Color.fromARGB(255, 207, 109, 102),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -302,7 +344,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         image: const DecorationImage(
-          image: AssetImage('images/depo.webp'), // Arka plan resmi
+          image: AssetImage('images/depo.webp'),
           fit: BoxFit.cover,
         ),
       ),
@@ -362,128 +404,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   ],
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(String title, String count, String percentage) {
-    // Atölye bilgileri listesi
-    final List<Map<String, dynamic>> workshops = [
-      {
-        'title': 'Dokuma Atölyesi',
-      },
-      {
-        'title': 'Kesim Atölyesi',
-      },
-      {
-        'title': 'Dikim Atölyesi',
-      },
-      {
-        'title': 'Dolum Atölyesi',
-      },
-      {
-        'title': 'Paketleme Atölyesi',
-      },
-    ];
-
-    // İlgili atölyeyi bulma
-    final workshop = workshops.firstWhere(
-      (workshop) => workshop['title'] == title,
-      orElse: () =>
-          {'image': 'images/default.webp', 'icon': Icons.help_outline},
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 3,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Atölye Resmi
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              percentage != "Günlük İşlem: +0 kg/adet"
-                  ? "images/fullmov.webp"
-                  : "images/emptymov.webp",
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 10),
-
-          // Bilgi Bölümü
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Toplam Stok: $count",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  percentage,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: percentage != 'Günlük İşlem: +0 kg/adet'
-                        ? Colors.green
-                        : Colors.red,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // İkon Butonu
-          InkWell(
-            onTap: () {
-              Get.to(
-                  () => WorkDetailScreen(selectedWorkshop: workshop['title']));
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
-                shape: BoxShape.circle,
-              ),
-              child: const Padding(
-                // ignore: unnecessary_const
-                padding: const EdgeInsets.all(3.0),
-                child: Icon(
-                  Icons
-                      .arrow_forward_ios, // Atölye ikonunu dinamik olarak göster
-                  color: Colors.white,
-                  size: 11,
-                ),
-              ),
             ),
           ),
         ],

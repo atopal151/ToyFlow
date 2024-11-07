@@ -15,20 +15,31 @@ class _MoverScreenState extends State<MoverScreen> {
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
   String? userRole;
+  int unreadCount = 0; // Okunmamış bildirim sayısı
 
   @override
   void initState() {
     super.initState();
     _fetchUserRole();
+    _fetchUnreadNotifications(); // Okunmamış bildirimleri al
   }
 
-  // Kullanıcı rolünü alıp userRole değişkenine atama
   Future<void> _fetchUserRole() async {
     if (user != null) {
       userRole = await _authService.getUserRole(user!.uid);
-      print('User Role: $userRole'); // userRole'u kontrol et
-      setState(() {}); // State'i güncelleyerek StreamBuilder'ın rolü almasını sağlıyoruz
+      setState(() {});
     }
+  }
+
+  Future<void> _fetchUnreadNotifications() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('movers')
+        .where('okundu', isEqualTo: false) // Okunmamış olanları filtrele
+        .get();
+
+    setState(() {
+      unreadCount = snapshot.size; // Okunmamış bildirim sayısını güncelle
+    });
   }
 
   Icon _getIcon(String islemTuru) {
@@ -46,6 +57,29 @@ class _MoverScreenState extends State<MoverScreen> {
     }
   }
 
+  void _markAsRead(String docId) async {
+    await FirebaseFirestore.instance
+        .collection('movers')
+        .doc(docId)
+        .update({'okundu': true});
+
+    _fetchUnreadNotifications(); // Okunmamış bildirim sayısını güncelle
+  }
+
+  // Bildirimi okundu olarak işaretle
+  Future<void> _markAllAsRead() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('movers')
+        .where('okundu', isEqualTo: false)
+        .get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.update({'okundu': true});
+    }
+
+    _fetchUnreadNotifications(); // Okunmamış bildirim sayısını güncelle
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,15 +89,50 @@ class _MoverScreenState extends State<MoverScreen> {
           style: TextStyle(fontSize: 18),
         ),
         elevation: 0,
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  // Bildirimlere gitme veya ekranı yenileme gibi işlev ekleyebilirsiniz
+                },
+              ),
+              if (unreadCount > 0)
+                Positioned(
+                  right: 11,
+                  top: 11,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Text(
+                      unreadCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
       body: userRole == null
-          ? const Center(
-              child: CircularProgressIndicator()) // userRole yüklenmesini bekliyor
+          ? const Center(child: CircularProgressIndicator())
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('movers')
-                  // Eğer kullanıcı admin değilse filtre uygula
-                  .where('atelye', isEqualTo: userRole == 'admin' ? null : userRole)
+                  .where('atelye',
+                      isEqualTo: userRole == 'admin' ? null : userRole)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -77,107 +146,89 @@ class _MoverScreenState extends State<MoverScreen> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  print("No documents found for role: $userRole");
-                  return const Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 130,
-                          backgroundImage: AssetImage('images/empty.webp'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                // "Admin" kullanıcılar tüm verileri görür, diğer kullanıcılar kendi role göre filtrelenmiş verileri görür
-                final hareketler = userRole == 'admin'
-                    ? snapshot.data!.docs
-                    : snapshot.data!.docs.where((doc) => doc['atelye'] == userRole).toList();
-
-                // Eğer filtrelenmiş liste boşsa kullanıcıya bildirin
-                if (hareketler.isEmpty) {
                   return const Center(
                     child: Text("Hareket Yok"),
                   );
                 }
 
-                // Sıralama işlemi uygulama tarafında yapılıyor
+                final hareketler = userRole == 'admin'
+                    ? snapshot.data!.docs
+                    : snapshot.data!.docs
+                        .where((doc) => doc['atelye'] == userRole)
+                        .toList();
+
                 hareketler.sort((a, b) => (b['tarih'] as Timestamp)
                     .compareTo(a['tarih'] as Timestamp));
 
-                return ListView.builder(
-                  itemCount: hareketler.length,
-                  itemBuilder: (context, index) {
-                    final hareket = hareketler[index];
-                    final timestamp = hareket['tarih'] as Timestamp?;
-                    final DateTime? tarih;
-                    if (timestamp != null) {
-                      tarih = timestamp.toDate();
-                    } else {
-                      tarih = null;
-                    }
-                    final formattedDate = tarih != null
-                        ? '${tarih.day.toString().padLeft(2, '0')}/${tarih.month.toString().padLeft(2, '0')}/${tarih.year} ${tarih.hour.toString().padLeft(2, '0')}:${tarih.minute.toString().padLeft(2, '0')}'
-                        : 'Tarih yok';
-                    final islemTuru = hareket['islemTuru'] as String;
-                    final aciklama = hareket['aciklama'] as String;
+                return RefreshIndicator(
+                  onRefresh: _markAllAsRead,
+                  child: ListView.builder(
+                    itemCount: hareketler.length,
+                    itemBuilder: (context, index) {
+                      final hareket = hareketler[index];
+                      final timestamp = hareket['tarih'] as Timestamp?;
+                      final DateTime? tarih = timestamp?.toDate();
+                      final formattedDate = tarih != null
+                          ? '${tarih.day.toString().padLeft(2, '0')}/${tarih.month.toString().padLeft(2, '0')}/${tarih.year} ${tarih.hour.toString().padLeft(2, '0')}:${tarih.minute.toString().padLeft(2, '0')}'
+                          : 'Tarih yok';
+                      final islemTuru = hareket['islemTuru'] as String;
+                      final aciklama = hareket['aciklama'] as String;
+                      final okunmadi = hareket['okundu'] == null ||
+                          hareket['okundu'] == false;
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 2,
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
+                      return GestureDetector(
+                        onTap: () {
+                          if (okunmadi) {
+                            _markAsRead(hareket.id);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: okunmadi
+                                ? const Color.fromARGB(255, 198, 193, 193)
+                                : Colors.transparent, // Okunmamışlar koyu renkte
+                           
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  shape: BoxShape.circle,
+                                ),
+                                child: _getIcon(islemTuru),
                               ),
-                              child: _getIcon(islemTuru),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    islemTuru,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      islemTuru,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '$aciklama - $formattedDate',
-                                    style: const TextStyle(fontSize: 11),
-                                  ),
-                                ],
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '$aciklama - $formattedDate',
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                    
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             ),

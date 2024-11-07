@@ -68,6 +68,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
     'Gri'
   ]; // K
   final List<String> _aksesuar = [
+    'Yok',
     'Papyon',
     'Kurdela',
     'Bıyık',

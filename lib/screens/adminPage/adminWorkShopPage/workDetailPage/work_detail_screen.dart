@@ -25,6 +25,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   String? _selectedWorkshop;
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
+    final now = DateTime.now();
  
  
  Future<void> generatePdf(List<Map<String, dynamic>> data) async {
@@ -68,7 +69,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   }
 
   if (directory != null) {
-    final file = File("${directory.path}/atolye_verileri.pdf");
+    final file = File("${directory.path}/${_selectedWorkshop}_verileri_${now.year}_${now.month}_${now.day}_${now.hour}_${now.minute}_${now.second}.pdf");
     await file.writeAsBytes(await pdf.save());
 
     // Dosya kaydedildiğinde kullanıcıya bilgi ver

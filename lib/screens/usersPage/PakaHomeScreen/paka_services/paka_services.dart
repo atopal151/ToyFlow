@@ -1,3 +1,5 @@
+
+
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,27 +29,28 @@ class PakaServices {
     }
   }
 //-----hareket kayıt-------
-  Future<void> _recordMovement({
-    required String malzeme,
-    required String renk,
-    String? boyut,
-    required int miktar,
-    required String islemTuru,
-    required String aciklama,
-  }) async {
-    if (userRole != null) {
-      await _recordServices.movementRecord(
-        malzeme: malzeme,
-        renk: renk,
-        miktar: miktar,
-        islemTuru: islemTuru,
-        atelye: userRole!,
-        aciklama: aciklama,
-      );
-    } else {
-      print("Kullanıcı oturumu açık değil veya rol alınamadı.");
-    }
+ Future<void> _recordMovement({
+  required String malzeme,
+  required String renk,
+  String? boyut,
+  required int miktar,
+  required String islemTuru,
+  required String aciklama,
+}) async {
+  if (userRole != null) {
+    await _recordServices.movementRecord(
+      malzeme: malzeme,
+      renk: renk,
+      miktar: miktar,
+      islemTuru: islemTuru,
+      atelye: userRole!,
+      aciklama: aciklama,
+    );
+  } else {
+    print("Kullanıcı oturumu açık değil veya rol alınamadı.");
   }
+}
+
  //--------kayıt ekleme -----------
   Future<void> addOrUpdateUrunStock({
     required BuildContext context,
@@ -130,7 +133,7 @@ class PakaServices {
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
+      Navigator.pop(context); 
     }
   }
 
