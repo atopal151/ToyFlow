@@ -33,6 +33,8 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
   List<String> _urunler = []; // İplik listesi
   List<String> _renkler = []; // Renk listesi
 
+  int miktar = 0; // miktar listesi
+
   final List<String> _kumaslar = [
     'Polar Fleece Kumaş',
     'Mikrofiber Peluş Kumaş',
@@ -71,24 +73,41 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
     }
   }
 
- Future<void> _fetchColors(String selectedIplik) async {
-  try {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('dokuma_work')
-        .where('urun', isEqualTo: selectedIplik)
-        .get();
+  Future<void> _fetchColors(String selectedIplik) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_work')
+          .where('urun', isEqualTo: selectedIplik)
+          .get();
 
-    setState(() {
-      _renkler = snapshot.docs
-          .map((doc) => doc['renk'] as String)
-          .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
-          .toList();
-    });
-  } catch (e) {
-    print("Renk verileri alınırken hata oluştu: $e");
+      setState(() {
+        _renkler = snapshot.docs
+            .map((doc) => doc['renk'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
   }
-}
 
+  Future<void> _fetchMiktar(String selectedIplik, String selectedRenk) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_work')
+          .where('urun', isEqualTo: selectedIplik)
+          .where('renk', isEqualTo: selectedRenk)
+          .get();
+
+      setState(() {
+        miktar = snapshot.docs.isNotEmpty
+            ? snapshot.docs.first['miktar'] as int // İlk belge miktarını al
+            : 0; // Eğer belge yoksa 0 olarak ayarla
+      });
+    } catch (e) {
+      print("Miktar verileri alınırken hata oluştu: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,22 +115,32 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /*---------------------------------------------------*/
             // Kullanılan iplik seçme dropdown
+            // Ürün seçme dropdown
             DropdownSelector(
-              hintText: 'Kullanılan İplik',
+              hintText: 'Kullanılan Ürün',
               items: _urunler,
               selectedValue: _selectedMalzeme,
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-                  _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedRenk = null; // Renk seçimini temizle
+                  _renkler.clear(); // Renk listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null) {
+                    _fetchColors(_selectedMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
             ),
-            // İp rengi seçme dropdown
+
+// Renk seçme dropdown
             DropdownSelector(
               hintText: 'Renk',
               items: _renkler,
@@ -123,6 +152,19 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarController,
@@ -134,12 +176,19 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
+                   if (_miktarController.text == "" ||
+                      _miktarController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
                   _dokaServices.decreaseStock(
                     context: context,
                     malzeme: _selectedMalzeme!,
                     renk: _selectedRenk!,
                     miktar: int.parse(_miktarController.text),
-                  );
+                  );}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -205,12 +254,19 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
+                  if (_miktarDonumController.text == "" ||
+                      _miktarDonumController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
                   _dokaServices.addOrUpdateKumasStock(
                     context: context,
                     kumas: _selectedDonumMalzeme!,
                     kumasRenk: _selectedDonumRenk!,
                     miktar: int.parse(_miktarDonumController.text),
-                  );
+                  );}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -249,7 +305,8 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _fetchColors(newValue!); // Fire ipliğine göre renkleri güncelle
+                  _fetchColors(
+                      newValue!); // Fire ipliğine göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
@@ -277,6 +334,13 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
+                  if (_fireMiktarController.text == "" ||
+                      _fireMiktarController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
                   _dokaServices.decreaseStock(
                     context: context,
                     malzeme: _selectedFireMalzeme!,
@@ -287,7 +351,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                     malzeme: _selectedFireMalzeme!,
                     renk: _selectedFireRenk!,
                     miktar: int.parse(_fireMiktarController.text),
-                  );
+                  );}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),

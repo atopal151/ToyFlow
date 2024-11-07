@@ -35,6 +35,8 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   List<String> _urunler = []; // Ürün listesi
   List<String> _renkler = []; // Renk listesi
 
+  int miktar = 0; // miktar listesi
+
   final List<String> _donusumUrun = [
     'Çilek Tavşan',
     'Havuç Tavşan',
@@ -55,7 +57,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
     '100'
   ]; // Ürün listesi
 
-final List<String> _renk = [
+  final List<String> _renk = [
     'Kırmızı',
     'Siyah',
     'Beyaz',
@@ -83,23 +85,41 @@ final List<String> _renk = [
     }
   }
 
- Future<void> _fetchColors(String selectedMalzeme) async {
-  try {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('dokuma_stok')
-        .where('urun', isEqualTo: selectedMalzeme)
-        .get();
+  Future<void> _fetchColors(String selectedMalzeme) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .get();
 
-    setState(() {
-      _renkler = snapshot.docs
-          .map((doc) => doc['renk'] as String)
-          .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
-          .toList();
-    });
-  } catch (e) {
-    print("Renk verileri alınırken hata oluştu: $e");
+      setState(() {
+        _renkler = snapshot.docs
+            .map((doc) => doc['renk'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
   }
-}
+
+  Future<void> _fetchMiktar(String selectedIplik, String selectedRenk) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_stok')
+          .where('urun', isEqualTo: selectedIplik)
+          .where('renk', isEqualTo: selectedRenk)
+          .get();
+
+      setState(() {
+        miktar = snapshot.docs.isNotEmpty
+            ? snapshot.docs.first['miktar'] as int // İlk belge miktarını al
+            : 0; // Eğer belge yoksa 0 olarak ayarla
+      });
+    } catch (e) {
+      print("Miktar verileri alınırken hata oluştu: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +127,8 @@ final List<String> _renk = [
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /*---------------------------------------------------*/
             // Ürün seçme dropdown
@@ -117,12 +139,19 @@ final List<String> _renk = [
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-                   _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedRenk = null; // Renk seçimini temizle
+                  _renkler.clear(); // Renk listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null) {
+                    _fetchColors(_selectedMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
             ),
-            // Renk seçme dropdown
+
+// Renk seçme dropdown
             DropdownSelector(
               hintText: 'Renk',
               items: _renkler,
@@ -134,6 +163,19 @@ final List<String> _renk = [
               },
               icon: Icons.color_lens,
             ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarController,
@@ -145,12 +187,20 @@ final List<String> _renk = [
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  _kesaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedMalzeme!,
-                    renk: _selectedRenk!,
-                    miktar: int.parse(_miktarController.text),
-                  );
+                  if (_miktarController.text == "" ||
+                      _miktarController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
+                    _kesaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedMalzeme!,
+                      renk: _selectedRenk!,
+                      miktar: int.parse(_miktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -205,7 +255,7 @@ final List<String> _renk = [
               },
               icon: Icons.color_lens,
             ),
-             // boyut seçme dropdown
+            // boyut seçme dropdown
             DropdownSelector(
               hintText: 'Boyut',
               items: _boyut,
@@ -228,13 +278,20 @@ final List<String> _renk = [
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
+                    if (_miktarDonumController.text == "" ||
+                      _miktarDonumController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
                   _kesaServices.addOrUpdateUrunStock(
                     context: context,
                     urun: _selectedDonumMalzeme!,
                     urunRenk: _selectedDonumRenk!,
                     boyut: _selectedDonumBoyut!,
                     miktar: int.parse(_miktarDonumController.text),
-                  );
+                  );}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -260,7 +317,7 @@ final List<String> _renk = [
               ),
             ),
 
-          const SizedBox(
+            const SizedBox(
               height: 20,
             ),
 
@@ -274,7 +331,8 @@ final List<String> _renk = [
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                   _fetchColors(newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _fetchColors(
+                      newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
               icon: Icons.cut,
@@ -304,6 +362,13 @@ final List<String> _renk = [
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
+                   if (_fireMiktarController.text == "" ||
+                      _fireMiktarController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
                   _kesaServices.decreaseStock(
                     context: context,
                     malzeme: _selectedFireMalzeme!,
@@ -314,7 +379,7 @@ final List<String> _renk = [
                     malzeme: _selectedFireMalzeme!,
                     renk: _selectedFireRenk!,
                     miktar: int.parse(_fireMiktarController.text),
-                  );
+                  );}
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),

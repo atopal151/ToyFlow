@@ -39,6 +39,8 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
   List<String> _renkler = []; // Renk listesi
   List<String> _boyutlar = []; // Renk listesi
 
+  int miktar = 0; // miktar listesi
+
   final List<String> _donusumUrun = [
     'Çilek Tavşan',
     'Havuç Tavşan',
@@ -136,14 +138,37 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
     }
   }
 
+  Future<void> _fetchMiktar(
+      String selectedIplik, String selectedRenk, String selectedBoyut) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dolum_stok')
+          .where('urun', isEqualTo: selectedIplik)
+          .where('renk', isEqualTo: selectedRenk)
+          .where('boyut', isEqualTo: selectedBoyut)
+          .get();
+
+      setState(() {
+        miktar = snapshot.docs.isNotEmpty
+            ? snapshot.docs.first['miktar'] as int // İlk belge miktarını al
+            : 0; // Eğer belge yoksa 0 olarak ayarla
+      });
+    } catch (e) {
+      print("Miktar verileri alınırken hata oluştu: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /*---------------------------------------------------*/
+            // Ürün seçme dropdown
             // Ürün seçme dropdown
             DropdownSelector(
               hintText: 'Kullanılan Ürün',
@@ -152,14 +177,21 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-                  _fetchColors(
-                      newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedRenk = null; // Renk seçimini temizle
+                  _selectedBoyut = null; // Boyut seçimini temizle
+                  _renkler.clear(); // Renk listesini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null) {
+                    _fetchColors(_selectedMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
             ),
 
-            // Renk seçme dropdown
+// Renk seçme dropdown
             DropdownSelector(
               hintText: 'Renk',
               items: _renkler,
@@ -167,11 +199,19 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedRenk = newValue;
+                  _selectedBoyut = null; // Boyut seçimini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen renge göre boyutları getir
+                  if (_selectedMalzeme != null && _selectedRenk != null) {
+                    _fetchBoyut(_selectedMalzeme!, _selectedRenk!);
+                  }
                 });
               },
               icon: Icons.color_lens,
             ),
-            // boyut seçme dropdown
+
+// Boyut seçme dropdown
             DropdownSelector(
               hintText: 'Boyut',
               items: _boyutlar,
@@ -179,14 +219,31 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedBoyut = newValue;
-                  if (_selectedMalzeme != null && _selectedRenk != null) {
-                    _fetchBoyut(_selectedMalzeme!,
-                        _selectedRenk!); // Ürün ve renge göre boyutları getir
+
+                  // Ürün, renk ve boyuta göre miktarı getir
+                  if (_selectedMalzeme != null &&
+                      _selectedRenk != null &&
+                      _selectedBoyut != null) {
+                    _fetchMiktar(
+                        _selectedMalzeme!, _selectedRenk!, _selectedBoyut!);
                   }
                 });
               },
               icon: Icons.height,
             ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _miktarController,
@@ -198,13 +255,21 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  _dolaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedMalzeme!,
-                    boyut: _selectedBoyut!,
-                    renk: _selectedRenk!,
-                    miktar: int.parse(_miktarController.text),
-                  );
+                  if (_miktarController.text == "" ||
+                      _miktarController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
+                    _dolaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedMalzeme!,
+                      boyut: _selectedBoyut!,
+                      renk: _selectedRenk!,
+                      miktar: int.parse(_miktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -294,14 +359,22 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  _dolaServices.addOrUpdateUrunStock(
-                    context: context,
-                    urun: _selectedDonumMalzeme!,
-                    urunRenk: _selectedDonumRenk!,
-                    boyut: _selectedDonumBoyut!,
-                    aksesuar: _selectedDonumAksesuar!,
-                    miktar: int.parse(_miktarDonumController.text),
-                  );
+                  if (_miktarDonumController.text == "" ||
+                      _miktarDonumController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Lütfen tüm alanları doldurun.")),
+                    );
+                  } else {
+                    _dolaServices.addOrUpdateUrunStock(
+                      context: context,
+                      urun: _selectedDonumMalzeme!,
+                      urunRenk: _selectedDonumRenk!,
+                      boyut: _selectedDonumBoyut!,
+                      aksesuar: _selectedDonumAksesuar!,
+                      miktar: int.parse(_miktarDonumController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -395,22 +468,22 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                           content: Text('Lütfen tüm alanları doldurun')),
                     );
                     return;
+                  } else {
+                    _dolaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+
+                    _dolaServices.addFireEntry(
+                      malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
                   }
-
-                  _dolaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedFireMalzeme!,
-                    boyut: _selectedFireBoyut!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );
-
-                  _dolaServices.addFireEntry(
-                    malzeme: _selectedFireMalzeme!,
-                    boyut: _selectedFireBoyut!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
