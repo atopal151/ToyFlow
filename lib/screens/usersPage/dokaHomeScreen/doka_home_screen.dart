@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:toyflow/screens/usersPage/dokaHomeScreen/doka_edit_screen.dart';
 import 'package:toyflow/services/product_services.dart';
 import '../../../services/custom_app_bar.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class DokaHomeScreen extends StatefulWidget {
   const DokaHomeScreen({super.key});
@@ -20,10 +20,19 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
+@override
+  void initState() {
+    super.initState();
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
+
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
+
+    
     return FirebaseFirestore.instance
         .collection('dokuma_stok')
-        .orderBy('urun')
+        .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -139,8 +148,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =
-                              DateFormat('dd.MM.yyyy').format(dateTime);
+                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -220,7 +228,14 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                           ),
                                         ],
                                       ),
+                                      const SizedBox(height: 5,),
+                                      Text(
+                                            eklemeTarihi,
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
                                     ],
+                              
                                   ),
                                 ),
                               ],

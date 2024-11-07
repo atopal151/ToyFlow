@@ -199,7 +199,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 86, 157, 185),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -283,7 +283,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 111, 183, 117),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

@@ -141,30 +141,6 @@ class UsersProfileScreen extends StatelessWidget {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 227, 162, 65),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.history,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                  title: const Text('Üretim Hareketleri'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MoverScreen()),
-                    );
-                    // Üretim raporları ekranına yönlendirme
-                  },
-                ),
-                ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
                       color: Color.fromARGB(255, 235, 85, 72),
                       shape: BoxShape.circle,
                     ),

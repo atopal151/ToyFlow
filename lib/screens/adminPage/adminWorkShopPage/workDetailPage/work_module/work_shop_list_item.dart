@@ -1,30 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class WorkshopListItem extends StatelessWidget {
+class WorkshopListItem extends StatefulWidget {
   final Map<String, dynamic> work;
 
   const WorkshopListItem({super.key, required this.work});
+
+  @override
+  State<WorkshopListItem> createState() => _WorkshopListItemState();
+}
+
+class _WorkshopListItemState extends State<WorkshopListItem> {
+ 
+   @override
+  void initState() {
+    super.initState();
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
 
   @override
   Widget build(BuildContext context) {
     String eklemeTarihi = 'Bilinmiyor';
     String miktarTarihi = 'Bilinmiyor';
 
-    // 'tarih' alanını String formatına dönüştürme
-    if (work['tarih'] is Timestamp) {
-      DateTime dateTime = (work['tarih'] as Timestamp).toDate();
-      eklemeTarihi = DateFormat('dd.MM.yyyy').format(dateTime);
+    // 'tarih' alanını göreceli formatta dönüştürme
+    if (widget.work['tarih'] is Timestamp) {
+      DateTime dateTime = (widget.work['tarih'] as Timestamp).toDate();
+      eklemeTarihi = timeago.format(dateTime, locale: 'tr'); // Göreceli tarih
     }
 
     // 'miktar' alanını String formatına dönüştürme
-    if (work['miktar'] is Timestamp) {
-      DateTime miktarDateTime = (work['miktar'] as Timestamp).toDate();
+    if (widget.work['miktar'] is Timestamp) {
+      DateTime miktarDateTime = (widget.work['miktar'] as Timestamp).toDate();
       miktarTarihi = DateFormat('dd.MM.yyyy').format(miktarDateTime);
     } else {
       // Eğer miktar bir sayı ise direkt 'miktarTarihi' olarak atıyoruz
-      miktarTarihi = work['miktar'].toString();
+      miktarTarihi = widget.work['miktar'].toString();
     }
 
     return Padding(
@@ -61,7 +75,7 @@ class WorkshopListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      work['urun'] ?? 'Ürün Yok',
+                      widget.work['urun'] ?? 'Ürün Yok',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 14),
                     ),
@@ -75,7 +89,6 @@ class WorkshopListItem extends StatelessWidget {
                           fontSize: 12,
                           color: Color.fromARGB(255, 97, 190, 106)),
                     ),
-
                     const SizedBox(height: 5),
                     Row(
                       children: [
@@ -86,12 +99,12 @@ class WorkshopListItem extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          "Renk: " + work['renk'],
+                          "Renk: " + widget.work['renk'],
                           style: const TextStyle(
                               fontWeight: FontWeight.w500, fontSize: 12),
                         ),
                         const SizedBox(width: 10),
-                        if (work['boyut'] != null)
+                        if (widget.work['boyut'] != null)
                           Row(
                             children: [
                               const Icon(
@@ -101,7 +114,7 @@ class WorkshopListItem extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                "Boyut: ${work['boyut']} cm",
+                                "Boyut: ${widget.work['boyut']} cm",
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 12),
                               ),
@@ -109,9 +122,8 @@ class WorkshopListItem extends StatelessWidget {
                           ),
                       ],
                     ),
-
                     const SizedBox(height: 4),
-                    if (work['aksesuar'] != null)
+                    if (widget.work['aksesuar'] != null)
                       Row(
                         children: [
                           const Icon(
@@ -121,21 +133,18 @@ class WorkshopListItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            "Aksesuar: ${work['aksesuar']}",
+                            "Aksesuar: ${widget.work['aksesuar']}",
                             style: const TextStyle(
                                 fontWeight: FontWeight.w500, fontSize: 12),
                           ),
                         ],
                       ),
-
                     const SizedBox(height: 6),
                     Text(
-                      "Son Güncelleme: " + eklemeTarihi, // 'tarih' değeri
+                      "Son Güncelleme: $eklemeTarihi", // 'tarih' değeri göreceli
                       style: const TextStyle(
                           fontWeight: FontWeight.w400, fontSize: 10),
                     ),
-
-                    // Diğer alanlar...
                   ],
                 ),
               ],

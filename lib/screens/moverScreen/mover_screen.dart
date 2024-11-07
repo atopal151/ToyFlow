@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/auth_service.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class MoverScreen extends StatefulWidget {
   const MoverScreen({super.key});
@@ -22,8 +23,11 @@ class _MoverScreenState extends State<MoverScreen> {
     super.initState();
     _fetchUserRole();
     _fetchUnreadNotifications(); // Okunmamış bildirimleri al
-  }
 
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
+  
   Future<void> _fetchUserRole() async {
     if (user != null) {
       userRole = await _authService.getUserRole(user!.uid);
@@ -66,7 +70,6 @@ class _MoverScreenState extends State<MoverScreen> {
     _fetchUnreadNotifications(); // Okunmamış bildirim sayısını güncelle
   }
 
-  // Bildirimi okundu olarak işaretle
   Future<void> _markAllAsRead() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('movers')
@@ -89,42 +92,7 @@ class _MoverScreenState extends State<MoverScreen> {
           style: TextStyle(fontSize: 18),
         ),
         elevation: 0,
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {
-                  // Bildirimlere gitme veya ekranı yenileme gibi işlev ekleyebilirsiniz
-                },
-              ),
-              if (unreadCount > 0)
-                Positioned(
-                  right: 11,
-                  top: 11,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
-                    ),
-                    child: Text(
-                      unreadCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ],
+        
       ),
       body: userRole == null
           ? const Center(child: CircularProgressIndicator())
@@ -157,8 +125,10 @@ class _MoverScreenState extends State<MoverScreen> {
                         .where((doc) => doc['atelye'] == userRole)
                         .toList();
 
-                hareketler.sort((a, b) => (b['tarih'] as Timestamp)
-                    .compareTo(a['tarih'] as Timestamp));
+                hareketler.sort(
+                  (a, b) => (b['tarih'] as Timestamp)
+                      .compareTo(a['tarih'] as Timestamp),
+                );
 
                 return RefreshIndicator(
                   onRefresh: _markAllAsRead,
@@ -169,7 +139,7 @@ class _MoverScreenState extends State<MoverScreen> {
                       final timestamp = hareket['tarih'] as Timestamp?;
                       final DateTime? tarih = timestamp?.toDate();
                       final formattedDate = tarih != null
-                          ? '${tarih.day.toString().padLeft(2, '0')}/${tarih.month.toString().padLeft(2, '0')}/${tarih.year} ${tarih.hour.toString().padLeft(2, '0')}:${tarih.minute.toString().padLeft(2, '0')}'
+                          ? timeago.format(tarih, locale: 'tr')
                           : 'Tarih yok';
                       final islemTuru = hareket['islemTuru'] as String;
                       final aciklama = hareket['aciklama'] as String;
@@ -186,9 +156,9 @@ class _MoverScreenState extends State<MoverScreen> {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: okunmadi
-                                ? const Color.fromARGB(255, 198, 193, 193)
-                                : Colors.transparent, // Okunmamışlar koyu renkte
-                           
+                                ? const Color.fromARGB(255, 213, 210, 210)
+                                : Colors
+                                    .transparent, // Okunmamışlar koyu renkte
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -204,8 +174,7 @@ class _MoverScreenState extends State<MoverScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       islemTuru,
@@ -216,10 +185,13 @@ class _MoverScreenState extends State<MoverScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '$aciklama - $formattedDate',
+                                      aciklama,
                                       style: const TextStyle(fontSize: 11),
                                     ),
-                                    
+                                    Text(
+                                      formattedDate,
+                                      style: const TextStyle(fontSize: 11),
+                                    )
                                   ],
                                 ),
                               ),

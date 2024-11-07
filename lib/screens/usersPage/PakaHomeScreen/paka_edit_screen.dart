@@ -207,7 +207,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 35, 92, 115),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -304,7 +304,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 57, 95, 61),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -413,7 +413,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 117, 54, 49),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

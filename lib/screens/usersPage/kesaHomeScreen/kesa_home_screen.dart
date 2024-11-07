@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:toyflow/services/product_services.dart';
 import '../../../services/custom_app_bar.dart';
 import 'kesa_edit_screen.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 
 class KesaHomeScreen extends StatefulWidget {
   const KesaHomeScreen({super.key});
@@ -20,10 +21,17 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
+  @override
+  void initState() {
+    super.initState();
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
+
   Stream<List<Map<String, dynamic>>> getKesimStokData() {
     return FirebaseFirestore.instance
         .collection('kesim_stok')
-        .orderBy('urun')
+        .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -140,8 +148,7 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =
-                              DateFormat('dd.MM.yyyy').format(dateTime);
+                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -233,6 +240,12 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
                                           ),
                                         ],
                                       ),
+                                      const SizedBox(height: 5,),
+                                      Text(
+                                            eklemeTarihi,
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
                                     ],
                                   ),
                                 ),

@@ -3,11 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:toyflow/services/product_services.dart';
 import '../../../services/custom_app_bar.dart';
 import 'dola_edit_screen.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
+ 
 class DolaHomeScreen extends StatefulWidget {
   const DolaHomeScreen({super.key});
 
@@ -20,10 +21,17 @@ class _DolaHomeScreenState extends State<DolaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
+  @override
+  void initState() {
+    super.initState();
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
+
   Stream<List<Map<String, dynamic>>> getDikimStokData() {
     return FirebaseFirestore.instance
         .collection('dolum_stok')
-        .orderBy('urun')
+        .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -140,8 +148,7 @@ class _DolaHomeScreenState extends State<DolaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =
-                              DateFormat('dd.MM.yyyy').format(dateTime);
+                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -236,6 +243,12 @@ class _DolaHomeScreenState extends State<DolaHomeScreen> {
                                           const SizedBox(width: 10),
                                         ],
                                       ),
+                                      const SizedBox(height: 5,),
+                                      Text(
+                                            eklemeTarihi,
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
                                     ],
                                   ),
                                 ),

@@ -32,7 +32,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
       if (_userRole == 'Dokuma') {
         QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dokuma_work').get();
+            await FirebaseFirestore.instance.collection('dokuma_work').orderBy('tarih',descending: true).get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -44,7 +44,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         });
       } else if (_userRole == 'Kesim') {
         QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dokuma_stok').get();
+            await FirebaseFirestore.instance.collection('dokuma_stok').orderBy('urun',descending: true).get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -56,7 +56,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         });
       } else if (_userRole == 'Dikim') {
         QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('kesim_stok').get();
+            await FirebaseFirestore.instance.collection('kesim_stok').orderBy('urun',descending: true).get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -68,7 +68,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         });
       } else if (_userRole == 'Dolum') {
         QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dikim_stok').get();
+            await FirebaseFirestore.instance.collection('dikim_stok').orderBy('urun',descending: true).get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -80,7 +80,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         });
       } else if (_userRole == 'Paketleme') {
         QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dolum_stok').get();
+            await FirebaseFirestore.instance.collection('dolum_stok').orderBy('urun',descending: true).get();
 
         setState(() {
           _works = querySnapshot.docs.map((doc) {
@@ -201,15 +201,20 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(width: 10),
-                                  const Icon(Icons.straighten,
+                                  
+                                  if (work['boyut'] != null)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.straighten,
                                       color: Colors.blueGrey, size: 16),
                                   const SizedBox(width: 4),
-                                  if (work['boyut'] != null)
-                                    Text(
-                                      "${work['boyut']} cm",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12),
+                                        Text(
+                                          "${work['boyut']} cm",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12),
+                                        ),
+                                      ],
                                     ),
                                 ],
                               ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class FireTakip extends StatefulWidget {
   const FireTakip({super.key});
@@ -10,6 +11,13 @@ class FireTakip extends StatefulWidget {
 }
 
 class _FireTakipState extends State<FireTakip> {
+  @override
+  void initState() {
+    super.initState();
+    // Türkçe dil desteğini ekleyin
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+  }
+
   // Firestore'dan kullanıcı rolünü al
   Future<String> getUserRole() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -39,15 +47,13 @@ class _FireTakipState extends State<FireTakip> {
     String collectionName = roleToCollectionMap[role] ?? "dokuma_fire";
     print("Kullanıcı rolü: $role, Seçilen koleksiyon: $collectionName");
 
-    return FirebaseFirestore.instance.collection(collectionName).snapshots();
+    return FirebaseFirestore.instance.collection(collectionName).orderBy('tarih',descending: true).snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fire Takip"),
-      ),
+      appBar: AppBar(),
       body: FutureBuilder<String>(
         future: getUserRole(),
         builder: (context, snapshot) {
@@ -79,17 +85,25 @@ class _FireTakipState extends State<FireTakip> {
                 padding: const EdgeInsets.all(8.0),
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                  var data =
+                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
                   String urun = data['urun'] ?? 'Bilinmiyor';
                   String renk = data['renk'] ?? 'Bilinmiyor';
                   String boyut = data['boyut'] ?? 'Bilinmiyor';
-                  String miktar = data['miktar'] != null ? "${data['miktar']} kg/adet" : 'Bilinmiyor';
-                  String tarih = data['tarih'] != null ? (data['tarih'] as Timestamp).toDate().toString() : 'Tarih Bilinmiyor';
+                  String miktar = data['miktar'] != null
+                      ? "${data['miktar']} kg/adet"
+                      : 'Bilinmiyor';
+// Tarihi kontrol et ve biçimlendir
+                  String tarih = data['tarih'] != null
+                      ? timeago.format((data['tarih'] as Timestamp).toDate(),
+                          locale: 'tr')
+                      : 'Tarih Bilinmiyor';
 
                   return Card(
                     color: Colors.white,
                     elevation: 3,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -101,7 +115,7 @@ class _FireTakipState extends State<FireTakip> {
                       title: Text(
                         urun,
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -118,9 +132,9 @@ class _FireTakipState extends State<FireTakip> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Tarih: $tarih",
+                            tarih,
                             style: const TextStyle(
-                              fontSize: 11,
+                              fontSize: 10,
                               color: Colors.black45,
                             ),
                           ),
