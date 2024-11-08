@@ -19,36 +19,50 @@ class _FireTakipState extends State<FireTakip> {
   }
 
   // Firestore'dan kullanıcı rolünü al
-  Future<String> getUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+Future<String> getUserRole() async {
+  User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
-      if (userDoc.exists && userDoc.data() != null) {
-        return (userDoc.data() as Map<String, dynamic>)['role'] ?? "Dokuma";
-      }
+    if (userDoc.exists && userDoc.data() != null) {
+      return (userDoc.data() as Map<String, dynamic>)['role'] ?? "Rol bulunamadı";
+    } else {
+      print("Uyarı: Kullanıcı rolü bulunamadı, varsayılan değer kullanılacak.");
     }
-    return "Dokuma"; // Varsayılan değer
+  } else {
+    print("Uyarı: Kullanıcı oturumu bulunamadı.");
   }
+  return ""; // Boş değer veya varsayılan rol bulunamadı uyarısı
+}
+
 
   Stream<QuerySnapshot> getFireDataStream(String role) {
-    // Rol ve koleksiyon eşlemesi
-    final roleToCollectionMap = {
-      "Dokuma": "dokuma_fire",
-      "Kesim": "kesim_fire",
-      "Dikim": "dikim_fire",
-      "Dolum": "dolum_fire",
-      "Paketleme": "paketleme_fire",
-    };
+  // Rol ve koleksiyon eşlemesi
+  final roleToCollectionMap = {
+    "Dokuma": "dokuma_fire",
+    "Kesim": "kesim_fire",
+    "Dikim": "dikim_fire",
+    "Dolum": "dolum_fire",
+    "Paketleme": "paketleme_fire",
+  };
 
-    String collectionName = roleToCollectionMap[role] ?? "dokuma_fire";
+  if (roleToCollectionMap.containsKey(role)) {
+    String collectionName = roleToCollectionMap[role]!;
     print("Kullanıcı rolü: $role, Seçilen koleksiyon: $collectionName");
-
-    return FirebaseFirestore.instance.collection(collectionName).orderBy('tarih',descending: true).snapshots();
+    
+    return FirebaseFirestore.instance
+        .collection(collectionName)
+        .orderBy('tarih', descending: true)
+        .snapshots();
+  } else {
+    print("Uyarı: Belirtilen rol için geçerli bir koleksiyon bulunamadı.");
+    return const Stream.empty(); // Geçerli bir koleksiyon yoksa boş bir stream döndür
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

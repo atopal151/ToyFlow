@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/chatScreen/chat_screen.dart';
@@ -7,15 +8,37 @@ import '../../../services/product_services.dart';
 import '../../usersWorkScreen/users_work_screen.dart';
 import '../fireler/fire_takip.dart';
 
-class UsersProfileScreen extends StatelessWidget {
-  final ProductServices _productService = Get.find();
-  final AuthService authService = Get.find<AuthService>();
-
-  // Yeni bir profil resmi değişkeni ekle
+class UsersProfileScreen extends StatefulWidget {
   final String profileImagePath;
 
+  // ignore: prefer_const_constructors_in_immutables
   UsersProfileScreen({Key? key, required this.profileImagePath})
       : super(key: key);
+
+  @override
+  State<UsersProfileScreen> createState() => _UsersProfileScreenState();
+}
+
+class _UsersProfileScreenState extends State<UsersProfileScreen> {
+  final ProductServices _productService = Get.find();
+
+  final AuthService authService = Get.find<AuthService>();
+
+  String? _userRole;
+  User? user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserRole(); // Rol bilgisini almak için asenkron fonksiyon çağrısı
+  }
+
+  Future<void> _fetchUserRole() async {
+    if (user != null) {
+      _userRole = await authService.getUserRole(user!.uid);
+      setState(() {}); // UI güncellemesi için setState çağrısı
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +58,8 @@ class UsersProfileScreen extends StatelessWidget {
           // Profil Resmi ve Kullanıcı Bilgisi
           CircleAvatar(
             radius: 40,
-            backgroundImage: AssetImage(profileImagePath), // Profil resmi
+            backgroundImage:
+                AssetImage(widget.profileImagePath), // Profil resmi
           ),
           const SizedBox(height: 10),
           Text(
@@ -112,30 +136,8 @@ class UsersProfileScreen extends StatelessWidget {
                     // Bildirimler ekranına yönlendirme
                   },
                 ),
-                ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 110, 145, 183),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.pending_actions,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                  title: const Text('Bekleyen İşler'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UsersWorkScreen()),
-                    );
-                    // Bekleyen işler ekranına yönlendirme
-                  },
-                ),
+                if (_userRole != null && _userRole != "Transfer")
+                 
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
@@ -159,7 +161,31 @@ class UsersProfileScreen extends StatelessWidget {
                     );
                     // Üretim raporları ekranına yönlendirme
                   },
-                ),
+                ), ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 110, 145, 183),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.pending_actions,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                    title:  Text( _userRole!="Transfer" ? 'Bekleyen İşler':'Sevk Edilecek Stok'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UsersWorkScreen(),
+                        ),
+                      );
+                      // Bekleyen işler ekranına yönlendirme
+                    },
+                  ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),

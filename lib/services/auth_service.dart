@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/transfer_page/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../screens/LoginScreen/login_screen.dart';
 import '../screens/usersPage/PakaHomeScreen/paka_home_screen.dart';
@@ -68,6 +69,9 @@ class AuthService {
               break;
             case 'Paketleme':
               destination = const PakaHomeScreen();
+              break;
+            case 'Transfer':
+              destination = const TransferScreen();
               break;
             default:
               destination = const LoginScreen();

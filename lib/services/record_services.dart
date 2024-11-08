@@ -8,6 +8,8 @@ class RecordServices {
   required String renk,
   required int miktar,
   required String islemTuru,
+  String? boyut,
+  String? aksesuar,
   required String aciklama,
   required String atelye,
 }) async {
@@ -17,6 +19,8 @@ class RecordServices {
       'renk': renk,
       'miktar': miktar,
       'islemTuru': islemTuru,
+      'boyut': boyut,
+      'aksesuar': aksesuar,
       'aciklama': aciklama,
       'atelye': atelye,
       'tarih': FieldValue.serverTimestamp(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/usersPage/PakaHomeScreen/paka_transfer.dart';
+import 'package:toyflow/screens/usersPage/transfer_page/stok_transfer_page.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../screens/usersPage/usersProfileScreen/users_profile.dart';
 import 'product_services.dart';
@@ -100,6 +100,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       actions: [
+        if (workshopName != "Transfer Birimi")
         Padding(
           padding: const EdgeInsets.only(right: 20),
           child: GestureDetector(
@@ -129,12 +130,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
 
         // Eğer workshopName "Paketleme Atölyesi" ise bu ikonu ekle
-        if (workshopName == "Paketleme Atölyesi")
+        if (workshopName == "Transfer Birimi")
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () {
-                Get.to(()=>const PakaTransfer());
+                Get.to(()=>const StokTransfer());
               },
               child: Container(
                 decoration: BoxDecoration(

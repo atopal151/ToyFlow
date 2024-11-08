@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/transfer_page/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../LoginScreen/login_screen.dart';
 import '../usersPage/PakaHomeScreen/paka_home_screen.dart';
@@ -44,6 +45,8 @@ class _SplashScreenState extends State<SplashScreen> {
           Get.off(() => const KesaHomeScreen());
         } else if (role == 'Paketleme') {
           Get.off(() => const PakaHomeScreen());
+        }else if (role == 'Transfer') {
+          Get.off(() => const TransferScreen());
         }
       } else {
         Get.off(() => const LoginScreen());

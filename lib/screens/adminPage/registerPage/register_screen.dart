@@ -24,13 +24,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _selectedCins; // Seçilen Cins
 
   // Rol ve atölye listeleri
-  final List<String> roles = ['Dokuma', 'Kesim', 'Dikim', 'Dolum', 'Paketleme'];
+  final List<String> roles = ['Dokuma', 'Kesim', 'Dikim', 'Dolum', 'Paketleme','Transfer'];
   final List<String> workshops = [
     'Dokuma Atölyesi',
     'Kesim Atölyesi',
     'Dikim Atölyesi',
     'Dolum Atölyesi',
-    'Paketleme Atölyesi'
+    'Paketleme Atölyesi',
+    'Transfer Birimi'
   ];
   final List<String> cins = ['Erkek', 'Kadın'];
 

@@ -25,8 +25,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   }
 
   Future<void> _fetchUserRoleAndData() async {
-    User? user = FirebaseAuth.instance.currentUser;
 
+    User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _userRole = await _authService.getUserRole(user.uid);
 
@@ -90,7 +90,20 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
             };
           }).toList();
         });
-      } else {
+      } else if (_userRole == 'Transfer') {
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection('paketleme_stok').orderBy('urun',descending: true).get();
+
+        setState(() {
+          _works = querySnapshot.docs.map((doc) {
+            return {
+              'id': doc.id,
+              ...doc.data() as Map<String, dynamic>,
+            };
+          }).toList();
+        });
+      } 
+      else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("Bu kullanıcı için geçerli bir iş yok.")),
