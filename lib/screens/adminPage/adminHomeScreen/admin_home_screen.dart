@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
 import 'package:toyflow/screens/moverScreen/mover_screen.dart';
+import 'package:toyflow/screens/usersPage/transfer_page/transfer_detail_screen.dart';
 import '../../../services/product_services.dart';
 import '../adminWorkShopPage/workDetailPage/work_detail_screen.dart';
 import 'adminhome_services/adminhome_services.dart';
@@ -40,17 +41,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _loadStockData() async {
-    int dokumaStock = await adminHomeService.fetchDailyStockOperations("Dokuma");
+    int dokumaStock =
+        await adminHomeService.fetchDailyStockOperations("Dokuma");
     int kesimStock = await adminHomeService.fetchDailyStockOperations("Kesim");
     int dikimStock = await adminHomeService.fetchDailyStockOperations("Dikim");
     int dolumStock = await adminHomeService.fetchDailyStockOperations("Dolum");
-    int paketlemeStock = await adminHomeService.fetchDailyStockOperations("Paketleme");
+    int paketlemeStock =
+        await adminHomeService.fetchDailyStockOperations("Paketleme");
 
     int dokuma = await adminHomeService.fetchStockFromCollection("dokuma_stok");
     int kesim = await adminHomeService.fetchStockFromCollection("kesim_stok");
     int dikim = await adminHomeService.fetchStockFromCollection("dikim_stok");
     int dolum = await adminHomeService.fetchStockFromCollection("dolum_stok");
-    int paketleme = await adminHomeService.fetchStockFromCollection("paketleme_stok");
+    int paketleme =
+        await adminHomeService.fetchStockFromCollection("paketleme_stok");
 
     if (mounted) {
       setState(() {
@@ -119,7 +123,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               return Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.notifications, color: Colors.black,size: 30,),
+                    icon: const Icon(
+                      Icons.notifications,
+                      color: Colors.black,
+                      size: 30,
+                    ),
                     onPressed: () {
                       Get.to(() => const MoverScreen());
                     },
@@ -192,24 +200,37 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               ),
               const SizedBox(height: 10),
               // Buraya atölye kartları ekleniyor
-              _buildAtolyeRow("Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
-              const SizedBox(height: 10,),
-              _buildAtolyeRow("Kesim Atölyesi", kesimAllStock, kesimAtolyesiStock),
-              const SizedBox(height: 10,),
-              _buildAtolyeRow("Dikim Atölyesi", dikimAllStock, dikimAtolyesiStock),
-              const SizedBox(height: 10,),
-              _buildAtolyeRow("Dolum Atölyesi", dolumAllStock, dolumAtolyesiStock),
-              const SizedBox(height: 10,),
-              _buildAtolyeRow("Paketleme Atölyesi", paketlemeAllStock, paketlemeAtolyesiStock),
+              _buildAtolyeRow(
+                  "Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
+              const SizedBox(
+                height: 10,
+              ),
+              _buildAtolyeRow(
+                  "Kesim Atölyesi", kesimAllStock, kesimAtolyesiStock),
+              const SizedBox(
+                height: 10,
+              ),
+              _buildAtolyeRow(
+                  "Dikim Atölyesi", dikimAllStock, dikimAtolyesiStock),
+              const SizedBox(
+                height: 10,
+              ),
+              _buildAtolyeRow(
+                  "Dolum Atölyesi", dolumAllStock, dolumAtolyesiStock),
+              const SizedBox(
+                height: 10,
+              ),
+              _buildAtolyeRow("Paketleme Atölyesi", paketlemeAllStock,
+                  paketlemeAtolyesiStock),
               const SizedBox(height: 20),
               const Text(
-                "Depo Stok Miktarları",
+                "Depolar",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               // Depo kartları burada eklenir
-              _buildDepoRow("Denizli Depo", "Denizli/.......", "30.10.2024"),
-              _buildDepoRow("İstanbul Depo", "İstanbul/......", "29.10.2024"),
-              _buildDepoRow("Almanya Depo", "Almanya/.....", "31.10.2024"),
+              _buildDepoRow("Denizli Depo", "30.10.2024", "denizli_depo"),
+              _buildDepoRow("İstanbul Depo", "29.10.2024", "istanbul_depo"),
+              _buildDepoRow("Almanya Depo", "31.10.2024", "almanya_depo"),
             ],
           ),
         ),
@@ -228,15 +249,18 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  Widget _buildDepoRow(String roomName, String occupancy, String temperature) {
+  Widget _buildDepoRow(String roomName, String temperature, String collection) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Expanded(
-          child: _buildStockCardButton(
-            roomName: roomName,
-            occupancy: occupancy,
-            temperature: temperature,
+          child: InkWell(
+            onTap: () => Get.to(() =>
+                TransferDetailScreen(title: roomName, collection: collection)),
+            child: _buildStockCardButton(
+              roomName: roomName,
+              temperature: temperature,
+            ),
           ),
         ),
       ],
@@ -294,7 +318,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     children: [
                       const Text(
                         "Toplam Stok: ",
-                        style:  TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w200,
                         ),
@@ -335,7 +359,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   Widget _buildStockCardButton({
     required String roomName,
-    required String occupancy,
     required String temperature,
   }) {
     return Container(
@@ -367,14 +390,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  occupancy,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
                   ),
                 ),
                 const Spacer(),

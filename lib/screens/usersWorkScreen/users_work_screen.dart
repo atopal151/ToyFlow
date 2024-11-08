@@ -25,89 +25,54 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   }
 
   Future<void> _fetchUserRoleAndData() async {
-
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _userRole = await _authService.getUserRole(user.uid);
 
-      if (_userRole == 'Dokuma') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dokuma_work').orderBy('tarih',descending: true).get();
+
+
+      try {
+        QuerySnapshot querySnapshot;
+
+        if (_userRole == 'Dokuma') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('dokuma_work').get();
+        } else if (_userRole == 'Kesim') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('dokuma_stok').get();
+        } else if (_userRole == 'Dikim') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('kesim_stok').get();
+        } else if (_userRole == 'Dolum') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('dikim_stok').get();
+        } else if (_userRole == 'Paketleme') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('dolum_stok').get();
+          print(querySnapshot);
+        } else if (_userRole == 'Transfer') {
+          querySnapshot = await FirebaseFirestore.instance
+              .collection('paketleme_stok')
+              .get();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Bu kullanıcı için geçerli bir iş yok.")),
+          );
+          return;
+        }
 
         setState(() {
-          _works = querySnapshot.docs.map((doc) {
+          _works = querySnapshot.docs
+              .map((doc) {
             return {
               'id': doc.id,
               ...doc.data() as Map<String, dynamic>,
             };
           }).toList();
         });
-      } else if (_userRole == 'Kesim') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dokuma_stok').orderBy('urun',descending: true).get();
-
-        setState(() {
-          _works = querySnapshot.docs.map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } else if (_userRole == 'Dikim') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('kesim_stok').orderBy('urun',descending: true).get();
-
-        setState(() {
-          _works = querySnapshot.docs.map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } else if (_userRole == 'Dolum') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dikim_stok').orderBy('urun',descending: true).get();
-
-        setState(() {
-          _works = querySnapshot.docs.map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } else if (_userRole == 'Paketleme') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('dolum_stok').orderBy('urun',descending: true).get();
-
-        setState(() {
-          _works = querySnapshot.docs.map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } else if (_userRole == 'Transfer') {
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection('paketleme_stok').orderBy('urun',descending: true).get();
-
-        setState(() {
-          _works = querySnapshot.docs.map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } 
-      else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Bu kullanıcı için geçerli bir iş yok.")),
-        );
+      } catch (e) {
+        print("Veriler alınırken hata oluştu: $e");
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +96,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                 final work = _works[index];
                 String eklemeTarihi = 'Bilinmiyor';
 
-                if (work['tarih'] != null) {
+                if (work['tarih'] != null && work['tarih'] is Timestamp) {
                   Timestamp timestamp = work['tarih'];
                   DateTime dateTime = timestamp.toDate();
                   eklemeTarihi = DateFormat('dd.MM.yyyy').format(dateTime);
@@ -157,18 +122,16 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Sol tarafta görsel
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
-                            'images/dolum.webp', // Görsel dosyanızın yolu
+                            'images/dolum.webp',
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        // Orta kısımda ürün bilgisi
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,6 +151,9 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                                 : _userRole == 'Kesim' &&
                                                         work['urun'] != null
                                                     ? 'Kesilecek ${work['urun']}'
+                                                    : _userRole == 'Transfer' &&
+                                                        work['urun'] != null
+                                                    ? 'Aktarılacak ${work['urun']}'
                                                     : (work['urun'] ??
                                                         'Ürün Yok'),
                                 style: const TextStyle(
@@ -214,13 +180,12 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(width: 10),
-                                  
                                   if (work['boyut'] != null)
                                     Row(
                                       children: [
                                         const Icon(Icons.straighten,
-                                      color: Colors.blueGrey, size: 16),
-                                  const SizedBox(width: 4),
+                                            color: Colors.blueGrey, size: 16),
+                                        const SizedBox(width: 4),
                                         Text(
                                           "${work['boyut']} cm",
                                           style: const TextStyle(

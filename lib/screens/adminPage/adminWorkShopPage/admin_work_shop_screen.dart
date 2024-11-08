@@ -18,7 +18,7 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
     },
     {
       'title': 'Kesim Atölyesi',
-      'icon': Icons.cut,
+      'icon': Icons.cut, 
       'image': 'images/kesim.webp'
     },
     {

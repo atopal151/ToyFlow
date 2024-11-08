@@ -60,6 +60,7 @@ class _StokTransferState extends State<StokTransfer> {
                       : _selectedDepo == 'Almanya Depo'
                           ? 'almanya_depo'
                           : 'varsayilan_koleksiyon') // Belirtilmemiş bir depo için varsayılan koleksiyon
+          .where("miktar", isNotEqualTo: 0)
           .get();
       setState(() {
         _urunler =
@@ -81,7 +82,7 @@ class _StokTransferState extends State<StokTransfer> {
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection(_selectedDepo == 'Paketleme Atölyesi'
+          .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
               : _selectedDepo == 'Denizli Ana Depo'
                   ? 'denizli_depo'
@@ -105,7 +106,7 @@ class _StokTransferState extends State<StokTransfer> {
   Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-         .collection(_selectedDepo == 'Paketleme Atölyesi'
+          .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
               : _selectedDepo == 'Denizli Ana Depo'
                   ? 'denizli_depo'
@@ -131,7 +132,7 @@ class _StokTransferState extends State<StokTransfer> {
       String selectedMalzeme, String selectedRenk, String selectedBoyut) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-         .collection(_selectedDepo == 'Paketleme Atölyesi'
+          .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
               : _selectedDepo == 'Denizli Ana Depo'
                   ? 'denizli_depo'
@@ -160,7 +161,7 @@ class _StokTransferState extends State<StokTransfer> {
       String selectedBoyut, String selectedAksesuar) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-       .collection(_selectedDepo == 'Paketleme Atölyesi'
+          .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
               : _selectedDepo == 'Denizli Ana Depo'
                   ? 'denizli_depo'
@@ -199,6 +200,15 @@ class _StokTransferState extends State<StokTransfer> {
               selectedValue: _selectedDepo,
               onChanged: (String? newValue) {
                 setState(() {
+                  _selectedMalzeme = null;
+                  _selectedRenk = null;
+                  _selectedBoyut = null;
+                  _selectedAksesuar = null;
+
+                  _urunler.clear();
+                  _renkler.clear();
+                  _boyutlar.clear();
+                  _aksesuarlar.clear();
                   _selectedDepo = newValue;
                   _fetchData(); // Seçilen depoya göre verileri Firebase'den çek
                 });
@@ -326,6 +336,7 @@ class _StokTransferState extends State<StokTransfer> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
+                    print("$_selectedDepo $_selectedGetDepo $_selectedMalzeme  $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
                     _transferServices.addOrUpdateUrunStock(
                       context: context,
                       addDepo: _selectedGetDepo!,

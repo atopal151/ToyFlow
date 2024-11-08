@@ -27,7 +27,23 @@ class TransferServices {
     }
   }
 
-//-----hareket kayıt-------
+  // Depo koleksiyonunu seçen yardımcı fonksiyon
+  String _getDepoCollection(String depo) {
+    switch (depo) {
+      case 'Paketleme Atölyesi':
+        return 'paketleme_stok';
+      case 'Denizli Ana Depo':
+        return 'denizli_depo';
+      case 'İstanbul Depo':
+        return 'istanbul_depo';
+      case 'Almanya Depo':
+        return 'almanya_depo';
+      default:
+        return 'varsayilan_koleksiyon';
+    }
+  }
+
+  // Hareket kaydı yapma
   Future<void> _recordMovement({
     required String malzeme,
     required String renk,
@@ -53,7 +69,7 @@ class TransferServices {
     }
   }
 
-  //--------kayıt ekleme -----------
+  // Stok ekleme veya güncelleme
   Future<void> addOrUpdateUrunStock({
     required BuildContext context,
     required String addDepo,
@@ -84,16 +100,9 @@ class TransferServices {
     );
 
     try {
+      String collectionPath = _getDepoCollection(addDepo);
       QuerySnapshot querySnapshot = await _firestore
-          .collection(addDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : addDepo == 'Denizli Ana Depo'
-                  ? 'denizli_depo'
-                  : addDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : addDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: urun)
           .where('renk', isEqualTo: urunRenk)
           .where('boyut', isEqualTo: boyut)
@@ -105,22 +114,14 @@ class TransferServices {
         int existingMiktar = existingDoc['miktar'];
         int yeniMiktar = existingMiktar + miktar;
         await _firestore
-             .collection(addDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : addDepo == 'Denizli Ana Depo'
-                  ? 'denizli_depo'
-                  : addDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : addDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+            .collection(collectionPath)
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet ürün ekledi!')),
+                  '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı!')),
         );
 
         await _recordMovement(
@@ -131,20 +132,10 @@ class TransferServices {
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
           aciklama:
-              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
+              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo mevcut stoğuna $miktar adet $urunRenk $boyut $urun aktarıldı!',
         );
       } else {
-        await _firestore
-          .collection(addDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : addDepo == 'Denizli Ana Depo'
-                  ? 'denizli_depo'
-                  : addDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : addDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
-            .add({
+        await _firestore.collection(collectionPath).add({
           'urun': urun,
           'renk': urunRenk,
           'boyut': boyut,
@@ -154,7 +145,7 @@ class TransferServices {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeni stok başarıyla kaydedildi!')),
+          SnackBar(content: Text('$addDepo stoğuna ürün başarıyla aktarıldı!')),
         );
 
         await _recordMovement(
@@ -165,7 +156,7 @@ class TransferServices {
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
           aciklama:
-              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value}  Yeni stoğa $miktar adet $urunRenk $boyut cm $urun ekledi!',
+              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo yeni stoğuna $miktar adet $urunRenk $boyut cm $urun ekledi!',
         );
       }
     } catch (e) {
@@ -177,7 +168,7 @@ class TransferServices {
     }
   }
 
-//-----stok düşümü-------
+  // Stok düşümü yapma
   Future<void> decreaseStock({
     required BuildContext context,
     required String downDepo,
@@ -200,43 +191,36 @@ class TransferServices {
     }
 
     try {
+      String collectionPath = _getDepoCollection(downDepo);
       QuerySnapshot existingRecord = await _firestore
-          .collection(downDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : downDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : downDepo == 'İstanbul Depo'
-                  ? 'istanbul_depo'
-                  : downDepo == 'Almanya Depo'
-                      ? 'almanya_depo'
-                      : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: malzeme)
           .where('boyut', isEqualTo: boyut)
           .where('renk', isEqualTo: renk)
           .where('aksesuar', isEqualTo: aksesuar)
           .get();
 
+      print("Toplam bulunan belge sayısı: ${existingRecord.docs.length}");
+      for (var doc in existingRecord.docs) {
+        print("Bulunan belge: ${doc.data()}"); // Her belgenin içeriğini yazdır
+      }
+      for (var doc in existingRecord.docs) {
+        print(doc.data()); // Her bir belgenin içeriğini yazdırır
+      }
+
       if (existingRecord.docs.isNotEmpty) {
         DocumentSnapshot doc = existingRecord.docs.first;
         int currentMiktar = doc['miktar'] ?? 0;
 
         if (currentMiktar >= miktar) {
-          await _firestore
-              .collection(downDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : downDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : downDepo == 'İstanbul Depo'
-                  ? 'istanbul_depo'
-                  : downDepo == 'Almanya Depo'
-                      ? 'almanya_depo'
-                      : 'varsayilan_koleksiyon')
-              .doc(doc.id)
-              .update({
+          await _firestore.collection(collectionPath).doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
+
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Stok başarıyla güncellendi.")),
+            SnackBar(
+                content:
+                    Text("$downDepo stoğundan ürün düşümü başarıyla yapıldı.")),
           );
 
           await _recordMovement(
@@ -247,7 +231,7 @@ class TransferServices {
             aksesuar: aksesuar,
             islemTuru: 'Stok Düşümü',
             aciklama:
-                '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar adet $renk $boyut cm $malzeme düşümü yaptı.',
+                '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $downDepo $miktar adet $renk $boyut cm $malzeme düşüm yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -260,7 +244,7 @@ class TransferServices {
         );
       }
     } catch (e) {
-      print(e);
+      print("Hata: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
