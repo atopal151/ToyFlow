@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/usersPage/boyaHomeScreen/boya_home_screen.dart';
 import 'package:toyflow/screens/usersPage/transfer_page/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../LoginScreen/login_screen.dart';
@@ -27,29 +28,32 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // 3 saniye bekledikten sonra yönlendirme işlemi
     Timer(const Duration(seconds: 1), () async {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         String role = await _authService.getUserRole(user.uid);
+        print(role);
         if (role == 'admin') {
-          Get.off(() => BottomNavBarWithPages());
+          Get.offAll(() => BottomNavBarWithPages());
         } else if (role == 'Dikim') {
-          Get.off(() => const DikaHomeScreen());
+          Get.offAll(() => const DikaHomeScreen());
         } else if (role == 'Dokuma') {
-          Get.off(() => const DokaHomeScreen());
+          Get.offAll(() => const DokaHomeScreen());
+        } else if (role == 'Boyama') {
+          Get.offAll(() => const BoyaHomeScreen());
         } else if (role == 'Dolum') {
-          Get.off(() => const DolaHomeScreen());
+          Get.offAll(() => const DolaHomeScreen());
         } else if (role == 'Kesim') {
-          Get.off(() => const KesaHomeScreen());
+          Get.offAll(() => const KesaHomeScreen());
         } else if (role == 'Paketleme') {
-          Get.off(() => const PakaHomeScreen());
-        }else if (role == 'Transfer') {
-          Get.off(() => const TransferScreen());
+          Get.offAll(() => const PakaHomeScreen());
+        } else if (role == 'Transfer') {
+          Get.offAll(() => const TransferScreen());
         }
       } else {
-        Get.off(() => const LoginScreen());
+        Get.offAll(() => const LoginScreen());
       }
     });
   }

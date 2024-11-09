@@ -61,6 +61,9 @@ class AuthService {
             case 'Dokuma':
               destination = const DokaHomeScreen();
               break;
+            case 'Boyama':
+              destination = const DokaHomeScreen();
+              break;
             case 'Dolum':
               destination = const DolaHomeScreen();
               break;
