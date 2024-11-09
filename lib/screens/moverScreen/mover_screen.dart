@@ -25,9 +25,9 @@ class _MoverScreenState extends State<MoverScreen> {
     _fetchUnreadNotifications(); // Okunmamış bildirimleri al
 
     // Türkçe dil desteğini ekleyin
-    timeago.setLocaleMessages('tr', timeago.TrMessages());
+    timeago.setLocaleMessages('tr', timeago.TrShortMessages());
   }
-  
+
   Future<void> _fetchUserRole() async {
     if (user != null) {
       userRole = await _authService.getUserRole(user!.uid);
@@ -49,15 +49,15 @@ class _MoverScreenState extends State<MoverScreen> {
   Icon _getIcon(String islemTuru) {
     switch (islemTuru) {
       case "Stok Ekleme":
-        return const Icon(Icons.add_circle, color: Colors.green);
+        return const Icon(Icons.add_circle, color: Colors.green,size: 18);
       case "Stok Güncelleme":
-        return const Icon(Icons.update, color: Colors.blue);
+        return const Icon(Icons.update, color: Colors.blue,size: 18);
       case "Fire Kaydı":
-        return const Icon(Icons.delete_rounded, color: Colors.red);
+        return const Icon(Icons.delete_rounded, color: Colors.red,size: 18);
       case "Stok Düşümü":
-        return const Icon(Icons.download, color: Colors.orange);
+        return const Icon(Icons.download, color: Colors.orange,size: 18);
       default:
-        return const Icon(Icons.info, color: Colors.grey);
+        return const Icon(Icons.info, color: Colors.grey,size: 18);
     }
   }
 
@@ -92,7 +92,6 @@ class _MoverScreenState extends State<MoverScreen> {
           style: TextStyle(fontSize: 18),
         ),
         elevation: 0,
-        
       ),
       body: userRole == null
           ? const Center(child: CircularProgressIndicator())
@@ -188,12 +187,23 @@ class _MoverScreenState extends State<MoverScreen> {
                                       aciklama,
                                       style: const TextStyle(fontSize: 11),
                                     ),
-                                    Text(
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.notifications_active,color: Colors.grey,size:20),
+                                  ),
+                                  Text(
                                       formattedDate,
                                       style: const TextStyle(fontSize: 11),
                                     )
-                                  ],
-                                ),
+                                ],
                               ),
                             ],
                           ),
