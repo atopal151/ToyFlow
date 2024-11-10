@@ -35,10 +35,10 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
         .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
+      return snapshot.docs.where((doc) =>
+                doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
-          'renk': doc['renk'],
           'miktar': doc['miktar'],
           'tarih': doc['tarih'],
         };
@@ -201,18 +201,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                       ),
                                       Row(
                                         children: [
-                                          const Icon(
-                                            Icons.color_lens,
-                                            color: Color.fromARGB(
-                                                255, 207, 124, 118),
-                                            size: 16,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            ' ${work['renk'] ?? 'Bilinmiyor'}',
-                                            style:
-                                                const TextStyle(fontSize: 12),
-                                          ),
+                                          
                                           const SizedBox(width: 10),
                                           const Icon(
                                             Icons.layers_sharp,

@@ -9,6 +9,7 @@ import 'package:toyflow/screens/usersPage/transfer_page/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../screens/LoginScreen/login_screen.dart';
 import '../screens/usersPage/PakaHomeScreen/paka_home_screen.dart';
+import '../screens/usersPage/boyaHomeScreen/boya_home_screen.dart';
 import '../screens/usersPage/dikaHomeScreen/dika_home_screen.dart';
 import '../screens/usersPage/dokaHomeScreen/doka_home_screen.dart';
 import '../screens/usersPage/dolaHomeScreen/dola_home_screen.dart';
@@ -62,7 +63,7 @@ class AuthService {
               destination = const DokaHomeScreen();
               break;
             case 'Boyama':
-              destination = const DokaHomeScreen();
+              destination = const BoyaHomeScreen();
               break;
             case 'Dolum':
               destination = const DolaHomeScreen();

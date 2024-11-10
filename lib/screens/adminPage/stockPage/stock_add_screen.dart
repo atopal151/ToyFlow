@@ -14,7 +14,6 @@ class _StockAddScreenState extends State<StockAddScreen> {
   final TextEditingController _miktarController = TextEditingController();
   final StockService _stockService = StockService(); // StockService örneği
 
-  String? _selectedRenk;
   String? _selectedUrun;
 
   final List<String> urun = [
@@ -24,30 +23,14 @@ class _StockAddScreenState extends State<StockAddScreen> {
     'Pamuk iplik',
     'Karışım İplik'
   ];
-  final List<String> renk = [
-    'Kırmızı',
-    'Mavi',
-    'Sarı',
-    'Yeşil',
-    'Pembe',
-    'Mor',
-    'Turuncu',
-    'Kahverengi',
-    'Beyaz',
-    'Siyah',
-    'Gri',
-    'Lacivert'
-  ];
 
   void _saveStock() {
     String? urun = _selectedUrun;
-    String? renk = _selectedRenk;
     int? miktar = int.tryParse(_miktarController.text);
 
-    if (urun != null && renk != null && miktar != null && miktar > 0) {
+    if (urun != null  && miktar != null && miktar > 0) {
       _stockService.saveStock(
         urun: urun,
-        renk: renk,
         miktar: miktar,
         context: context,
       );
@@ -78,17 +61,6 @@ class _StockAddScreenState extends State<StockAddScreen> {
                 });
               },
               icon: Icons.layers,
-            ),
-            DropdownRegisterSelector(
-              hintText: 'Renk Seç',
-              items: renk,
-              selectedValue: _selectedRenk,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedRenk = newValue;
-                });
-              },
-              icon: Icons.color_lens,
             ),
             Row(
               children: [

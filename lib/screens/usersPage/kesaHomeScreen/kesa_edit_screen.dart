@@ -74,7 +74,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   Future<void> _fetchData() async {
     try {
       QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('dokuma_stok').get();
+          await FirebaseFirestore.instance.collection('boyama_stok').get();
 
       setState(() {
         _urunler =
@@ -88,12 +88,14 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('dokuma_stok')
+          .collection('boyama_stok')
           .where('urun', isEqualTo: selectedMalzeme)
           .get();
 
       setState(() {
         _renkler = snapshot.docs
+            .where((doc) =>
+                doc['miktar'] != 0) // miktar alanı 0 olmayanları filtreliyoruz
             .map((doc) => doc['renk'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -106,7 +108,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   Future<void> _fetchMiktar(String selectedIplik, String selectedRenk) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('dokuma_stok')
+          .collection('boyama_stok')
           .where('urun', isEqualTo: selectedIplik)
           .where('renk', isEqualTo: selectedRenk)
           .get();
@@ -159,6 +161,10 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedRenk = newValue;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null) {
+                    _fetchMiktar(_selectedMalzeme!, _selectedRenk!);
+                  }
                 });
               },
               icon: Icons.color_lens,
@@ -278,20 +284,21 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                    if (_miktarDonumController.text == "" ||
+                  if (_miktarDonumController.text == "" ||
                       _miktarDonumController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _kesaServices.addOrUpdateUrunStock(
-                    context: context,
-                    urun: _selectedDonumMalzeme!,
-                    urunRenk: _selectedDonumRenk!,
-                    boyut: _selectedDonumBoyut!,
-                    miktar: int.parse(_miktarDonumController.text),
-                  );}
+                    _kesaServices.addOrUpdateUrunStock(
+                      context: context,
+                      urun: _selectedDonumMalzeme!,
+                      urunRenk: _selectedDonumRenk!,
+                      boyut: _selectedDonumBoyut!,
+                      miktar: int.parse(_miktarDonumController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -331,8 +338,11 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _fetchColors(
-                      newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedFireRenk=null;
+                  _renkler.clear(); // Renk listesini temizle
+                   if (_selectedFireMalzeme != null) {
+                    _fetchColors(_selectedFireMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
@@ -346,11 +356,24 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireRenk = newValue;
+                  if (_selectedFireRenk != null) {
+                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!);
+                  }
                 });
               },
               icon: Icons.color_lens,
             ),
-
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
@@ -362,24 +385,25 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                   if (_fireMiktarController.text == "" ||
+                  if (_fireMiktarController.text == "" ||
                       _fireMiktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _kesaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedFireMalzeme!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );
-                  _kesaServices.addFireEntry(
-                    malzeme: _selectedFireMalzeme!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );}
+                    _kesaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedFireMalzeme!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+                    _kesaServices.addFireEntry(
+                      malzeme: _selectedFireMalzeme!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),

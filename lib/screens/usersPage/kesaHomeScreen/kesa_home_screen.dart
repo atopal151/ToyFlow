@@ -34,7 +34,8 @@ class _KesaHomeScreenState extends State<KesaHomeScreen> {
         .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
+      return snapshot.docs.where((doc) =>
+                doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
           'renk': doc['renk'],

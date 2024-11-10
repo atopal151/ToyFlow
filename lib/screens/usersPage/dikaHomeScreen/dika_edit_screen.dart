@@ -102,6 +102,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
 
       setState(() {
         _renkler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['renk'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -121,6 +122,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
 
       setState(() {
         _boyutlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['boyut'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -247,20 +249,21 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_fireMiktarController.text == "" ||
-                      _fireMiktarController.text.isEmpty) {
+                  if (_miktarController.text == "" ||
+                      _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _kesaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedMalzeme!,
-                    boyut: _selectedBoyut!,
-                    renk: _selectedRenk!,
-                    miktar: int.parse(_miktarController.text),
-                  );}
+                    _kesaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedMalzeme!,
+                      boyut: _selectedBoyut!,
+                      renk: _selectedRenk!,
+                      miktar: int.parse(_miktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -345,13 +348,14 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _kesaServices.addOrUpdateUrunStock(
-                    context: context,
-                    urun: _selectedDonumMalzeme!,
-                    urunRenk: _selectedDonumRenk!,
-                    boyut: _selectedDonumBoyut!,
-                    miktar: int.parse(_miktarDonumController.text),
-                  );}
+                    _kesaServices.addOrUpdateUrunStock(
+                      context: context,
+                      urun: _selectedDonumMalzeme!,
+                      urunRenk: _selectedDonumRenk!,
+                      boyut: _selectedDonumBoyut!,
+                      miktar: int.parse(_miktarDonumController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -444,22 +448,22 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                           content: Text('Lütfen tüm alanları doldurun')),
                     );
                     return;
-                  }else{
+                  } else {
+                    _kesaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
 
-                  _kesaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedFireMalzeme!,
-                    boyut: _selectedFireBoyut!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );
-
-                  _kesaServices.addFireEntry(
-                    malzeme: _selectedFireMalzeme!,
-                    boyut: _selectedFireBoyut!,
-                    renk: _selectedFireRenk!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );}
+                    _kesaServices.addFireEntry(
+                      malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
+                      renk: _selectedFireRenk!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),

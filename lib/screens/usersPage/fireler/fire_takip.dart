@@ -42,6 +42,8 @@ Future<String> getUserRole() async {
   Stream<QuerySnapshot> getFireDataStream(String role) {
   // Rol ve koleksiyon eşlemesi
   final roleToCollectionMap = {
+
+    "Boyama": "boyama_fire",
     "Dokuma": "dokuma_fire",
     "Kesim": "kesim_fire",
     "Dikim": "dikim_fire",

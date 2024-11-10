@@ -30,7 +30,6 @@ class DokaServices {
 
   Future<void> _recordMovement({
     required String malzeme,
-    required String renk,
     required int miktar,
     required String islemTuru,
     required String aciklama,
@@ -38,7 +37,6 @@ class DokaServices {
     if (userRole != null) {
       await _recordServices.movementRecord(
         malzeme: malzeme,
-        renk: renk,
         miktar: miktar,
         islemTuru: islemTuru,
         atelye: userRole!,
@@ -52,10 +50,9 @@ class DokaServices {
   Future<void> addOrUpdateKumasStock({
     required BuildContext context,
     required String kumas,
-    required String kumasRenk,
     required int miktar,
   }) async {
-    if (kumas.isEmpty || kumasRenk.isEmpty || miktar <= 0) {
+    if (kumas.isEmpty ||  miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
       );
@@ -74,7 +71,6 @@ class DokaServices {
       QuerySnapshot querySnapshot = await _firestore
           .collection('dokuma_stok')
           .where('urun', isEqualTo: kumas)
-          .where('renk', isEqualTo: kumasRenk)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -92,15 +88,13 @@ class DokaServices {
 
         await _recordMovement(
           malzeme: kumas,
-          renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumasRenk $kumas ekledi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumas ekledi!',
         );
       } else {
         await _firestore.collection('dokuma_stok').add({
           'urun': kumas,
-          'renk': kumasRenk,
           'miktar': miktar,
           'tarih': FieldValue.serverTimestamp(),
         });
@@ -111,10 +105,9 @@ class DokaServices {
 
         await _recordMovement(
           malzeme: kumas,
-          renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumasRenk $kumas ekledi!',
+          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumas ekledi!',
         );
       }
     } catch (e) {
@@ -129,10 +122,9 @@ class DokaServices {
   Future<void> decreaseStock({
     required BuildContext context,
     required String malzeme,
-    required String renk,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty || renk.isEmpty || miktar <= 0) {
+    if (malzeme.isEmpty || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );
@@ -143,7 +135,6 @@ class DokaServices {
       QuerySnapshot existingRecord = await _firestore
           .collection('dokuma_work')
           .where('urun', isEqualTo: malzeme)
-          .where('renk', isEqualTo: renk)
           .get();
 
       if (existingRecord.docs.isNotEmpty) {
@@ -160,10 +151,9 @@ class DokaServices {
 
           await _recordMovement(
             malzeme: malzeme,
-            renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $malzeme düşümü yaptı.',
+            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -184,7 +174,6 @@ class DokaServices {
 
   Future<void> addFireEntry({
     required String malzeme,
-    required String renk,
     required int miktar,
   }) async {
 
@@ -194,17 +183,15 @@ class DokaServices {
       
       await _firestore.collection('dokuma_fire').add({
         'urun': malzeme,
-        'renk': renk,
         'miktar': miktar,
         'tarih': FieldValue.serverTimestamp(),
       });
 
       await _recordMovement(
         malzeme: malzeme,
-        renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo $renk $malzeme düşümü yaptı!',
+        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo  $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");

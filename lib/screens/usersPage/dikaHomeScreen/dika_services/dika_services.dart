@@ -139,7 +139,7 @@ class DikaServices {
     required String renk,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty || renk.isEmpty ||renk.isEmpty ||renk.isEmpty  || miktar <= 0) {
+    if (malzeme.isEmpty || renk.isEmpty ||boyut.isEmpty  || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );

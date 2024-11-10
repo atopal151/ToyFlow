@@ -148,7 +148,7 @@ class KesaServices {
 
     try {
       QuerySnapshot existingRecord = await _firestore
-          .collection('dokuma_stok')
+          .collection('boyama_stok')
           .where('urun', isEqualTo: malzeme)
           .where('renk', isEqualTo: renk)
           .get();
@@ -158,7 +158,7 @@ class KesaServices {
         int currentMiktar = doc['miktar'] ?? 0;
 
         if (currentMiktar >= miktar) {
-          await _firestore.collection('dokuma_stok').doc(doc.id).update({
+          await _firestore.collection('boyama_stok').doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
           ScaffoldMessenger.of(context).showSnackBar(

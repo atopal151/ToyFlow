@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:toyflow/screens/usersPage/dokaHomeScreen/doka_edit_screen.dart';
+import 'package:toyflow/screens/usersPage/boyaHomeScreen/boya_edit_screen.dart';
 import 'package:toyflow/services/product_services.dart';
 import '../../../services/custom_app_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -35,7 +35,8 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
         .orderBy('tarih',descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
+      return snapshot.docs.where((doc) =>
+                doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
           'renk': doc['renk'],
@@ -55,7 +56,7 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
     return Scaffold(
       appBar: const CustomAppBar(
         workshopName: "Boyama Atölyesi",
-        chatPage: DokaEditScreen(),
+        chatPage: BoyaEditScreen(),
       ),
       body: Column(
         children: [

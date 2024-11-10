@@ -37,9 +37,14 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         if (_userRole == 'Dokuma') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('dokuma_work').get();
-        } else if (_userRole == 'Kesim') {
+        } 
+        else if (_userRole == 'Boyama') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('dokuma_stok').get();
+        }
+        else if (_userRole == 'Kesim') {
+          querySnapshot =
+              await FirebaseFirestore.instance.collection('boyama_stok').get();
         } else if (_userRole == 'Dikim') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('kesim_stok').get();
@@ -63,7 +68,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         }
 
         setState(() {
-          _works = querySnapshot.docs
+          _works = querySnapshot.docs.where((doc) =>
+                doc['miktar'] != 0)
               .map((doc) {
             return {
               'id': doc.id,
@@ -142,7 +148,10 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                     : _userRole == 'Paketleme' &&
                                             work['urun'] != null
                                         ? 'Paketlenecek ${work['urun']}'
-                                        : _userRole == 'Dolum' &&
+                                        : _userRole == 'Boyama' &&
+                                            work['urun'] != null
+                                        ? 'Boyanacak ${work['urun']}'
+                                        :_userRole == 'Dolum' &&
                                                 work['urun'] != null
                                             ? 'Doldurulacak ${work['urun']}'
                                             : _userRole == 'Dikim' &&
