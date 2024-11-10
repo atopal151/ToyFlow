@@ -60,17 +60,11 @@ class _StokTransferState extends State<StokTransfer> {
                       : _selectedDepo == 'Almanya Depo'
                           ? 'almanya_depo'
                           : 'varsayilan_koleksiyon') // Belirtilmemiş bir depo için varsayılan koleksiyon
-          .where("miktar", isNotEqualTo: 0)
           .get();
       setState(() {
-        _urunler =
-            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _boyutlar =
-            snapshot.docs.map((doc) => doc['boyut'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
-        _aksesuarlar = snapshot.docs
-            .map((doc) => doc['aksesuar'] as String)
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
             .toSet()
             .toList();
       });
@@ -95,8 +89,11 @@ class _StokTransferState extends State<StokTransfer> {
           .get();
 
       setState(() {
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
+        _renkler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['renk'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Renk verileri alınırken hata oluştu: $e");
@@ -120,8 +117,11 @@ class _StokTransferState extends State<StokTransfer> {
           .get();
 
       setState(() {
-        _boyutlar =
-            snapshot.docs.map((doc) => doc['boyut'] as String).toSet().toList();
+        _boyutlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['boyut'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Boyut verileri alınırken hata oluştu: $e");
@@ -148,6 +148,7 @@ class _StokTransferState extends State<StokTransfer> {
 
       setState(() {
         _aksesuarlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['aksesuar'] as String)
             .toSet()
             .toList();
@@ -336,7 +337,8 @@ class _StokTransferState extends State<StokTransfer> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                    print("$_selectedDepo $_selectedGetDepo $_selectedMalzeme  $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
+                    print(
+                        "$_selectedDepo $_selectedGetDepo $_selectedMalzeme  $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
                     _transferServices.addOrUpdateUrunStock(
                       context: context,
                       addDepo: _selectedGetDepo!,

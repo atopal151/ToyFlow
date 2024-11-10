@@ -77,8 +77,11 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
           await FirebaseFirestore.instance.collection('boyama_stok').get();
 
       setState(() {
-        _urunler =
-            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
@@ -338,9 +341,9 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _selectedFireRenk=null;
+                  _selectedFireRenk = null;
                   _renkler.clear(); // Renk listesini temizle
-                   if (_selectedFireMalzeme != null) {
+                  if (_selectedFireMalzeme != null) {
                     _fetchColors(_selectedFireMalzeme!);
                   }
                 });
@@ -399,6 +402,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                       miktar: int.parse(_fireMiktarController.text),
                     );
                     _kesaServices.addFireEntry(
+                      context: context,
                       malzeme: _selectedFireMalzeme!,
                       renk: _selectedFireRenk!,
                       miktar: int.parse(_fireMiktarController.text),

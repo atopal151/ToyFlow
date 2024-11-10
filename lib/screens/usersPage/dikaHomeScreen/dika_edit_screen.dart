@@ -81,12 +81,11 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
           await FirebaseFirestore.instance.collection('kesim_stok').get();
 
       setState(() {
-        _urunler =
-            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _boyutlar =
-            snapshot.docs.map((doc) => doc['boyut'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
@@ -458,6 +457,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                     );
 
                     _kesaServices.addFireEntry(
+                      context: context,
                       malzeme: _selectedFireMalzeme!,
                       boyut: _selectedFireBoyut!,
                       renk: _selectedFireRenk!,

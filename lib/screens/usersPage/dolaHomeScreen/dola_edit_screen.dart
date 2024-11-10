@@ -81,12 +81,11 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
           await FirebaseFirestore.instance.collection('dikim_stok').get();
 
       setState(() {
-        _urunler =
-            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _boyutlar =
-            snapshot.docs.map((doc) => doc['boyut'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
@@ -102,6 +101,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
 
       setState(() {
         _renkler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['renk'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -121,6 +121,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
 
       setState(() {
         _boyutlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['boyut'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -247,8 +248,8 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_fireMiktarController.text == "" ||
-                      _fireMiktarController.text.isEmpty) {
+                  if (_miktarController.text == "" ||
+                      _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),
@@ -393,8 +394,15 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _fetchColors(
-                      newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedFireRenk = null; // Renk seçimini temizle
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
+                  _renkler.clear(); // Renk listesini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireMalzeme != null) {
+                    _fetchColors(_selectedFireMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
@@ -409,6 +417,14 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireRenk = newValue;
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen renge göre boyutları getir
+                  if (_selectedFireMalzeme != null &&
+                      _selectedFireRenk != null) {
+                    _fetchBoyut(_selectedFireMalzeme!, _selectedFireRenk!);
+                  }
                 });
               },
               icon: Icons.color_lens,
@@ -421,10 +437,29 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireBoyut = newValue;
+                  // Ürün, renk ve boyuta göre miktarı getir
+                  if (_selectedFireMalzeme != null &&
+                      _selectedFireRenk != null &&
+                      _selectedFireBoyut != null) {
+                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!,
+                        _selectedFireBoyut!);
+                  }
                 });
               },
               icon: Icons.height,
             ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
@@ -456,6 +491,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                     );
 
                     _dolaServices.addFireEntry(
+                      context: context,
                       malzeme: _selectedFireMalzeme!,
                       boyut: _selectedFireBoyut!,
                       renk: _selectedFireRenk!,
@@ -464,7 +500,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 223, 99, 90),
+                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

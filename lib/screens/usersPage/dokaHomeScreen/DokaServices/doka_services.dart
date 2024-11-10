@@ -11,7 +11,7 @@ import '../../../../services/product_services.dart';
 
 class DokaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final ProductServices _productServices=Get.find();
+  final ProductServices _productServices = Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -52,7 +52,7 @@ class DokaServices {
     required String kumas,
     required int miktar,
   }) async {
-    if (kumas.isEmpty ||  miktar <= 0) {
+    if (kumas.isEmpty || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
       );
@@ -83,14 +83,17 @@ class DokaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
+          SnackBar(
+              content: Text(
+                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
           malzeme: kumas,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumas ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumas ekledi!',
         );
       } else {
         await _firestore.collection('dokuma_stok').add({
@@ -107,7 +110,8 @@ class DokaServices {
           malzeme: kumas,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumas ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumas ekledi!',
         );
       }
     } catch (e) {
@@ -130,7 +134,13 @@ class DokaServices {
       );
       return;
     }
-
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dokuma_work')
@@ -153,7 +163,8 @@ class DokaServices {
             malzeme: malzeme,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme düşümü yaptı.',
+            aciklama:
+                '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -169,18 +180,24 @@ class DokaServices {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
+    } finally {
+      Navigator.pop(context);
     }
   }
 
   Future<void> addFireEntry({
     required String malzeme,
+    required BuildContext context,
     required int miktar,
   }) async {
-
-    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
-
-      
       await _firestore.collection('dokuma_fire').add({
         'urun': malzeme,
         'miktar': miktar,
@@ -191,13 +208,16 @@ class DokaServices {
         malzeme: malzeme,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo  $malzeme düşümü yaptı!',
+        aciklama:
+            '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo  $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");
     } catch (e) {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
+    } finally {
+      Navigator.pop(context);
     }
   }
 }

@@ -11,7 +11,7 @@ import '../../../../services/product_services.dart';
 
 class BoyaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final ProductServices _productServices=Get.find();
+  final ProductServices _productServices = Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -30,7 +30,7 @@ class BoyaServices {
 
   Future<void> _recordMovement({
     required String malzeme,
-     String? renk,
+    String? renk,
     required int miktar,
     required String islemTuru,
     required String aciklama,
@@ -87,7 +87,9 @@ class BoyaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
+          SnackBar(
+              content: Text(
+                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
@@ -95,7 +97,8 @@ class BoyaServices {
           renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumasRenk $kumas ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo $kumasRenk $kumas ekledi!',
         );
       } else {
         await _firestore.collection('boyama_stok').add({
@@ -114,7 +117,8 @@ class BoyaServices {
           renk: kumasRenk,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumasRenk $kumas ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Yeni stoğa $miktar kilo $kumasRenk $kumas ekledi!',
         );
       }
     } catch (e) {
@@ -131,13 +135,19 @@ class BoyaServices {
     required String malzeme,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty ||  miktar <= 0) {
+    if (malzeme.isEmpty || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );
       return;
     }
-
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dokuma_stok')
@@ -160,7 +170,8 @@ class BoyaServices {
             malzeme: malzeme,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme düşümü yaptı.',
+            aciklama:
+                '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -176,18 +187,25 @@ class BoyaServices {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
+    }finally {
+      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 
   Future<void> addFireEntry({
     required String malzeme,
+    required BuildContext context,
     required int miktar,
   }) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
 
-    
     try {
-
-      
       await _firestore.collection('boyama_fire').add({
         'urun': malzeme,
         'miktar': miktar,
@@ -198,13 +216,16 @@ class BoyaServices {
         malzeme: malzeme,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo  $malzeme düşümü yaptı!',
+        aciklama:
+            '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar kilo  $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");
     } catch (e) {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
+    }finally {
+      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 }

@@ -189,6 +189,13 @@ class TransferServices {
       );
       return;
     }
+  showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
 
     try {
       String collectionPath = _getDepoCollection(downDepo);
@@ -248,6 +255,9 @@ class TransferServices {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
+    }
+    finally{
+      Navigator.pop(context);
     }
   }
 }

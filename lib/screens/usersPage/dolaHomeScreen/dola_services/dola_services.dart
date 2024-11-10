@@ -10,7 +10,7 @@ import 'package:toyflow/services/record_services.dart';
 
 class DolaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final ProductServices _productServices=Get.find();
+  final ProductServices _productServices = Get.find();
   final RecordServices _recordServices = Get.find();
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
@@ -26,6 +26,7 @@ class DolaServices {
       userRole = await _authService.getUserRole(user!.uid);
     }
   }
+
 //-----hareket kayıt-------
   Future<void> _recordMovement({
     required String malzeme,
@@ -48,7 +49,8 @@ class DolaServices {
       print("Kullanıcı oturumu açık değil veya rol alınamadı.");
     }
   }
- //--------kayıt ekleme -----------
+
+  //--------kayıt ekleme -----------
   Future<void> addOrUpdateUrunStock({
     required BuildContext context,
     required String urun,
@@ -56,7 +58,7 @@ class DolaServices {
     required String urunRenk,
     required int miktar,
   }) async {
-    if (urun.isEmpty || urunRenk.isEmpty || boyut.isEmpty ||miktar <= 0) {
+    if (urun.isEmpty || urunRenk.isEmpty || boyut.isEmpty || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
       );
@@ -89,7 +91,9 @@ class DolaServices {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
+          SnackBar(
+              content: Text(
+                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
         );
 
         await _recordMovement(
@@ -98,7 +102,8 @@ class DolaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet $urunRenk $boyut $urun ekledi!',
         );
       } else {
         await _firestore.collection('dolum_stok').add({
@@ -119,7 +124,8 @@ class DolaServices {
           boyut: boyut,
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
-          aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value}  Yeni stoğa $miktar adet $urunRenk $boyut cm $urun ekledi!',
+          aciklama:
+              '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value}  Yeni stoğa $miktar adet $urunRenk $boyut cm $urun ekledi!',
         );
       }
     } catch (e) {
@@ -139,13 +145,23 @@ class DolaServices {
     required String renk,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty || renk.isEmpty ||renk.isEmpty ||renk.isEmpty  || miktar <= 0) {
+    if (malzeme.isEmpty ||
+        renk.isEmpty ||
+        renk.isEmpty ||
+        renk.isEmpty ||
+        miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );
       return;
     }
-
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dikim_stok')
@@ -172,7 +188,8 @@ class DolaServices {
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $boyut cm $malzeme düşümü yaptı.',
+            aciklama:
+                '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $boyut cm $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -188,21 +205,28 @@ class DolaServices {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
+    } finally {
+      Navigator.pop(context);
     }
   }
+
 //----fire kayıt alanı-----
   Future<void> addFireEntry({
     required String malzeme,
-
+    required BuildContext context,
     required String boyut,
     required String renk,
     required int miktar,
   }) async {
 
-    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
-
-      
       await _firestore.collection('dolum_fire').add({
         'urun': malzeme,
         'boyut': boyut,
@@ -217,13 +241,17 @@ class DolaServices {
         renk: renk,
         miktar: miktar,
         islemTuru: 'Fire Kaydı',
-        aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar adet $renk $boyut cm $malzeme düşümü yaptı!',
+        aciklama:
+            '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Fire kaydı olarak $miktar adet $renk $boyut cm $malzeme düşümü yaptı!',
       );
 
       print("Fire kaydı başarıyla eklendi.");
     } catch (e) {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
+    }
+    finally{
+      Navigator.pop(context);
     }
   }
 }

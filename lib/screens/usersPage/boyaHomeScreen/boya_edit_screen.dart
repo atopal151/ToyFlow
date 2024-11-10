@@ -301,6 +301,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                       miktar: int.parse(_fireMiktarController.text),
                     );
                     _dokaServices.addFireEntry(
+                      context: context,
                       malzeme: _selectedFireMalzeme!,
                       miktar: int.parse(_fireMiktarController.text),
                     );

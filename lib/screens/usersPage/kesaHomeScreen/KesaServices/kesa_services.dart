@@ -145,7 +145,13 @@ class KesaServices {
       );
       return;
     }
-
+  showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('boyama_stok')
@@ -187,15 +193,25 @@ class KesaServices {
         SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
       );
     }
+    finally{
+      Navigator.pop(context);
+    }
   }
 //----fire kayıt alanı-----
   Future<void> addFireEntry({
     required String malzeme,
+    required BuildContext context,
     required String renk,
     required int miktar,
   }) async {
 
-    
+      showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
     try {
 
       
@@ -218,6 +234,9 @@ class KesaServices {
     } catch (e) {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
+    }
+    finally{
+      Navigator.pop(context);
     }
   }
 }

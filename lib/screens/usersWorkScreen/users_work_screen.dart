@@ -29,20 +29,16 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
     if (user != null) {
       _userRole = await _authService.getUserRole(user.uid);
 
-
-
       try {
         QuerySnapshot querySnapshot;
 
         if (_userRole == 'Dokuma') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('dokuma_work').get();
-        } 
-        else if (_userRole == 'Boyama') {
+        } else if (_userRole == 'Boyama') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('dokuma_stok').get();
-        }
-        else if (_userRole == 'Kesim') {
+        } else if (_userRole == 'Kesim') {
           querySnapshot =
               await FirebaseFirestore.instance.collection('boyama_stok').get();
         } else if (_userRole == 'Dikim') {
@@ -68,9 +64,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         }
 
         setState(() {
-          _works = querySnapshot.docs.where((doc) =>
-                doc['miktar'] != 0)
-              .map((doc) {
+          _works =
+              querySnapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
             return {
               'id': doc.id,
               ...doc.data() as Map<String, dynamic>,
@@ -95,7 +90,17 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         elevation: 0,
       ),
       body: _works.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'images/box.webp',
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
           : ListView.builder(
               itemCount: _works.length,
               itemBuilder: (context, index) {
@@ -131,7 +136,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
-                            'images/dolum.webp',
+                            'images/box.webp',
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
@@ -149,22 +154,24 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                             work['urun'] != null
                                         ? 'Paketlenecek ${work['urun']}'
                                         : _userRole == 'Boyama' &&
-                                            work['urun'] != null
-                                        ? 'Boyanacak ${work['urun']}'
-                                        :_userRole == 'Dolum' &&
                                                 work['urun'] != null
-                                            ? 'Doldurulacak ${work['urun']}'
-                                            : _userRole == 'Dikim' &&
+                                            ? 'Boyanacak ${work['urun']}'
+                                            : _userRole == 'Dolum' &&
                                                     work['urun'] != null
-                                                ? 'Dikilecek ${work['urun']}'
-                                                : _userRole == 'Kesim' &&
+                                                ? 'Doldurulacak ${work['urun']}'
+                                                : _userRole == 'Dikim' &&
                                                         work['urun'] != null
-                                                    ? 'Kesilecek ${work['urun']}'
-                                                    : _userRole == 'Transfer' &&
-                                                        work['urun'] != null
-                                                    ? 'Aktarılacak ${work['urun']}'
-                                                    : (work['urun'] ??
-                                                        'Ürün Yok'),
+                                                    ? 'Dikilecek ${work['urun']}'
+                                                    : _userRole == 'Kesim' &&
+                                                            work['urun'] != null
+                                                        ? 'Kesilecek ${work['urun']}'
+                                                        : _userRole ==
+                                                                    'Transfer' &&
+                                                                work['urun'] !=
+                                                                    null
+                                                            ? 'Aktarılacak ${work['urun']}'
+                                                            : (work['urun'] ??
+                                                                'Ürün Yok'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,

@@ -89,12 +89,11 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
           await FirebaseFirestore.instance.collection('dolum_stok').get();
 
       setState(() {
-        _urunler =
-            snapshot.docs.map((doc) => doc['urun'] as String).toSet().toList();
-        _boyutlar =
-            snapshot.docs.map((doc) => doc['boyut'] as String).toSet().toList();
-        _renkler =
-            snapshot.docs.map((doc) => doc['renk'] as String).toSet().toList();
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
@@ -110,6 +109,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
 
       setState(() {
         _renkler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['renk'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -129,6 +129,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
 
       setState(() {
         _boyutlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['boyut'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -407,22 +408,28 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
             /*---------------------------------------------------*/
             // Ürün seçme dropdown
 
-            DropdownSelector(
+              DropdownSelector(
               hintText: 'Fire Ürün',
               items: _urunler,
               selectedValue: _selectedFireMalzeme,
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _fetchColors(
-                      newValue!); // Seçilen ipliğe göre renkleri güncelle
+                  _selectedFireRenk = null; // Renk seçimini temizle
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
+                  _renkler.clear(); // Renk listesini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireMalzeme != null) {
+                    _fetchColors(_selectedFireMalzeme!);
+                  }
                 });
               },
               icon: Icons.cut,
             ),
 
-            // Renk seçme dropdown
-
+// Renk seçme dropdown
             DropdownSelector(
               hintText: 'Renk',
               items: _renkler,
@@ -430,11 +437,19 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireRenk = newValue;
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen renge göre boyutları getir
+                  if (_selectedFireMalzeme != null && _selectedFireRenk != null) {
+                    _fetchBoyut(_selectedFireMalzeme!, _selectedFireRenk!);
+                  }
                 });
               },
               icon: Icons.color_lens,
             ),
-// boyut seçme dropdown
+
+// Boyut seçme dropdown
             DropdownSelector(
               hintText: 'Boyut',
               items: _boyutlar,
@@ -442,9 +457,29 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireBoyut = newValue;
+
+                  // Ürün, renk ve boyuta göre miktarı getir
+                  if (_selectedFireMalzeme != null &&
+                      _selectedFireRenk != null &&
+                      _selectedFireBoyut != null) {
+                    _fetchMiktar(
+                        _selectedFireMalzeme!, _selectedFireRenk!, _selectedFireBoyut!);
+                  }
                 });
               },
               icon: Icons.height,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
             ),
 
             // Miktar girme
@@ -478,6 +513,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                     );
 
                     _dolaServices.addFireEntry(
+                      context: context,
                       malzeme: _selectedFireMalzeme!,
                       boyut: _selectedFireBoyut!,
                       renk: _selectedFireRenk!,

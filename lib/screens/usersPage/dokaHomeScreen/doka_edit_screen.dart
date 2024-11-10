@@ -53,15 +53,16 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
           await FirebaseFirestore.instance.collection('dokuma_work').get();
 
       setState(() {
-        _urunler =
-            snapshot.docs.where((doc) =>
-                doc['miktar'] != 0).map((doc) => doc['urun'] as String).toSet().toList();
+        _urunler = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['urun'] as String)
+            .toSet()
+            .toList();
       });
     } catch (e) {
       print("Veriler alınırken hata oluştu: $e");
     }
   }
-
 
   Future<void> _fetchMiktar(String selectedIplik) async {
     try {
@@ -99,7 +100,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-                   // Seçilen ürüne göre renkleri getir
+                  // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null) {
                     _fetchMiktar(_selectedMalzeme!);
                   }
@@ -131,18 +132,19 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                   if (_miktarController.text == "" ||
+                  if (_miktarController.text == "" ||
                       _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _dokaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedMalzeme!,
-                    miktar: int.parse(_miktarController.text),
-                  );}
+                    _dokaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedMalzeme!,
+                      miktar: int.parse(_miktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -203,11 +205,12 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _dokaServices.addOrUpdateKumasStock(
-                    context: context,
-                    kumas: _selectedDonumMalzeme!,
-                    miktar: int.parse(_miktarDonumController.text),
-                  );}
+                    _dokaServices.addOrUpdateKumasStock(
+                      context: context,
+                      kumas: _selectedDonumMalzeme!,
+                      miktar: int.parse(_miktarDonumController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
@@ -268,15 +271,17 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                  _dokaServices.decreaseStock(
-                    context: context,
-                    malzeme: _selectedFireMalzeme!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );
-                  _dokaServices.addFireEntry(
-                    malzeme: _selectedFireMalzeme!,
-                    miktar: int.parse(_fireMiktarController.text),
-                  );}
+                    _dokaServices.decreaseStock(
+                      context: context,
+                      malzeme: _selectedFireMalzeme!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+                    _dokaServices.addFireEntry(
+                      context: context,
+                      malzeme: _selectedFireMalzeme!,
+                      miktar: int.parse(_fireMiktarController.text),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 49, 51, 52),
