@@ -106,7 +106,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -185,7 +185,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar gir
             TextFieldWithCounter(
@@ -251,7 +251,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   _selectedFireMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar gir
             TextFieldWithCounter(

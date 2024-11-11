@@ -181,7 +181,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Renk seçme dropdown
@@ -201,7 +201,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Boyut seçme dropdown
@@ -222,7 +222,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -303,7 +303,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Renk seçme dropdown
             DropdownSelector(
@@ -315,7 +315,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _selectedDonumRenk = newValue;
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             // boyut seçme dropdown
             DropdownSelector(
@@ -327,7 +327,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _selectedDonumBoyut = newValue;
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
             TextFieldWithCounter(
@@ -398,7 +398,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                       newValue!); // Seçilen ipliğe göre renkleri güncelle
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
             // Renk seçme dropdown
@@ -412,7 +412,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _selectedFireRenk = newValue;
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 // boyut seçme dropdown
             DropdownSelector(
@@ -424,7 +424,7 @@ class _DikaEditScreenState extends State<DikaEditScreen> {
                   _selectedFireBoyut = newValue;
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
             TextFieldWithCounter(

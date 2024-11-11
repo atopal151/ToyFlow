@@ -101,7 +101,9 @@ flutter:
    - images/paketleme.webp
    - images/emptydata.webp
    - images/emptymov.webp
+   - images/fire.webp
    - images/depo2.webp
+   - images/boyama.webp
    - images/fullmov.webp
    - assets/fonts/Roboto-Regular.ttf
 

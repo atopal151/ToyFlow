@@ -15,6 +15,10 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
       'title': 'Dokuma Atölyesi',
       'icon': Icons.abc_sharp,
       'image': 'images/dokuma.webp'
+    },{
+      'title': 'Boyama Atölyesi',
+      'icon': Icons.color_lens,
+      'image': 'images/boyama.webp'
     },
     {
       'title': 'Kesim Atölyesi',

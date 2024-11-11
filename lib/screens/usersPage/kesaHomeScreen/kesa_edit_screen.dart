@@ -153,7 +153,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Renk seçme dropdown
@@ -170,7 +170,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -250,7 +250,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Renk seçme dropdown
             DropdownSelector(
@@ -262,7 +262,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   _selectedDonumRenk = newValue;
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             // boyut seçme dropdown
             DropdownSelector(
@@ -274,7 +274,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   _selectedDonumBoyut = newValue;
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
             TextFieldWithCounter(
@@ -348,7 +348,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Renk seçme dropdown
 
@@ -364,7 +364,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             Padding(
               padding: const EdgeInsets.only(

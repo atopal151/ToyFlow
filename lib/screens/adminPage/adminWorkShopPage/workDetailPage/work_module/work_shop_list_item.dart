@@ -13,8 +13,7 @@ class WorkshopListItem extends StatefulWidget {
 }
 
 class _WorkshopListItemState extends State<WorkshopListItem> {
- 
-   @override
+  @override
   void initState() {
     super.initState();
     // Türkçe dil desteğini ekleyin
@@ -92,16 +91,22 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
                     const SizedBox(height: 5),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.color_lens,
-                          color: Color.fromARGB(255, 81, 124, 146),
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          "Renk: " + widget.work['renk'],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 12),
+
+                        if (widget.work['renk'] != null)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.color_lens,
+                              color: Color.fromARGB(255, 81, 124, 146),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Renk: " + widget.work['renk'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 12),
+                            ),
+                          ],
                         ),
                         const SizedBox(width: 10),
                         if (widget.work['boyut'] != null)

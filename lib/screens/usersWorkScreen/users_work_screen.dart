@@ -94,7 +94,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
-                  'images/box.webp',
+                  'images/emptymov.webp',
                   width: 200,
                   height: 200,
                   fit: BoxFit.cover,
@@ -136,7 +136,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.asset(
-                            'images/box.webp',
+                            'images/fullmov.webp',
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,

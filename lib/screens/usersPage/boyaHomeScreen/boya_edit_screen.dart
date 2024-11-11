@@ -116,7 +116,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -195,7 +195,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Kumaş rengini seç
             DropdownSelector(
@@ -274,7 +274,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedFireMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
             // Miktar gir

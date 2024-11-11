@@ -189,7 +189,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Renk seçme dropdown
@@ -209,7 +209,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Boyut seçme dropdown
@@ -230,7 +230,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -311,7 +311,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Renk seçme dropdown
             DropdownSelector(
@@ -323,7 +323,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   _selectedDonumRenk = newValue;
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             // boyut seçme dropdown
             DropdownSelector(
@@ -335,7 +335,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   _selectedDonumBoyut = newValue;
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             //aksesuar
             DropdownSelector(
@@ -347,7 +347,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   _selectedDonumAksesuar = newValue;
                 });
               },
-              icon: Icons.style,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
             TextFieldWithCounter(
@@ -378,7 +378,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                  backgroundColor: const Color.fromARGB(255, 49,51, 52),
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -426,7 +426,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Renk seçme dropdown
@@ -446,7 +446,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Boyut seçme dropdown
@@ -467,7 +467,7 @@ class _PakaEditScreenState extends State<PakaEditScreen> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(

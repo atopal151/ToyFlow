@@ -181,7 +181,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Renk seçme dropdown
@@ -201,7 +201,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 
 // Boyut seçme dropdown
@@ -222,7 +222,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
 
             Padding(
@@ -303,7 +303,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   _selectedDonumMalzeme = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             // Renk seçme dropdown
             DropdownSelector(
@@ -315,7 +315,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   _selectedDonumRenk = newValue;
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             // boyut seçme dropdown
             DropdownSelector(
@@ -327,7 +327,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   _selectedDonumBoyut = newValue;
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
             TextFieldWithCounter(
@@ -405,7 +405,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
 
             // Renk seçme dropdown
@@ -427,7 +427,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
 // boyut seçme dropdown
             DropdownSelector(
@@ -446,7 +446,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             Padding(
               padding: const EdgeInsets.only(

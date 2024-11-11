@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _selectedCins = newValue;
                 });
               },
-              icon: Icons.transgender,
+              icon: Icons.arrow_drop_down,
             ),
 
             // rol Dropdown
@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _selectedRole = newValue;
                 });
               },
-              icon: Icons.work,
+              icon: Icons.arrow_drop_down,
             ),
             // Atölye Dropdown
             DropdownRegisterSelector(
@@ -104,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _selectedWorkshop = newValue;
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
            
             Padding(

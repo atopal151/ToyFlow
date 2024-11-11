@@ -3,27 +3,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class WorkshopDataService {
   static const List<String> workshops = [
     'Dokuma Atölyesi',
+    'Boyama Atölyesi',
     'Kesim Atölyesi',
     'Dikim Atölyesi',
     'Dolum Atölyesi',
     'Paketleme Atölyesi',
-    'Favoriler'
   ];
 
   static Stream<List<Map<String, dynamic>>> getWorkshopData(String? workshop) {
     switch (workshop) {
       case 'Dokuma Atölyesi':
-        return _getCollectionData('dokuma_stok', ['urun', 'renk', 'miktar', 'tarih']);
+        return _getCollectionData('dokuma_stok', ['urun', 'miktar', 'tarih']);
+      case 'Boyama Atölyesi':
+        return _getCollectionData(
+            'boyama_stok', ['urun', 'renk', 'miktar', 'tarih']);
       case 'Kesim Atölyesi':
-        return _getCollectionData('kesim_stok', ['urun', 'renk','boyut','miktar', 'tarih']);
+        return _getCollectionData(
+            'kesim_stok', ['urun', 'renk', 'boyut', 'miktar', 'tarih']);
       case 'Dikim Atölyesi':
-        return _getCollectionData('dikim_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
+        return _getCollectionData(
+            'dikim_stok', ['urun', 'renk', 'boyut', 'miktar', 'tarih']);
       case 'Dolum Atölyesi':
-        return _getCollectionData('dolum_stok', ['urun', 'renk' ,'boyut','miktar', 'tarih']);
+        return _getCollectionData(
+            'dolum_stok', ['urun', 'renk', 'boyut', 'miktar', 'tarih']);
       case 'Paketleme Atölyesi':
-        return _getCollectionData('paketleme_stok', ['urun', 'renk' ,'boyut','aksesuar','miktar', 'tarih']);
+        return _getCollectionData('paketleme_stok',
+            ['urun', 'renk', 'boyut', 'aksesuar', 'miktar', 'tarih']);
       default:
-        return _getCollectionData('favoriler', ['urun', 'favori_adet', 'tarih']);
+        return _getCollectionData('paketleme_stok',
+            ['urun', 'renk', 'boyut', 'aksesuar', 'miktar', 'tarih']);
     }
   }
 
@@ -32,7 +40,8 @@ class WorkshopDataService {
     return FirebaseFirestore.instance
         .collection(collectionName)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
+        .map((snapshot) =>
+            snapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
               return {for (var field in fields) field: doc[field]};
             }).toList());
   }

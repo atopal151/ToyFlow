@@ -22,13 +22,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final AdminHomeService adminHomeService = AdminHomeService();
 
   int dokumaAllStock = 0;
+  int boyamaAllStock = 0;
   int kesimAllStock = 0;
   int dikimAllStock = 0;
   int dolumAllStock = 0;
   int paketlemeAllStock = 0;
 
-  String selectedFilter = "Gün"; // Varsayılan filtre
   int dokumaAtolyesiStock = 0;
+  int boyamaAtolyesiStock = 0;
   int kesimAtolyesiStock = 0;
   int dikimAtolyesiStock = 0;
   int dolumAtolyesiStock = 0;
@@ -43,6 +44,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   Future<void> _loadStockData() async {
     int dokumaStock =
         await adminHomeService.fetchDailyStockOperations("Dokuma");
+
+    int boyamaStock =
+        await adminHomeService.fetchDailyStockOperations("Boyama");
     int kesimStock = await adminHomeService.fetchDailyStockOperations("Kesim");
     int dikimStock = await adminHomeService.fetchDailyStockOperations("Dikim");
     int dolumStock = await adminHomeService.fetchDailyStockOperations("Dolum");
@@ -50,6 +54,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         await adminHomeService.fetchDailyStockOperations("Paketleme");
 
     int dokuma = await adminHomeService.fetchStockFromCollection("dokuma_stok");
+    int boyama = await adminHomeService.fetchStockFromCollection("boyama_stok");
     int kesim = await adminHomeService.fetchStockFromCollection("kesim_stok");
     int dikim = await adminHomeService.fetchStockFromCollection("dikim_stok");
     int dolum = await adminHomeService.fetchStockFromCollection("dolum_stok");
@@ -59,12 +64,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     if (mounted) {
       setState(() {
         dokumaAtolyesiStock = dokumaStock;
+        boyamaAtolyesiStock = boyamaStock;
         kesimAtolyesiStock = kesimStock;
         dikimAtolyesiStock = dikimStock;
         dolumAtolyesiStock = dolumStock;
         paketlemeAtolyesiStock = paketlemeStock;
 
         dokumaAllStock = dokuma;
+        boyamaAllStock = boyama;
         kesimAllStock = kesim;
         dikimAllStock = dikim;
         dolumAllStock = dolum;
@@ -180,28 +187,24 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     onTap: () {
                       _loadStockData();
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(3.0),
-                        child: Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                          size: 11,
-                        ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(3.0),
+                      child: Icon(
+                        Icons.refresh,
+                        color: Color.fromARGB(255, 55, 55, 55),
+                        size: 20,
                       ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              // Buraya atölye kartları ekleniyor
               _buildAtolyeRow(
                   "Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
+              const SizedBox(
+                height: 10,
+              ), _buildAtolyeRow(
+                  "Boyama Atölyesi", boyamaAllStock, boyamaAtolyesiStock),
               const SizedBox(
                 height: 10,
               ),
@@ -227,7 +230,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 "Depolar",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              // Depo kartları burada eklenir
               _buildDepoRow("Denizli Depo", "30.10.2024", "denizli_depo"),
               _buildDepoRow("İstanbul Depo", "29.10.2024", "istanbul_depo"),
               _buildDepoRow("Almanya Depo", "31.10.2024", "almanya_depo"),
@@ -276,7 +278,23 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         padding: const EdgeInsets.all(16.0),
         margin: const EdgeInsets.symmetric(horizontal: 4.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromARGB(255, 123, 123, 123), // İlk ton
+              Color.fromARGB(255, 103, 102, 102), // İkinci ton
+              Color.fromARGB(255, 71, 71, 71), // Üçüncü ton
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          image: DecorationImage(
+            image:  AssetImage(title=="Dokuma Atölyesi" ? "images/dokuma.webp" :title=="Kesim Atölyesi" ? "images/kesim.webp" : title=="Dikim Atölyesi" ? "images/dikim.webp" : title=="Dolum Atölyesi" ? "images/dolum.webp" : title=="Paketleme Atölyesi" ? "images/paketleme.webp" : title=="Boyama Atölyesi" ? "images/boyama.webp" : "" ), // Görselin yolu
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(0.4), // Görselin opacity değeri
+              BlendMode.dstATop, // Görselin arkadaki gradient ile karışma modu
+            ),
+          ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -289,68 +307,66 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         ),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                percentage != "Günlük İşlem: +0 kg/adet"
-                    ? "images/fullmov.webp"
-                    : "images/emptymov.webp",
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+            
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+               
+                Row(
+                  children: [
+                     Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text(
-                        "Toplam Stok: ",
-                        style: TextStyle(
+                ),
+            
+                const SizedBox(width: 4),
+                    const Text(
+                      " Stok:",
+                      style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w200,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white),
+                    ),
+                    Text(
+                      count,
+                      style:
+                          const TextStyle(fontSize: 13, color: Colors.white),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.transfer_within_a_station,color:Colors.grey, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        percentage,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: percentage != 'Günlük İşlem: +0 kg/adet'
+                              ? const Color.fromARGB(255, 30, 60, 31)
+                              : const Color.fromARGB(255, 120, 73, 69),
                         ),
                       ),
-                      Text(count)
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    percentage,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: percentage != 'Günlük İşlem: +0 kg/adet'
-                          ? const Color.fromARGB(255, 83, 158, 86)
-                          : const Color.fromARGB(255, 207, 109, 102),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white,
-                size: 11,
-              ),
-            ),
+            
           ],
         ),
       ),

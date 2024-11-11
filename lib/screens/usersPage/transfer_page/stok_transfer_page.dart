@@ -235,7 +235,7 @@ class _StokTransferState extends State<StokTransfer> {
                   }
                 });
               },
-              icon: Icons.cut,
+              icon: Icons.arrow_drop_down,
             ),
             DropdownSelector(
               hintText: 'Renk',
@@ -254,7 +254,7 @@ class _StokTransferState extends State<StokTransfer> {
                   }
                 });
               },
-              icon: Icons.color_lens,
+              icon: Icons.arrow_drop_down,
             ),
             DropdownSelector(
               hintText: 'Boyut',
@@ -274,7 +274,7 @@ class _StokTransferState extends State<StokTransfer> {
                   }
                 });
               },
-              icon: Icons.height,
+              icon: Icons.arrow_drop_down,
             ),
             DropdownSelector(
               hintText: 'Aksesuar',
@@ -293,7 +293,7 @@ class _StokTransferState extends State<StokTransfer> {
                   }
                 });
               },
-              icon: Icons.style,
+              icon: Icons.arrow_drop_down,
             ),
             Padding(
               padding: const EdgeInsets.only(

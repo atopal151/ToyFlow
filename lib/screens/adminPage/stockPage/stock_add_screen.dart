@@ -60,7 +60,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
                   _selectedUrun = newValue;
                 });
               },
-              icon: Icons.layers,
+              icon: Icons.arrow_drop_down,
             ),
             Row(
               children: [

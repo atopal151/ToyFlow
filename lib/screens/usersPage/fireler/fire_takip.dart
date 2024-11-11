@@ -15,56 +15,56 @@ class _FireTakipState extends State<FireTakip> {
   void initState() {
     super.initState();
     // Türkçe dil desteğini ekleyin
-    timeago.setLocaleMessages('tr', timeago.TrMessages());
+    timeago.setLocaleMessages('tr', timeago.TrShortMessages());
   }
 
   // Firestore'dan kullanıcı rolünü al
-Future<String> getUserRole() async {
-  User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+  Future<String> getUserRole() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-    if (userDoc.exists && userDoc.data() != null) {
-      return (userDoc.data() as Map<String, dynamic>)['role'] ?? "Rol bulunamadı";
+      if (userDoc.exists && userDoc.data() != null) {
+        return (userDoc.data() as Map<String, dynamic>)['role'] ??
+            "Rol bulunamadı";
+      } else {
+        print(
+            "Uyarı: Kullanıcı rolü bulunamadı, varsayılan değer kullanılacak.");
+      }
     } else {
-      print("Uyarı: Kullanıcı rolü bulunamadı, varsayılan değer kullanılacak.");
+      print("Uyarı: Kullanıcı oturumu bulunamadı.");
     }
-  } else {
-    print("Uyarı: Kullanıcı oturumu bulunamadı.");
+    return ""; // Boş değer veya varsayılan rol bulunamadı uyarısı
   }
-  return ""; // Boş değer veya varsayılan rol bulunamadı uyarısı
-}
-
 
   Stream<QuerySnapshot> getFireDataStream(String role) {
-  // Rol ve koleksiyon eşlemesi
-  final roleToCollectionMap = {
+    // Rol ve koleksiyon eşlemesi
+    final roleToCollectionMap = {
+      "Dokuma": "dokuma_fire",
+      "Boyama": "boyama_fire",
+      "Kesim": "kesim_fire",
+      "Dikim": "dikim_fire",
+      "Dolum": "dolum_fire",
+      "Paketleme": "paketleme_fire",
+    };
 
-    "Boyama": "boyama_fire",
-    "Dokuma": "dokuma_fire",
-    "Kesim": "kesim_fire",
-    "Dikim": "dikim_fire",
-    "Dolum": "dolum_fire",
-    "Paketleme": "paketleme_fire",
-  };
+    if (roleToCollectionMap.containsKey(role)) {
+      String collectionName = roleToCollectionMap[role]!;
+      print("Kullanıcı rolü: $role, Seçilen koleksiyon: $collectionName");
 
-  if (roleToCollectionMap.containsKey(role)) {
-    String collectionName = roleToCollectionMap[role]!;
-    print("Kullanıcı rolü: $role, Seçilen koleksiyon: $collectionName");
-    
-    return FirebaseFirestore.instance
-        .collection(collectionName)
-        .orderBy('tarih', descending: true)
-        .snapshots();
-  } else {
-    print("Uyarı: Belirtilen rol için geçerli bir koleksiyon bulunamadı.");
-    return const Stream.empty(); // Geçerli bir koleksiyon yoksa boş bir stream döndür
+      return FirebaseFirestore.instance
+          .collection(collectionName)
+          .orderBy('tarih', descending: true)
+          .snapshots();
+    } else {
+      print("Uyarı: Belirtilen rol için geçerli bir koleksiyon bulunamadı.");
+      return const Stream
+          .empty(); // Geçerli bir koleksiyon yoksa boş bir stream döndür
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -103,13 +103,13 @@ Future<String> getUserRole() async {
                 itemBuilder: (context, index) {
                   var data =
                       snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                  String urun = data['urun'] ?? 'Bilinmiyor';
-                  String renk = data['renk'] ?? 'Bilinmiyor';
-                  String boyut = data['boyut'] ?? 'Bilinmiyor';
+                  String urun = data['urun'] ?? '--';
+                  String renk = data['renk'] ?? '--';
+                  String boyut = data['boyut'] ?? '--';
                   String miktar = data['miktar'] != null
                       ? "${data['miktar']} kg/adet"
                       : 'Bilinmiyor';
-// Tarihi kontrol et ve biçimlendir
+                  // Tarihi kontrol et ve biçimlendir
                   String tarih = data['tarih'] != null
                       ? timeago.format((data['tarih'] as Timestamp).toDate(),
                           locale: 'tr')
@@ -124,16 +124,66 @@ Future<String> getUserRole() async {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: Color.fromARGB(255, 208, 93, 64),
-                        child: Icon(Icons.delete, color: Colors.white),
-                      ),
-                      title: Text(
-                        urun,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          'images/fire.webp', // Profil resmi
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
                         ),
+                      ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            urun,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.color_lens,
+                                color: Color.fromARGB(255, 99, 148, 182),
+                                size: 15,
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                renk,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              const Icon(
+                                Icons.height,
+                                color: Color.fromARGB(255, 99, 148, 182),
+                                size: 15,
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                "$boyut cm",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black54,
+                                ),
+                              )
+                            ],
+                          )
+                        ],
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,8 +192,8 @@ Future<String> getUserRole() async {
                           Text(
                             "Miktar: $miktar",
                             style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
+                              fontSize: 13,
+                              color: Color.fromARGB(255, 183, 89, 89),
                             ),
                           ),
                           const SizedBox(height: 4),
