@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/SplashScreen/splash_screen.dart';
+import 'package:toyflow/screens/splash_screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:toyflow/services/product_services.dart';
 import 'package:toyflow/services/record_services.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toyflow/screens/adminPage/adminWorkShopPage/workDetailPage/work_detail_screen.dart';
+import 'package:toyflow/screens/adminPage/admin_work_shop_screen/work_detail_screen/work_detail_screen.dart';
 
 class AdminWorkShopScreen extends StatefulWidget {
   const AdminWorkShopScreen({super.key});

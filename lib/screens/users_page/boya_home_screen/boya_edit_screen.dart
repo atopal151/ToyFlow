@@ -1,64 +1,45 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:toyflow/screens/usersPage/dolaHomeScreen/dola_services/dola_services.dart';
 
+import 'boya_services/boya_services.dart';
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
 
-class DolaEditScreen extends StatefulWidget {
-  const DolaEditScreen({super.key});
+class BoyaEditScreen extends StatefulWidget {
+  const BoyaEditScreen({super.key});
 
   @override
-  State<DolaEditScreen> createState() => _DolaEditScreenState();
+  State<BoyaEditScreen> createState() => _BoyaEditScreenState();
 }
 
-class _DolaEditScreenState extends State<DolaEditScreen> {
-  final DolaServices _dolaServices = DolaServices();
+class _BoyaEditScreenState extends State<BoyaEditScreen> {
+  final BoyaServices _dokaServices = BoyaServices();
 
-  //kullanılan stok
+  // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
-  String? _selectedMalzeme; // Seçilen ürün
-  String? _selectedRenk; // Seçilen renk
-  String? _selectedBoyut; // Seçilen Kumaş renk
-  //eklenecek stok
+  String? _selectedMalzeme; // Seçilen iplik
+
+  // eklenecek kumaş stok
   final TextEditingController _miktarDonumController = TextEditingController();
+  String? _selectedDonumRenk; // Seçilen kumaş rengi
+  String? _selectedDonumMalzeme; // Seçilen kumaş
 
-  String? _selectedDonumBoyut; // Seçilen Kumaş renk
-  String? _selectedDonumRenk; // Seçilen Kumaş renk
-  String? _selectedDonumMalzeme; // Seçilen ürün
-  //Fire stok
+  // fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
-  String? _selectedFireMalzeme; // Seçilen ürün
-  String? _selectedFireBoyut; // Seçilen ürün
-  String? _selectedFireRenk; // Seçilen renk
+  String? _selectedFireMalzeme; // Seçilen fire ipliği
 
-  List<String> _urunler = []; // Ürün listesi
-  List<String> _renkler = []; // Renk listesi
-  List<String> _boyutlar = []; // Renk listesi
+  List<String> _urunler = []; // İplik listesi
 
   int miktar = 0; // miktar listesi
 
-  final List<String> _donusumUrun = [
-    'Çilek Tavşan',
-    'Havuç Tavşan',
-    'Kapşonlu Panda',
-    'Su Samuru',
-    'Bambu Panda',
-    'Peluş Ayı'
-  ]; // Ürün listesi
-
-  final List<String> _boyut = [
-    '30',
-    '40',
-    '50',
-    '60',
-    '70',
-    '80',
-    '90',
-    '100'
-  ]; // Ürün listesi
+  final List<String> _kumaslar = [
+    'Polar Fleece Kumaş',
+    'Mikrofiber Peluş Kumaş',
+    'Süet Kumaş',
+    'Minky Kumaş',
+    'Tüylü Kumaş',
+    'Velboa Kumaş'
+  ]; // Kumaş listesi
 
   final List<String> _renk = [
     'Kırmızı',
@@ -67,18 +48,18 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
     'Turuncu',
     'Pembe',
     'Gri'
-  ]; // K
-
+  ]; // Kumaş listesi
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
   }
 
+  // İplik verilerini Firebase'den çek
   Future<void> _fetchData() async {
     try {
       QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('dikim_stok').get();
+          await FirebaseFirestore.instance.collection('dokuma_stok').get();
 
       setState(() {
         _urunler = snapshot.docs
@@ -92,53 +73,11 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
     }
   }
 
-  Future<void> _fetchColors(String selectedMalzeme) async {
+  Future<void> _fetchMiktar(String selectedIplik) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('dikim_stok')
-          .where('urun', isEqualTo: selectedMalzeme)
-          .get();
-
-      setState(() {
-        _renkler = snapshot.docs
-            .where((doc) => doc['miktar'] != 0)
-            .map((doc) => doc['renk'] as String)
-            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
-            .toList();
-      });
-    } catch (e) {
-      print("Renk verileri alınırken hata oluştu: $e");
-    }
-  }
-
-  Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('dikim_stok')
-          .where('urun', isEqualTo: selectedMalzeme)
-          .where('renk', isEqualTo: selectedRenk)
-          .get();
-
-      setState(() {
-        _boyutlar = snapshot.docs
-            .where((doc) => doc['miktar'] != 0)
-            .map((doc) => doc['boyut'] as String)
-            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
-            .toList();
-      });
-    } catch (e) {
-      print("Renk verileri alınırken hata oluştu: $e");
-    }
-  }
-
-  Future<void> _fetchMiktar(
-      String selectedIplik, String selectedRenk, String selectedBoyut) async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('dikim_stok')
+          .collection('dokuma_stok')
           .where('urun', isEqualTo: selectedIplik)
-          .where('renk', isEqualTo: selectedRenk)
-          .where('boyut', isEqualTo: selectedBoyut)
           .get();
 
       setState(() {
@@ -161,7 +100,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
+            // Kullanılan iplik seçme dropdown
             // Ürün seçme dropdown
             DropdownSelector(
               hintText: 'Kullanılan Ürün',
@@ -170,55 +109,10 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-                  _selectedRenk = null; // Renk seçimini temizle
-                  _selectedBoyut = null; // Boyut seçimini temizle
-                  _renkler.clear(); // Renk listesini temizle
-                  _boyutlar.clear(); // Boyut listesini temizle
 
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null) {
-                    _fetchColors(_selectedMalzeme!);
-                  }
-                });
-              },
-              icon: Icons.arrow_drop_down,
-            ),
-
-// Renk seçme dropdown
-            DropdownSelector(
-              hintText: 'Renk',
-              items: _renkler,
-              selectedValue: _selectedRenk,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedRenk = newValue;
-                  _selectedBoyut = null; // Boyut seçimini temizle
-                  _boyutlar.clear(); // Boyut listesini temizle
-
-                  // Seçilen renge göre boyutları getir
-                  if (_selectedMalzeme != null && _selectedRenk != null) {
-                    _fetchBoyut(_selectedMalzeme!, _selectedRenk!);
-                  }
-                });
-              },
-              icon: Icons.arrow_drop_down,
-            ),
-
-// Boyut seçme dropdown
-            DropdownSelector(
-              hintText: 'Boyut',
-              items: _boyutlar,
-              selectedValue: _selectedBoyut,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedBoyut = newValue;
-
-                  // Ürün, renk ve boyuta göre miktarı getir
-                  if (_selectedMalzeme != null &&
-                      _selectedRenk != null &&
-                      _selectedBoyut != null) {
-                    _fetchMiktar(
-                        _selectedMalzeme!, _selectedRenk!, _selectedBoyut!);
+                    _fetchMiktar(_selectedMalzeme!);
                   }
                 });
               },
@@ -255,11 +149,9 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                    _dolaServices.decreaseStock(
+                    _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedMalzeme!,
-                      boyut: _selectedBoyut!,
-                      renk: _selectedRenk!,
                       miktar: int.parse(_miktarController.text),
                     );
                   }
@@ -293,10 +185,10 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             const SizedBox(
               height: 20,
             ),
-            // Ürün seçme dropdown
+            // Dönüştürülen kumaşı seç
             DropdownSelector(
               hintText: 'Dönüştürülen Ürün',
-              items: _donusumUrun,
+              items: _kumaslar,
               selectedValue: _selectedDonumMalzeme,
               onChanged: (String? newValue) {
                 setState(() {
@@ -305,7 +197,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
-            // Renk seçme dropdown
+            // Kumaş rengini seç
             DropdownSelector(
               hintText: 'Renk',
               items: _renk,
@@ -315,21 +207,9 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                   _selectedDonumRenk = newValue;
                 });
               },
-              icon: Icons.arrow_drop_down,
+              icon: Icons.color_lens,
             ),
-            // boyut seçme dropdown
-            DropdownSelector(
-              hintText: ' Boyut',
-              items: _boyut,
-              selectedValue: _selectedDonumBoyut,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedDonumBoyut = newValue;
-                });
-              },
-              icon: Icons.arrow_drop_down,
-            ),
-            // Miktar girme
+            // Miktar gir
             TextFieldWithCounter(
               controller: _miktarDonumController,
               hintText: 'Miktar',
@@ -347,11 +227,10 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                    _dolaServices.addOrUpdateUrunStock(
+                    _dokaServices.addOrUpdateKumasStock(
                       context: context,
-                      urun: _selectedDonumMalzeme!,
-                      urunRenk: _selectedDonumRenk!,
-                      boyut: _selectedDonumBoyut!,
+                      kumas: _selectedDonumMalzeme!,
+                      kumasRenk: _selectedDonumRenk!,
                       miktar: int.parse(_miktarDonumController.text),
                     );
                   }
@@ -385,8 +264,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
 
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
-
+            // Fire düşülecek ipliği seç
             DropdownSelector(
               hintText: 'Fire Ürün',
               items: _urunler,
@@ -394,73 +272,12 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _selectedFireRenk = null; // Renk seçimini temizle
-                  _selectedFireBoyut = null; // Boyut seçimini temizle
-                  _renkler.clear(); // Renk listesini temizle
-                  _boyutlar.clear(); // Boyut listesini temizle
-
-                  // Seçilen ürüne göre renkleri getir
-                  if (_selectedFireMalzeme != null) {
-                    _fetchColors(_selectedFireMalzeme!);
-                  }
                 });
               },
               icon: Icons.arrow_drop_down,
             ),
 
-            // Renk seçme dropdown
-
-            DropdownSelector(
-              hintText: 'Renk',
-              items: _renkler,
-              selectedValue: _selectedFireRenk,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedFireRenk = newValue;
-                  _selectedFireBoyut = null; // Boyut seçimini temizle
-                  _boyutlar.clear(); // Boyut listesini temizle
-
-                  // Seçilen renge göre boyutları getir
-                  if (_selectedFireMalzeme != null &&
-                      _selectedFireRenk != null) {
-                    _fetchBoyut(_selectedFireMalzeme!, _selectedFireRenk!);
-                  }
-                });
-              },
-              icon: Icons.arrow_drop_down,
-            ),
-// boyut seçme dropdown
-            DropdownSelector(
-              hintText: 'Boyut',
-              items: _boyutlar,
-              selectedValue: _selectedFireBoyut,
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedFireBoyut = newValue;
-                  // Ürün, renk ve boyuta göre miktarı getir
-                  if (_selectedFireMalzeme != null &&
-                      _selectedFireRenk != null &&
-                      _selectedFireBoyut != null) {
-                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!,
-                        _selectedFireBoyut!);
-                  }
-                });
-              },
-              icon: Icons.arrow_drop_down,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 35.0,
-                top: 15,
-              ),
-              child: Text(
-                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-              ),
-            ),
-
-            // Miktar girme
+            // Miktar gir
             TextFieldWithCounter(
               controller: _fireMiktarController,
               hintText: 'Miktar',
@@ -471,30 +288,21 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Null kontrolü
-                  if (_selectedFireMalzeme == null ||
-                      _selectedFireBoyut == null ||
-                      _selectedFireRenk == null ||
+                  if (_fireMiktarController.text == "" ||
                       _fireMiktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Lütfen tüm alanları doldurun')),
+                          content: Text("Lütfen tüm alanları doldurun.")),
                     );
-                    return;
                   } else {
-                    _dolaServices.decreaseStock(
+                    _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
-                      boyut: _selectedFireBoyut!,
-                      renk: _selectedFireRenk!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
-
-                    _dolaServices.addFireEntry(
+                    _dokaServices.addFireEntry(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
-                      boyut: _selectedFireBoyut!,
-                      renk: _selectedFireRenk!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
                   }

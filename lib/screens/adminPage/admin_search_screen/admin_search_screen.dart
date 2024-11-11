@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/user_services/dropdown_selector.dart';
-import '../adminWorkShopPage/workDetailPage/work_module/work_shop_list_item.dart';
+import '../admin_work_shop_screen/work_detail_screen/work_module/work_shop_list_item.dart';
 
 class AdminSearchScreen extends StatefulWidget {
   const AdminSearchScreen({super.key});

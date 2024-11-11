@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/adminPage/stockPage/stock_add_screen.dart';
-import 'package:toyflow/screens/moverScreen/mover_screen.dart';
+import 'package:toyflow/screens/adminPage/stock_screen/stock_add_screen.dart';
+import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../../../services/product_services.dart';
-import '../registerPage/register_screen.dart';
+import '../register_screen/register_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
   const AdminSettingScreen({super.key});

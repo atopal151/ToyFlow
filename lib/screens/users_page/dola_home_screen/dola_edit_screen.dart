@@ -2,25 +2,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:toyflow/screens/users_page/dola_home_screen/dola_services/dola_services.dart';
 
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
-import 'KesaServices/kesa_services.dart';
 
-class KesaEditScreen extends StatefulWidget {
-  const KesaEditScreen({super.key});
+class DolaEditScreen extends StatefulWidget {
+  const DolaEditScreen({super.key});
 
   @override
-  State<KesaEditScreen> createState() => _KesaEditScreenState();
+  State<DolaEditScreen> createState() => _DolaEditScreenState();
 }
 
-class _KesaEditScreenState extends State<KesaEditScreen> {
-  final KesaServices _kesaServices = KesaServices();
+class _DolaEditScreenState extends State<DolaEditScreen> {
+  final DolaServices _dolaServices = DolaServices();
 
   //kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
   String? _selectedMalzeme; // Seçilen ürün
   String? _selectedRenk; // Seçilen renk
+  String? _selectedBoyut; // Seçilen Kumaş renk
   //eklenecek stok
   final TextEditingController _miktarDonumController = TextEditingController();
 
@@ -30,10 +31,12 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   //Fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
   String? _selectedFireMalzeme; // Seçilen ürün
+  String? _selectedFireBoyut; // Seçilen ürün
   String? _selectedFireRenk; // Seçilen renk
 
   List<String> _urunler = []; // Ürün listesi
   List<String> _renkler = []; // Renk listesi
+  List<String> _boyutlar = []; // Renk listesi
 
   int miktar = 0; // miktar listesi
 
@@ -65,6 +68,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
     'Pembe',
     'Gri'
   ]; // K
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +78,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   Future<void> _fetchData() async {
     try {
       QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('boyama_stok').get();
+          await FirebaseFirestore.instance.collection('dikim_stok').get();
 
       setState(() {
         _urunler = snapshot.docs
@@ -91,14 +95,13 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('boyama_stok')
+          .collection('dikim_stok')
           .where('urun', isEqualTo: selectedMalzeme)
           .get();
 
       setState(() {
         _renkler = snapshot.docs
-            .where((doc) =>
-                doc['miktar'] != 0) // miktar alanı 0 olmayanları filtreliyoruz
+            .where((doc) => doc['miktar'] != 0)
             .map((doc) => doc['renk'] as String)
             .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
             .toList();
@@ -108,12 +111,34 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
     }
   }
 
-  Future<void> _fetchMiktar(String selectedIplik, String selectedRenk) async {
+  Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('boyama_stok')
+          .collection('dikim_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .where('renk', isEqualTo: selectedRenk)
+          .get();
+
+      setState(() {
+        _boyutlar = snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc['boyut'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> _fetchMiktar(
+      String selectedIplik, String selectedRenk, String selectedBoyut) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dikim_stok')
           .where('urun', isEqualTo: selectedIplik)
           .where('renk', isEqualTo: selectedRenk)
+          .where('boyut', isEqualTo: selectedBoyut)
           .get();
 
       setState(() {
@@ -137,6 +162,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
           children: [
             /*---------------------------------------------------*/
             // Ürün seçme dropdown
+            // Ürün seçme dropdown
             DropdownSelector(
               hintText: 'Kullanılan Ürün',
               items: _urunler,
@@ -145,7 +171,9 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                 setState(() {
                   _selectedMalzeme = newValue;
                   _selectedRenk = null; // Renk seçimini temizle
+                  _selectedBoyut = null; // Boyut seçimini temizle
                   _renkler.clear(); // Renk listesini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
 
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null) {
@@ -164,9 +192,33 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedRenk = newValue;
-                  // Seçilen ürüne göre renkleri getir
-                  if (_selectedMalzeme != null) {
-                    _fetchMiktar(_selectedMalzeme!, _selectedRenk!);
+                  _selectedBoyut = null; // Boyut seçimini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen renge göre boyutları getir
+                  if (_selectedMalzeme != null && _selectedRenk != null) {
+                    _fetchBoyut(_selectedMalzeme!, _selectedRenk!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+
+// Boyut seçme dropdown
+            DropdownSelector(
+              hintText: 'Boyut',
+              items: _boyutlar,
+              selectedValue: _selectedBoyut,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedBoyut = newValue;
+
+                  // Ürün, renk ve boyuta göre miktarı getir
+                  if (_selectedMalzeme != null &&
+                      _selectedRenk != null &&
+                      _selectedBoyut != null) {
+                    _fetchMiktar(
+                        _selectedMalzeme!, _selectedRenk!, _selectedBoyut!);
                   }
                 });
               },
@@ -203,9 +255,10 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                    _kesaServices.decreaseStock(
+                    _dolaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedMalzeme!,
+                      boyut: _selectedBoyut!,
                       renk: _selectedRenk!,
                       miktar: int.parse(_miktarController.text),
                     );
@@ -266,7 +319,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
             ),
             // boyut seçme dropdown
             DropdownSelector(
-              hintText: 'Boyut',
+              hintText: ' Boyut',
               items: _boyut,
               selectedValue: _selectedDonumBoyut,
               onChanged: (String? newValue) {
@@ -294,7 +347,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                           content: Text("Lütfen tüm alanları doldurun.")),
                     );
                   } else {
-                    _kesaServices.addOrUpdateUrunStock(
+                    _dolaServices.addOrUpdateUrunStock(
                       context: context,
                       urun: _selectedDonumMalzeme!,
                       urunRenk: _selectedDonumRenk!,
@@ -341,8 +394,12 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                  _selectedFireRenk = null;
+                  _selectedFireRenk = null; // Renk seçimini temizle
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
                   _renkler.clear(); // Renk listesini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen ürüne göre renkleri getir
                   if (_selectedFireMalzeme != null) {
                     _fetchColors(_selectedFireMalzeme!);
                   }
@@ -350,6 +407,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
+
             // Renk seçme dropdown
 
             DropdownSelector(
@@ -359,8 +417,32 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireRenk = newValue;
-                  if (_selectedFireRenk != null) {
-                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!);
+                  _selectedFireBoyut = null; // Boyut seçimini temizle
+                  _boyutlar.clear(); // Boyut listesini temizle
+
+                  // Seçilen renge göre boyutları getir
+                  if (_selectedFireMalzeme != null &&
+                      _selectedFireRenk != null) {
+                    _fetchBoyut(_selectedFireMalzeme!, _selectedFireRenk!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+// boyut seçme dropdown
+            DropdownSelector(
+              hintText: 'Boyut',
+              items: _boyutlar,
+              selectedValue: _selectedFireBoyut,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireBoyut = newValue;
+                  // Ürün, renk ve boyuta göre miktarı getir
+                  if (_selectedFireMalzeme != null &&
+                      _selectedFireRenk != null &&
+                      _selectedFireBoyut != null) {
+                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!,
+                        _selectedFireBoyut!);
                   }
                 });
               },
@@ -377,6 +459,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
               ),
             ),
+
             // Miktar girme
             TextFieldWithCounter(
               controller: _fireMiktarController,
@@ -388,22 +471,29 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_fireMiktarController.text == "" ||
+                  // Null kontrolü
+                  if (_selectedFireMalzeme == null ||
+                      _selectedFireBoyut == null ||
+                      _selectedFireRenk == null ||
                       _fireMiktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
+                          content: Text('Lütfen tüm alanları doldurun')),
                     );
+                    return;
                   } else {
-                    _kesaServices.decreaseStock(
+                    _dolaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
                       renk: _selectedFireRenk!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
-                    _kesaServices.addFireEntry(
+
+                    _dolaServices.addFireEntry(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      boyut: _selectedFireBoyut!,
                       renk: _selectedFireRenk!,
                       miktar: int.parse(_fireMiktarController.text),
                     );

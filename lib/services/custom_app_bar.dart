@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/usersPage/transfer_page/stok_transfer_page.dart';
+import 'package:toyflow/screens/users_page/transfer_screen/stok_transfer_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
-import '../screens/usersPage/usersProfileScreen/users_profile.dart';
+import '../screens/users_page/users_profile_screen/users_profile_screen.dart';
 import 'product_services.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {

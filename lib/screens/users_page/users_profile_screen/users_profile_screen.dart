@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/chatScreen/chat_screen.dart';
-import 'package:toyflow/screens/usersPage/usersNotificationScreen/users_notification_screen.dart';
+import 'package:toyflow/screens/chat_screen/chat_screen.dart';
+import 'package:toyflow/screens/users_page/users_notification_screen/users_notification_screen.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/product_services.dart';
-import '../../usersWorkScreen/users_work_screen.dart';
+import '../../users_work_screen/users_work_screen.dart';
 import '../fireler/fire_takip.dart';
 
 class UsersProfileScreen extends StatefulWidget {

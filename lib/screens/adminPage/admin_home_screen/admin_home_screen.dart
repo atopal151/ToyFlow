@@ -3,12 +3,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/adminPage/adminSettingScreen/admin_setting_screen.dart';
-import 'package:toyflow/screens/moverScreen/mover_screen.dart';
-import 'package:toyflow/screens/usersPage/transfer_page/transfer_detail_screen.dart';
+import 'package:toyflow/screens/adminPage/admin_setting_screen/admin_setting_screen.dart';
+import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
+import 'package:toyflow/screens/users_page/transfer_screen/transfer_detail_screen.dart';
 import '../../../services/product_services.dart';
-import '../adminWorkShopPage/workDetailPage/work_detail_screen.dart';
-import 'adminhome_services/adminhome_services.dart';
+import '../admin_work_shop_screen/work_detail_screen/work_detail_screen.dart';
+import 'adminhome_services/admin_home_services.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -180,7 +180,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 children: [
                   const Text(
                     "Günlük Aktivite",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(width: 10),
                   InkWell(
@@ -192,7 +192,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       child: Icon(
                         Icons.refresh,
                         color: Color.fromARGB(255, 55, 55, 55),
-                        size: 20,
+                        size: 15,
                       ),
                     ),
                   ),
@@ -228,7 +228,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 20),
               const Text(
                 "Depolar",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               _buildDepoRow("Denizli Depo", "30.10.2024", "denizli_depo"),
               _buildDepoRow("İstanbul Depo", "29.10.2024", "istanbul_depo"),
@@ -295,7 +295,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               BlendMode.dstATop, // Görselin arkadaki gradient ile karışma modu
             ),
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -378,10 +378,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     required String temperature,
   }) {
     return Container(
-      height: 150,
+      height: 100,
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(10),
         image: const DecorationImage(
           image: AssetImage('images/depo.webp'),
           fit: BoxFit.cover,
@@ -391,7 +391,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(10),
               color: Colors.black.withOpacity(0.3),
             ),
           ),
@@ -419,7 +419,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [

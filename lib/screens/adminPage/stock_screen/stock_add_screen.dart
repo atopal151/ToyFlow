@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../registerPage/registerServices/dropdown_style_file.dart';
-import '../registerPage/registerServices/textbox_style_file.dart';
+import '../register_screen/registerServices/dropdown_style_file.dart';
+import '../register_screen/registerServices/textbox_style_file.dart';
 import 'stock_services/stock_services.dart';
 
 class StockAddScreen extends StatefulWidget {
