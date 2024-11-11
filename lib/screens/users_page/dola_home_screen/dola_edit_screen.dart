@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:toyflow/screens/users_page/dola_home_screen/dola_services/dola_services.dart';
+import 'package:toyflow/services/get_data_table.dart';
 
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
@@ -16,6 +17,7 @@ class DolaEditScreen extends StatefulWidget {
 
 class _DolaEditScreenState extends State<DolaEditScreen> {
   final DolaServices _dolaServices = DolaServices();
+  final DataTableService _dataTableService=DataTableService();
 
   //kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
@@ -40,40 +42,51 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
 
   int miktar = 0; // miktar listesi
 
-  final List<String> _donusumUrun = [
-    'Çilek Tavşan',
-    'Havuç Tavşan',
-    'Kapşonlu Panda',
-    'Su Samuru',
-    'Bambu Panda',
-    'Peluş Ayı'
+   List<String> _donusumUrun = [
   ]; // Ürün listesi
 
-  final List<String> _boyut = [
-    '30',
-    '40',
-    '50',
-    '60',
-    '70',
-    '80',
-    '90',
-    '100'
+   List<String> _boyut = [
   ]; // Ürün listesi
 
-  final List<String> _renk = [
-    'Kırmızı',
-    'Siyah',
-    'Beyaz',
-    'Turuncu',
-    'Pembe',
-    'Gri'
+   List<String> _renk = [
   ]; // K
 
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
+    _fetchUrunList();
+    _fetchRenkList();
+    _fetchBoyutList();
   }
+
+  Future<void> _fetchUrunList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_name', 'name');
+    setState(() {
+      _donusumUrun = fetchedUrun;
+    });
+  }
+
+  Future<void> _fetchRenkList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_renk', 'renk');
+    setState(() {
+      _renk = fetchedUrun;
+    });
+  }
+
+   Future<void> _fetchBoyutList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_height', 'boyut');
+    setState(() {
+      _boyut = fetchedUrun;
+    });
+  }
+
 
   Future<void> _fetchData() async {
     try {

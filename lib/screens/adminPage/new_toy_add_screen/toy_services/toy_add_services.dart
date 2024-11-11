@@ -8,6 +8,81 @@ class ToyAddServices {
   // Firestore instance'ını al
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+Future<void> addNewKumas({
+    required String kumas,
+    required BuildContext context,
+  }) async {
+    // Yükleme animasyonunu göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
+      await _firestore.collection('kumas').add({
+        'kumas': kumas,
+      });
+
+      // Başarılı bir işlem mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kumaş başarıyla kaydedildi!')),
+      );
+    } catch (e) {
+      // Hata mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+      );
+    }
+
+    // Yükleme animasyonunu kapat
+    Navigator.pop(context);
+  }
+
+
+Future<void> addNewIp({
+    required String iplik,
+    required BuildContext context,
+  }) async {
+    // Yükleme animasyonunu göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
+      await _firestore.collection('iplik').add({
+        'iplik': iplik,
+      });
+
+      // Başarılı bir işlem mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('İplik başarıyla kaydedildi!')),
+      );
+    } catch (e) {
+      // Hata mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+      );
+    }
+
+    // Yükleme animasyonunu kapat
+    Navigator.pop(context);
+  }
+
+
   Future<void> addNewToy({
     required String urun,
     required BuildContext context,
@@ -24,7 +99,7 @@ class ToyAddServices {
     );
 
     try {
-      // Firestore'da "toy_title" koleksiyonuna veri ekle
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
       await _firestore.collection('toy_name').add({
         'name': urun,
       });
@@ -60,7 +135,7 @@ Future<void> addNewAksesuar({
     );
 
     try {
-      // Firestore'da "toy_title" koleksiyonuna veri ekle
+      // Firestore'da "toy_aksesuar" koleksiyonuna veri ekle
       await _firestore.collection('toy_aksesuar').add({
         'aksesuar': aksesuar,
       });
@@ -98,7 +173,7 @@ Future<void> addNewAksesuar({
     );
 
     try {
-      // Firestore'da "toy_title" koleksiyonuna veri ekle
+      // Firestore'da "toy_renk" koleksiyonuna veri ekle
       await _firestore.collection('toy_renk').add({
         'renk': renk,
       });
@@ -136,7 +211,7 @@ Future<void> addNewAksesuar({
     );
 
     try {
-      // Firestore'da "toy_title" koleksiyonuna veri ekle
+      // Firestore'da "toy_height" koleksiyonuna veri ekle
       await _firestore.collection('toy_height').add({
         'boyut': boyut,
       });

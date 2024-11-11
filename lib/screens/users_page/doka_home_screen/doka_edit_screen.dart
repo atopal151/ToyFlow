@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:toyflow/services/get_data_table.dart';
 
 import 'doka_services/doka_services.dart';
 import '../../../services/user_services/dropdown_selector.dart';
@@ -14,6 +15,7 @@ class DokaEditScreen extends StatefulWidget {
 
 class _DokaEditScreenState extends State<DokaEditScreen> {
   final DokaServices _dokaServices = DokaServices();
+  final DataTableService _dataTableService=DataTableService();
 
   // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
@@ -31,20 +33,25 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
 
   int miktar = 0; // miktar listesi
 
-  final List<String> _kumaslar = [
-    'Polar Fleece Kumaş',
-    'Mikrofiber Peluş Kumaş',
-    'Süet Kumaş',
-    'Minky Kumaş',
-    'Tüylü Kumaş',
-    'Velboa Kumaş'
+  List<String> _kumaslar = [
   ]; // Kumaş listesi
 
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
+    _fetchKumasList();
   }
+
+
+  Future<void> _fetchKumasList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun = await _dataTableService.getCollectionData('kumas','kumas');
+    setState(() {
+      _kumaslar = fetchedUrun;
+    });
+  }
+
 
   // İplik verilerini Firebase'den çek
   Future<void> _fetchData() async {

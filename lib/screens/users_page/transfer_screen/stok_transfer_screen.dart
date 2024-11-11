@@ -53,7 +53,7 @@ class _StokTransferState extends State<StokTransfer> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Ana Depo'
+              : _selectedDepo == 'Denizli Depo'
                   ? 'denizli_depo'
                   : _selectedDepo == 'İstanbul Depo'
                       ? 'istanbul_depo'
@@ -78,7 +78,7 @@ class _StokTransferState extends State<StokTransfer> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Ana Depo'
+              : _selectedDepo == 'Denizli Depo'
                   ? 'denizli_depo'
                   : _selectedDepo == 'İstanbul Depo'
                       ? 'istanbul_depo'
@@ -105,7 +105,7 @@ class _StokTransferState extends State<StokTransfer> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Ana Depo'
+              : _selectedDepo == 'Denizli Depo'
                   ? 'denizli_depo'
                   : _selectedDepo == 'İstanbul Depo'
                       ? 'istanbul_depo'
@@ -134,7 +134,7 @@ class _StokTransferState extends State<StokTransfer> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Ana Depo'
+              : _selectedDepo == 'Denizli Depo'
                   ? 'denizli_depo'
                   : _selectedDepo == 'İstanbul Depo'
                       ? 'istanbul_depo'
@@ -164,7 +164,7 @@ class _StokTransferState extends State<StokTransfer> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection(_selectedDepo == 'Paketleme Atölyesi'
               ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Ana Depo'
+              : _selectedDepo == 'Denizli Depo'
                   ? 'denizli_depo'
                   : _selectedDepo == 'İstanbul Depo'
                       ? 'istanbul_depo'

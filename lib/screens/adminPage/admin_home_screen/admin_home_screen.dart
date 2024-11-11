@@ -280,9 +280,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color.fromARGB(255, 123, 123, 123), // İlk ton
-              Color.fromARGB(255, 103, 102, 102), // İkinci ton
-              Color.fromARGB(255, 71, 71, 71), // Üçüncü ton
+              Color.fromARGB(255, 2, 2, 2), // İlk ton
+              Color.fromARGB(255, 75, 75, 75), // İkinci ton
+              Color.fromARGB(255, 205, 199, 199), // Üçüncü ton
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

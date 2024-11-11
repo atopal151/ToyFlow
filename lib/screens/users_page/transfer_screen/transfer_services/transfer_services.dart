@@ -32,7 +32,7 @@ class TransferServices {
     switch (depo) {
       case 'Paketleme Atölyesi':
         return 'paketleme_stok';
-      case 'Denizli Ana Depo':
+      case 'Denizli Depo':
         return 'denizli_depo';
       case 'İstanbul Depo':
         return 'istanbul_depo';

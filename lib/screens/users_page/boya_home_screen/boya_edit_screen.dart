@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:toyflow/services/get_data_table.dart';
 
 import 'boya_services/boya_services.dart';
 import '../../../services/user_services/dropdown_selector.dart';
@@ -14,6 +15,7 @@ class BoyaEditScreen extends StatefulWidget {
 
 class _BoyaEditScreenState extends State<BoyaEditScreen> {
   final BoyaServices _dokaServices = BoyaServices();
+  final DataTableService _dataTableService = DataTableService();
 
   // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
@@ -32,27 +34,33 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
 
   int miktar = 0; // miktar listesi
 
-  final List<String> _kumaslar = [
-    'Polar Fleece Kumaş',
-    'Mikrofiber Peluş Kumaş',
-    'Süet Kumaş',
-    'Minky Kumaş',
-    'Tüylü Kumaş',
-    'Velboa Kumaş'
-  ]; // Kumaş listesi
+  List<String> _kumaslar = []; // Kumaş listesi
 
-  final List<String> _renk = [
-    'Kırmızı',
-    'Siyah',
-    'Beyaz',
-    'Turuncu',
-    'Pembe',
-    'Gri'
-  ]; // Kumaş listesi
+  List<String> _renk = []; // Kumaş listesi
+
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
+    _fetchKumasList();
+    _fetchRenkList();
+  }
+
+  Future<void> _fetchKumasList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('kumas', 'kumas');
+    setState(() {
+      _kumaslar = fetchedUrun;
+    });
+  }
+    Future<void> _fetchRenkList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_renk', 'renk');
+    setState(() {
+      _renk = fetchedUrun;
+    });
   }
 
   // İplik verilerini Firebase'den çek

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/get_data_table.dart';
 import '../register_screen/registerServices/dropdown_style_file.dart';
 import '../register_screen/registerServices/textbox_style_file.dart';
 import 'stock_services/stock_services.dart';
@@ -12,23 +13,31 @@ class StockAddScreen extends StatefulWidget {
 
 class _StockAddScreenState extends State<StockAddScreen> {
   final TextEditingController _miktarController = TextEditingController();
-  final StockService _stockService = StockService(); // StockService örneği
+  final StockService _stockService = StockService();
+  final DataTableService _dataService = DataTableService(); 
 
   String? _selectedUrun;
+  List<String> urun = [];
 
-  final List<String> urun = [
-    'Polyester iplik',
-    'Akrilik iplik',
-    'Naylon iplik',
-    'Pamuk iplik',
-    'Karışım İplik'
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchIplikList();
+  }
+
+  Future<void> _fetchIplikList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun = await _dataService.getCollectionData('iplik','iplik');
+    setState(() {
+      urun = fetchedUrun;
+    });
+  }
 
   void _saveStock() {
     String? urun = _selectedUrun;
     int? miktar = int.tryParse(_miktarController.text);
 
-    if (urun != null  && miktar != null && miktar > 0) {
+    if (urun != null && miktar != null && miktar > 0) {
       _stockService.saveStock(
         urun: urun,
         miktar: miktar,
@@ -36,7 +45,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Boş alanlaır lütfen doldurun.')),
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
       );
     }
   }
@@ -50,7 +59,6 @@ class _StockAddScreenState extends State<StockAddScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ürün Dropdown
             DropdownRegisterSelector(
               hintText: 'Ürün Seç',
               items: urun,
@@ -74,8 +82,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
                 IconButton(
                   icon: const Icon(Icons.remove),
                   onPressed: () {
-                    int currentValue =
-                        int.tryParse(_miktarController.text) ?? 0;
+                    int currentValue = int.tryParse(_miktarController.text) ?? 0;
                     currentValue = currentValue > 0 ? currentValue - 1 : 0;
                     _miktarController.text = currentValue.toString();
                   },
@@ -83,8 +90,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () {
-                    int currentValue =
-                        int.tryParse(_miktarController.text) ?? 0;
+                    int currentValue = int.tryParse(_miktarController.text) ?? 0;
                     currentValue += 1;
                     _miktarController.text = currentValue.toString();
                   },
@@ -95,7 +101,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () {
-                  _saveStock(); // Kaydetme işlemi başlatılıyor
+                  _saveStock();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

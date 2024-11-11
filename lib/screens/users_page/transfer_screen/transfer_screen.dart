@@ -21,7 +21,7 @@ class _TransferScreenState extends State<TransferScreen> {
       'collection': 'paketleme_stok',
     },
     {
-      'title': 'Denizli Ana Depo',
+      'title': 'Denizli Depo',
       'image': 'images/depo.webp',
       'collection': 'denizli_depo',
     },

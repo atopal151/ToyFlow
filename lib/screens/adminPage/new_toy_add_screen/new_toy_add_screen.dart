@@ -10,12 +10,45 @@ class NewToyAddScreen extends StatefulWidget {
 }
 
 class _NewToyAddScreenState extends State<NewToyAddScreen> {
+  final TextEditingController _kumas = TextEditingController();
+  final TextEditingController _iplik = TextEditingController();
   final TextEditingController _toyName = TextEditingController();
   final TextEditingController _toyRenk = TextEditingController();
   final TextEditingController _toyBoyut = TextEditingController();
   final TextEditingController _toyAksesuar = TextEditingController();
   final ToyAddServices _toyAddServices =
       ToyAddServices(); // ToyAddServices örneği
+
+
+void _addKumas() {
+    String kumas = _kumas.text;
+
+    if (kumas.isNotEmpty) {
+      _toyAddServices.addNewKumas(
+        kumas: kumas,
+        context: context,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
+      );
+    }
+  }
+
+  void _addIp() {
+    String iplik = _iplik.text;
+
+    if (iplik.isNotEmpty) {
+      _toyAddServices.addNewIp(
+        iplik: iplik,
+        context: context,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
+      );
+    }
+  }
 
   void _addName() {
     String name = _toyName.text;
@@ -256,6 +289,96 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                     SizedBox(width: 8),
                     Text(
                       'Aksesuar Ekle',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _iplik,
+                    hintText: 'Yeni İplik İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: () {
+                  _addIp(); // Kaydetme işlemi başlatılıyor
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'İplik İsmi Ekle',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _kumas,
+                    hintText: 'Yeni Kumaş İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: () {
+                  _addKumas(); // Kaydetme işlemi başlatılıyor
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Kumaş İsmi Ekle',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
