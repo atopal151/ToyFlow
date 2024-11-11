@@ -131,7 +131,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                     return ListView.builder(
                       itemCount: filteredData.length,
                       itemBuilder: (context, index) {
-                        return WorkshopListItem(work: filteredData[index]);
+                        return WorkshopListItem(work: filteredData[index],atolye:_selectedWorkshop.toString());
                       },
                     );
                   });

@@ -84,7 +84,7 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
                   itemBuilder: (context, index) {
                     // Her bir ürün belgesini WorkshopListItem içine gönderiyoruz
                     final work = products[index].data() as Map<String, dynamic>;
-                    return WorkshopListItem(work: work);
+                    return WorkshopListItem(work: work,atolye: widget.title,);
                   },
                 );
               },

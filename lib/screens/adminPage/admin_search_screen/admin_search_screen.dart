@@ -139,7 +139,7 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
                           final item = filteredItems[index];
-                          return WorkshopListItem(work: item);
+                          return WorkshopListItem(work: item,atolye: _depoSelected,);
                         },
                       ),
               ),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_add_screen.dart';
 import 'package:toyflow/screens/adminPage/stock_screen/stock_add_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
@@ -140,6 +141,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   title: const Text('Yeni Ürün Kalemi Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
+                      Get.to(() => const NewToyAddScreen());
                     // Ayarları güncelleme ekranına yönlendirme
                   },
                 ),
