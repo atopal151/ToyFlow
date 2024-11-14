@@ -54,7 +54,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stok Kayıt"),
+        title: const Text("Stok Kayıt",style: TextStyle(fontSize: 15),),
       ),
       body: SingleChildScrollView(
         child: Column(

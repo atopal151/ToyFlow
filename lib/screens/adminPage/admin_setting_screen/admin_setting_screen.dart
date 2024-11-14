@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_add_screen.dart';
-import 'package:toyflow/screens/adminPage/stock_screen/stock_add_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../../../services/product_services.dart';
 import '../new_storage_add/new_storage_add.dart';
 import '../register_screen/register_screen.dart';
+import '../stock_screen/stok_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
   const AdminSettingScreen({super.key});
@@ -94,15 +94,15 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.inventory_2,
+                      Icons.gesture,
                       color: Colors.white,
                       size: 20,
                     ),
                   ),
-                  title: const Text('Stok Ekle'),
+                  title: const Text('İp Stoğunu Görüntüle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    Get.to(() => const StockAddScreen());
+                    Get.to(() => const StockScreen());
                   },
                 ),
                 ListTile(
@@ -132,7 +132,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.add_business,
+                      Icons.playlist_add,
                       color: Colors.white,
                       size: 20,
                     ),
@@ -152,7 +152,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.storage_sharp,
+                      Icons.store,
                       color: Colors.white,
                       size: 20,
                     ),

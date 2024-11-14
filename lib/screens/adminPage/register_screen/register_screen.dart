@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Personel Kaydet"),
+        title: const Text("Personel Kaydet",style: TextStyle(fontSize: 15),),
       ),
       body: SingleChildScrollView(
         child: Column(
