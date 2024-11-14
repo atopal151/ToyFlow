@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../services/get_data_table.dart';
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
 import 'transfer_services/transfer_services.dart';
@@ -16,6 +17,8 @@ class StokTransfer extends StatefulWidget {
 
 class _StokTransferState extends State<StokTransfer> {
   final TransferServices _transferServices = TransferServices();
+  final DataTableService _dataTableService =
+      DataTableService(); // DataTableService örneği
 
   // Aktarılacak stok
   final TextEditingController _miktarController = TextEditingController();
@@ -33,12 +36,7 @@ class _StokTransferState extends State<StokTransfer> {
 
   String? _selectedGetDepo; // Seçilen renk
 
-  final List<String> _depolar = [
-    'Paketleme Atölyesi',
-    'Denizli Ana Depo',
-    'İstanbul Depo',
-    'Almanya Depo',
-  ]; // Ürün listesi
+  List<String> _depolar = []; // Ürün listesi
 
   int miktar = 0; // Stok miktarı
 
@@ -46,21 +44,27 @@ class _StokTransferState extends State<StokTransfer> {
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
+    _fetchDepolar();
   }
 
+// Dinamik olarak depoları Firestore'dan çeken fonksiyon
+  Future<void> _fetchDepolar() async {
+    final List<String> depolar =
+        await _dataTableService.getCollectionData('depolar', 'title');
+    setState(() {
+      _depolar = depolar; // Çekilen depolar listesi
+    });
+  }
+
+  // Firebase'den ürün listesini çekme
   Future<void> _fetchData() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(_selectedDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : _selectedDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : _selectedDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon') // Belirtilmemiş bir depo için varsayılan koleksiyon
-          .get();
+      // _getDepoCollection ile dinamik olarak depo koleksiyonunu alıyoruz
+      String collectionPath =
+          await _transferServices.getDepoCollection(_selectedDepo ?? '');
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection(collectionPath).get();
+
       setState(() {
         _urunler = snapshot.docs
             .where((doc) => doc['miktar'] != 0)
@@ -73,18 +77,13 @@ class _StokTransferState extends State<StokTransfer> {
     }
   }
 
+// Firebase'den renk listesini çekme
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
+      String collectionPath =
+          await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(_selectedDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : _selectedDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : _selectedDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: selectedMalzeme)
           .get();
 
@@ -100,18 +99,13 @@ class _StokTransferState extends State<StokTransfer> {
     }
   }
 
+// Firebase'den boyut listesini çekme
   Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
     try {
+      String collectionPath =
+          await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(_selectedDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : _selectedDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : _selectedDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: selectedMalzeme)
           .where('renk', isEqualTo: selectedRenk)
           .get();
@@ -128,19 +122,14 @@ class _StokTransferState extends State<StokTransfer> {
     }
   }
 
+// Firebase'den aksesuar listesini çekme
   Future<void> _fetchAksesuar(
       String selectedMalzeme, String selectedRenk, String selectedBoyut) async {
     try {
+      String collectionPath =
+          await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(_selectedDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : _selectedDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : _selectedDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: selectedMalzeme)
           .where('renk', isEqualTo: selectedRenk)
           .where('boyut', isEqualTo: selectedBoyut)
@@ -158,19 +147,14 @@ class _StokTransferState extends State<StokTransfer> {
     }
   }
 
+// Firebase'den miktar bilgisini çekme
   Future<void> _fetchMiktar(String selectedIplik, String selectedRenk,
       String selectedBoyut, String selectedAksesuar) async {
     try {
+      String collectionPath =
+          await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection(_selectedDepo == 'Paketleme Atölyesi'
-              ? 'paketleme_stok'
-              : _selectedDepo == 'Denizli Depo'
-                  ? 'denizli_depo'
-                  : _selectedDepo == 'İstanbul Depo'
-                      ? 'istanbul_depo'
-                      : _selectedDepo == 'Almanya Depo'
-                          ? 'almanya_depo'
-                          : 'varsayilan_koleksiyon')
+          .collection(collectionPath)
           .where('urun', isEqualTo: selectedIplik)
           .where('renk', isEqualTo: selectedRenk)
           .where('boyut', isEqualTo: selectedBoyut)
@@ -331,7 +315,13 @@ class _StokTransferState extends State<StokTransfer> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_miktarController.text.isEmpty) {
+                  if (_miktarController.text.isEmpty ||
+                      _selectedAksesuar!.isEmpty ||
+                      _selectedBoyut!.isEmpty ||
+                      _selectedDepo!.isEmpty ||
+                      _selectedGetDepo!.isEmpty ||
+                      _selectedMalzeme!.isEmpty ||
+                      _selectedRenk!.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Lütfen tüm alanları doldurun.")),

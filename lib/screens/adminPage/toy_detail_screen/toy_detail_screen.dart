@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:toyflow/services/get_data_table.dart';
 
 import '../../../services/user_services/dropdown_selector.dart';
 
@@ -23,6 +24,7 @@ class ToyDetailScreen extends StatefulWidget {
 }
 
 class _ToyDetailScreenState extends State<ToyDetailScreen> {
+  final DataTableService _dataTableService=DataTableService();
   String title = "";
 
   String? _selectedBoyut; // Seçilen  boyut
@@ -37,43 +39,61 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
     _selectedRenk == widget.renk;
     _selectedAksesuar == widget.aksesuar;
     _selectedBoyut == widget.boyut;
+
+   _fetchUrunList();
+    _fetchRenkList();
+    _fetchBoyutList();
+    _fetchAksesuarList();
   }
 
-  final List<String> _urun = [
-    'Çilek Tavşan',
-    'Havuç Tavşan',
-    'Kapşonlu Panda',
-    'Su Samuru',
-    'Bambu Panda',
-    'Peluş Ayı'
+   List<String> _urun = [
   ]; // Ürün listesi
 
-  final List<String> _boyut = [
-    '30',
-    '40',
-    '50',
-    '60',
-    '70',
-    '80',
-    '90',
-    '100'
+   List<String> _boyut = [
   ]; // Ürün listesi
 
-  final List<String> _renk = [
-    'Kırmızı',
-    'Siyah',
-    'Beyaz',
-    'Turuncu',
-    'Pembe',
-    'Gri'
+   List<String> _renk = [
   ];
-  final List<String> _aksesuar = [
-    'Yok',
-    'Papyon',
-    'Kurdela',
-    'Bıyık',
-    'Kuyruk',
+   List<String> _aksesuar = [
   ];
+
+  
+
+  Future<void> _fetchUrunList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_name', 'name');
+    setState(() {
+      _urun = fetchedUrun;
+    });
+  }
+
+  Future<void> _fetchRenkList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_renk', 'renk');
+    setState(() {
+      _renk = fetchedUrun;
+    });
+  }
+
+   Future<void> _fetchBoyutList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_height', 'boyut');
+    setState(() {
+      _boyut = fetchedUrun;
+    });
+  }
+Future<void> _fetchAksesuarList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('toy_aksesuar', 'aksesuar');
+    setState(() {
+      _aksesuar = fetchedUrun;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,15 +124,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
               flex: 10,
               child: Column(
                 children: [
-                  if (widget.atolye == "Denizli Depo" ||
-                      widget.atolye == "Almanya Depo" ||
-                      widget.atolye == "İstanbul Depo" ||
-                      widget.atolye == "Dokuma Atölyesi" ||
-                      widget.atolye == "Boyama Atölyesi" ||
-                      widget.atolye == "Kesim Atölyesi" ||
-                      widget.atolye == "Dikim Atölyesi" ||
-                      widget.atolye == "Dolum Atölyesi" ||
-                      widget.atolye == "Paketleme Atölyesi")
                     DropdownSelector(
                       hintText: 'Ürün',
                       items: _urun,
@@ -125,14 +136,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                       },
                       icon: Icons.arrow_drop_down,
                     ),
-                  if (widget.atolye == "Denizli Depo" ||
-                      widget.atolye == "Almanya Depo" ||
-                      widget.atolye == "İstanbul Depo" ||
-                      widget.atolye == "Boyama Atölyesi" ||
-                      widget.atolye == "Kesim Atölyesi" ||
-                      widget.atolye == "Dikim Atölyesi" ||
-                      widget.atolye == "Dolum Atölyesi" ||
-                      widget.atolye == "Paketleme Atölyesi")
                     // Renk seçme dropdown
 
                     DropdownSelector(
@@ -146,13 +149,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                       },
                       icon: Icons.arrow_drop_down,
                     ),
-                  if (widget.atolye == "Denizli Depo" ||
-                      widget.atolye == "Almanya Depo" ||
-                      widget.atolye == "İstanbul Depo" ||
-                      widget.atolye == "Kesim Atölyesi" ||
-                      widget.atolye == "Dikim Atölyesi" ||
-                      widget.atolye == "Dolum Atölyesi" ||
-                      widget.atolye == "Paketleme Atölyesi")
                     // boyut seçme dropdown
                     DropdownSelector(
                       hintText: 'Boyut',
@@ -165,13 +161,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                       },
                       icon: Icons.arrow_drop_down,
                     ),
-                  if (widget.atolye == "Denizli Depo" ||
-                      widget.atolye == "Almanya Depo" ||
-                      widget.atolye == "İstanbul Depo" ||
-                      widget.atolye == "Kesim Atölyesi" ||
-                      widget.atolye == "Dikim Atölyesi" ||
-                      widget.atolye == "Dolum Atölyesi" ||
-                      widget.atolye == "Paketleme Atölyesi")
                     //aksesuar
                     DropdownSelector(
                       hintText: 'Aksesuar',
@@ -211,7 +200,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                       ),
                     ),
                   ),
-                  const Text("depo1"),
                   const Text("depo1"),
                   const Text("depo1")
                 ],

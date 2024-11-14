@@ -26,22 +26,31 @@ class TransferServices {
       userRole = await _authService.getUserRole(user!.uid);
     }
   }
+// Depo koleksiyonunu Firestore'dan çekerek seçen yardımcı fonksiyon
+Future<String> getDepoCollection(String depoTitle) async {
+  try {
+    // Firestore'dan "depolar" koleksiyonunda "title" alanına göre arama yapıyoruz.
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('depolar')
+        .where('title', isEqualTo: depoTitle)
+        .get();
 
-  // Depo koleksiyonunu seçen yardımcı fonksiyon
-  String _getDepoCollection(String depo) {
-    switch (depo) {
-      case 'Paketleme Atölyesi':
-        return 'paketleme_stok';
-      case 'Denizli Depo':
-        return 'denizli_depo';
-      case 'İstanbul Depo':
-        return 'istanbul_depo';
-      case 'Almanya Depo':
-        return 'almanya_depo';
-      default:
-        return 'varsayilan_koleksiyon';
+    if (querySnapshot.docs.isNotEmpty) {
+      // İlk kaydı alıyoruz (title benzersiz olduğu varsayılarak)
+      DocumentSnapshot doc = querySnapshot.docs.first;
+      String collectionName = doc['collection'];
+      return collectionName;
+    } else {
+      // Depo bulunamazsa varsayılan bir koleksiyon ismi döndür
+      return 'varsayilan_koleksiyon';
     }
+  } catch (e) {
+    print("Depo koleksiyonunu alırken hata oluştu: $e");
+    // Hata durumunda varsayılan koleksiyon döndür
+    return 'varsayilan_koleksiyon';
   }
+}
+
 
   // Hareket kaydı yapma
   Future<void> _recordMovement({
@@ -69,195 +78,187 @@ class TransferServices {
     }
   }
 
-  // Stok ekleme veya güncelleme
-  Future<void> addOrUpdateUrunStock({
-    required BuildContext context,
-    required String addDepo,
-    required String urun,
-    required String boyut,
-    required String urunRenk,
-    required String aksesuar,
-    required int miktar,
-  }) async {
-    if (addDepo.isEmpty ||
-        urun.isEmpty ||
-        urunRenk.isEmpty ||
-        boyut.isEmpty ||
-        aksesuar.isEmpty ||
-        miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
+ // Stok ekleme veya güncelleme
+Future<void> addOrUpdateUrunStock({
+  required BuildContext context,
+  required String addDepo,
+  required String urun,
+  required String boyut,
+  required String urunRenk,
+  required String aksesuar,
+  required int miktar,
+}) async {
+  if (addDepo.isEmpty ||
+      urun.isEmpty ||
+      urunRenk.isEmpty ||
+      boyut.isEmpty ||
+      aksesuar.isEmpty ||
+      miktar <= 0) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
     );
+    return;
+  }
 
-    try {
-      String collectionPath = _getDepoCollection(addDepo);
-      QuerySnapshot querySnapshot = await _firestore
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return const Center(child: CircularProgressIndicator());
+    },
+  );
+
+  try {
+    // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz
+    String collectionPath = await getDepoCollection(addDepo);
+    QuerySnapshot querySnapshot = await _firestore
+        .collection(collectionPath)
+        .where('urun', isEqualTo: urun)
+        .where('renk', isEqualTo: urunRenk)
+        .where('boyut', isEqualTo: boyut)
+        .where('aksesuar', isEqualTo: aksesuar)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot existingDoc = querySnapshot.docs.first;
+      int existingMiktar = existingDoc['miktar'];
+      int yeniMiktar = existingMiktar + miktar;
+      await _firestore
           .collection(collectionPath)
-          .where('urun', isEqualTo: urun)
-          .where('renk', isEqualTo: urunRenk)
-          .where('boyut', isEqualTo: boyut)
-          .where('aksesuar', isEqualTo: aksesuar)
-          .get();
+          .doc(existingDoc.id)
+          .update({'miktar': yeniMiktar});
 
-      if (querySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot existingDoc = querySnapshot.docs.first;
-        int existingMiktar = existingDoc['miktar'];
-        int yeniMiktar = existingMiktar + miktar;
-        await _firestore
-            .collection(collectionPath)
-            .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı!')),
+      );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı!')),
-        );
+      await _recordMovement(
+        malzeme: urun,
+        renk: urunRenk,
+        boyut: boyut,
+        aksesuar: aksesuar,
+        miktar: miktar,
+        islemTuru: 'Stok Güncelleme',
+        aciklama:
+            '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo mevcut stoğuna $miktar adet $urunRenk $boyut $urun aktarıldı!',
+      );
+    } else {
+      await _firestore.collection(collectionPath).add({
+        'urun': urun,
+        'renk': urunRenk,
+        'boyut': boyut,
+        'aksesuar': aksesuar,
+        'miktar': miktar,
+        'tarih': FieldValue.serverTimestamp(),
+      });
 
-        await _recordMovement(
-          malzeme: urun,
-          renk: urunRenk,
-          boyut: boyut,
-          aksesuar: aksesuar,
-          miktar: miktar,
-          islemTuru: 'Stok Güncelleme',
-          aciklama:
-              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo mevcut stoğuna $miktar adet $urunRenk $boyut $urun aktarıldı!',
-        );
-      } else {
-        await _firestore.collection(collectionPath).add({
-          'urun': urun,
-          'renk': urunRenk,
-          'boyut': boyut,
-          'aksesuar': aksesuar,
-          'miktar': miktar,
-          'tarih': FieldValue.serverTimestamp(),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$addDepo stoğuna ürün başarıyla aktarıldı!')),
+      );
+
+      await _recordMovement(
+        malzeme: urun,
+        renk: urunRenk,
+        boyut: boyut,
+        aksesuar: aksesuar,
+        miktar: miktar,
+        islemTuru: 'Stok Ekleme',
+        aciklama:
+            '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo yeni stoğuna $miktar adet $urunRenk $boyut cm $urun ekledi!',
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+    );
+  } finally {
+    Navigator.pop(context);
+  }
+}
+
+// Stok düşümü yapma
+Future<void> decreaseStock({
+  required BuildContext context,
+  required String downDepo,
+  required String malzeme,
+  required String boyut,
+  required String renk,
+  required String aksesuar,
+  required int miktar,
+}) async {
+  if (downDepo.isEmpty ||
+      malzeme.isEmpty ||
+      renk.isEmpty ||
+      boyut.isEmpty ||
+      aksesuar.isEmpty ||
+      miktar <= 0) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
+    );
+    return;
+  }
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return const Center(child: CircularProgressIndicator());
+    },
+  );
+
+  try {
+    // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz
+    String collectionPath = await getDepoCollection(downDepo);
+    QuerySnapshot existingRecord = await _firestore
+        .collection(collectionPath)
+        .where('urun', isEqualTo: malzeme)
+        .where('boyut', isEqualTo: boyut)
+        .where('renk', isEqualTo: renk)
+        .where('aksesuar', isEqualTo: aksesuar)
+        .get();
+
+    if (existingRecord.docs.isNotEmpty) {
+      DocumentSnapshot doc = existingRecord.docs.first;
+      int currentMiktar = doc['miktar'] ?? 0;
+
+      if (currentMiktar >= miktar) {
+        await _firestore.collection(collectionPath).doc(doc.id).update({
+          'miktar': currentMiktar - miktar,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$addDepo stoğuna ürün başarıyla aktarıldı!')),
+          SnackBar(content: Text("$downDepo stoğundan ürün düşümü başarıyla yapıldı.")),
         );
 
         await _recordMovement(
-          malzeme: urun,
-          renk: urunRenk,
+          malzeme: malzeme,
           boyut: boyut,
-          aksesuar: aksesuar,
+          renk: renk,
           miktar: miktar,
-          islemTuru: 'Stok Ekleme',
+          aksesuar: aksesuar,
+          islemTuru: 'Stok Düşümü',
           aciklama:
-              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo yeni stoğuna $miktar adet $urunRenk $boyut cm $urun ekledi!',
+              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $downDepo $miktar adet $renk $boyut cm $malzeme düşüm yaptı.',
         );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
-      );
-    } finally {
-      Navigator.pop(context);
-    }
-  }
-
-  // Stok düşümü yapma
-  Future<void> decreaseStock({
-    required BuildContext context,
-    required String downDepo,
-    required String malzeme,
-    required String boyut,
-    required String renk,
-    required String aksesuar,
-    required int miktar,
-  }) async {
-    if (downDepo.isEmpty ||
-        malzeme.isEmpty ||
-        renk.isEmpty ||
-        boyut.isEmpty ||
-        aksesuar.isEmpty ||
-        miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-      );
-      return;
-    }
-  showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
-
-    try {
-      String collectionPath = _getDepoCollection(downDepo);
-      QuerySnapshot existingRecord = await _firestore
-          .collection(collectionPath)
-          .where('urun', isEqualTo: malzeme)
-          .where('boyut', isEqualTo: boyut)
-          .where('renk', isEqualTo: renk)
-          .where('aksesuar', isEqualTo: aksesuar)
-          .get();
-
-      print("Toplam bulunan belge sayısı: ${existingRecord.docs.length}");
-      for (var doc in existingRecord.docs) {
-        print("Bulunan belge: ${doc.data()}"); // Her belgenin içeriğini yazdır
-      }
-      for (var doc in existingRecord.docs) {
-        print(doc.data()); // Her bir belgenin içeriğini yazdırır
-      }
-
-      if (existingRecord.docs.isNotEmpty) {
-        DocumentSnapshot doc = existingRecord.docs.first;
-        int currentMiktar = doc['miktar'] ?? 0;
-
-        if (currentMiktar >= miktar) {
-          await _firestore.collection(collectionPath).doc(doc.id).update({
-            'miktar': currentMiktar - miktar,
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text("$downDepo stoğundan ürün düşümü başarıyla yapıldı.")),
-          );
-
-          await _recordMovement(
-            malzeme: malzeme,
-            boyut: boyut,
-            renk: renk,
-            miktar: miktar,
-            aksesuar: aksesuar,
-            islemTuru: 'Stok Düşümü',
-            aciklama:
-                '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $downDepo $miktar adet $renk $boyut cm $malzeme düşüm yaptı.',
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Yetersiz stok miktarı.")),
-          );
-        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
+          const SnackBar(content: Text("Yetersiz stok miktarı.")),
         );
       }
-    } catch (e) {
-      print("Hata: $e");
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
+        const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
       );
     }
-    finally{
-      Navigator.pop(context);
-    }
+  } catch (e) {
+    print("Hata: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
+    );
+  } finally {
+    Navigator.pop(context);
   }
+}
+
 }

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/admin_setting_screen/admin_setting_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/screens/users_page/transfer_screen/transfer_detail_screen.dart';
+import 'package:toyflow/services/get_data_table.dart';
 import '../../../services/product_services.dart';
 import '../admin_work_shop_screen/work_detail_screen/work_detail_screen.dart';
 import 'adminhome_services/admin_home_services.dart';
@@ -20,6 +21,7 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
   final AdminHomeService adminHomeService = AdminHomeService();
+  final DataTableService _dataTableService=DataTableService();
 
   int dokumaAllStock = 0;
   int boyamaAllStock = 0;
@@ -35,10 +37,32 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int dolumAtolyesiStock = 0;
   int paketlemeAtolyesiStock = 0;
 
+  List<String> _depoName = []; // İplik listesi
+
+  List<String> _depoCollection= []; // İplik listesi
   @override
   void initState() {
     super.initState();
     _loadStockData();
+    _fetchDepoTitleList();
+    _fetchDepoCollectionList();
+  }
+  Future<void> _fetchDepoTitleList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('depolar', 'title');
+    setState(() {
+      _depoName = fetchedUrun;
+    });
+  }
+
+  Future<void> _fetchDepoCollectionList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('depolar', 'collection');
+    setState(() {
+      _depoCollection = fetchedUrun;
+    });
   }
 
   Future<void> _loadStockData() async {
@@ -229,10 +253,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const Text(
                 "Depolar",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),const SizedBox(height: 10),
+              // Dinamik olarak depo listeleme
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _depoName.length,
+                itemBuilder: (context, index) {
+                  return _buildDepoRow(
+                    _depoName[index],
+                    "------", // Sıcaklık gibi sabit bir değer için placeholder
+                    _depoCollection[index],
+                  );
+                },
               ),
-              _buildDepoRow("Denizli Depo", "30.10.2024", "denizli_depo"),
-              _buildDepoRow("İstanbul Depo", "29.10.2024", "istanbul_depo"),
-              _buildDepoRow("Almanya Depo", "31.10.2024", "almanya_depo"),
             ],
           ),
         ),

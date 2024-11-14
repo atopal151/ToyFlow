@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/custom_app_bar.dart';
 import 'package:toyflow/screens/users_page/transfer_screen/stok_transfer_screen.dart';
-import 'transfer_detail_screen.dart'; // Detay sayfasını import etmeyi unutmayın
+import 'transfer_detail_screen.dart';
 
 class TransferScreen extends StatefulWidget {
   const TransferScreen({super.key});
@@ -14,28 +14,31 @@ class TransferScreen extends StatefulWidget {
 class _TransferScreenState extends State<TransferScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final List<Map<String, dynamic>> workshops = [
-    {
-      'title': 'Paketleme Atölyesi',
-      'image': 'images/depo.webp',
-      'collection': 'paketleme_stok',
-    },
-    {
-      'title': 'Denizli Depo',
-      'image': 'images/depo.webp',
-      'collection': 'denizli_depo',
-    },
-    {
-      'title': 'Almanya Depo',
-      'image': 'images/depo.webp',
-      'collection': 'almanya_depo',
-    },
-    {
-      'title': 'İstanbul Depo',
-      'image': 'images/depo.webp',
-      'collection': 'istanbul_depo',
-    },
-  ];
+  List<Map<String, dynamic>> workshops = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getDepolar(); // Dinamik olarak depoları al
+  }
+
+  // Dinamik olarak depoları Firestore'dan çeken fonksiyon
+  Future<void> _getDepolar() async {
+    try {
+      final QuerySnapshot snapshot = await _firestore.collection('depolar').get();
+      setState(() {
+        workshops = snapshot.docs.map((doc) {
+          return {
+            'title': doc['title'],
+            'image': doc['image'] ?? 'images/depo.webp', // Eğer image alanı yoksa varsayılan bir görsel ekleyin
+            'collection': doc['collection'],
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print("Depolar alınırken hata oluştu: $e");
+    }
+  }
 
   Future<int> fetchStockFromCollection(String collectionName) async {
     try {
@@ -54,7 +57,7 @@ class _TransferScreenState extends State<TransferScreen> {
   }
 
   Future<void> _refreshList() async {
-    setState(() {});
+    await _getDepolar(); // Listeyi yenilediğimizde depoları tekrar çek
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
@@ -101,6 +104,7 @@ class _TransferScreenState extends State<TransferScreen> {
                     child: _buildStockCardButton(
                       roomName: workshop['title'],
                       occupancy: occupancyText,
+                      imagePath: workshop['image'], // Görsel yolunu dinamik olarak gönderiyoruz
                     ),
                   );
                 },
@@ -115,14 +119,15 @@ class _TransferScreenState extends State<TransferScreen> {
   Widget _buildStockCardButton({
     required String roomName,
     required String occupancy,
+    required String imagePath, // Dinamik olarak görsel yolu
   }) {
     return Container(
       height: 100,
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        image: const DecorationImage(
-          image: AssetImage('images/depo.webp'),
+        image: DecorationImage(
+          image: AssetImage(imagePath),
           fit: BoxFit.fitWidth,
         ),
       ),

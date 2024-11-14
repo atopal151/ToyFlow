@@ -7,6 +7,7 @@ import 'package:toyflow/screens/adminPage/stock_screen/stock_add_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../../../services/product_services.dart';
+import '../new_storage_add/new_storage_add.dart';
 import '../register_screen/register_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
@@ -102,7 +103,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const StockAddScreen());
-                   
                   },
                 ),
                 ListTile(
@@ -122,7 +122,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const MoverScreen());
-                   
                   },
                 ),
                 ListTile(
@@ -141,7 +140,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   title: const Text('Yeni Ürün Kalemi Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                      Get.to(() => const NewToyAddScreen());
+                    Get.to(() => const NewToyAddScreen());
                     // Ayarları güncelleme ekranına yönlendirme
                   },
                 ),
@@ -153,15 +152,15 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.report,
+                      Icons.storage_sharp,
                       color: Colors.white,
                       size: 20,
                     ),
                   ),
-                  title: const Text('Raporları Görüntüle'),
+                  title: const Text('Depo Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    // Raporları görüntüle ekranına yönlendirme
+                    Get.to(() => const StorageNewAdd());
                   },
                 ),
                 ListTile(

@@ -11,39 +11,49 @@ class AdminSearchScreen extends StatefulWidget {
 }
 
 class _AdminSearchScreenState extends State<AdminSearchScreen> {
+
   List<Map<String, dynamic>> allItems = []; // Firestore'dan alınan tüm veriler
   List<Map<String, dynamic>> filteredItems = []; // Filtrelenmiş veriler
   TextEditingController searchController = TextEditingController();
   String? _depoSelected;
 
+  List<String> _depolar = []; // Depo isimleri listesi
+  List<String> _depoCollection = []; // Depo collection isimleri listesi
+
   @override
   void initState() {
     super.initState();
-    // İlk etapta veri çekilmiyor, depo seçimi bekleniyor
+    _fetchDepoData(); // Depo isimlerini ve collection verilerini çekiyoruz
   }
 
-  final List<String> _depolar = [
-    'Paketleme Atölyesi',
-    'Denizli Depo',
-    'İstanbul Depo',
-    'Almanya Depo',
-  ]; // Ürün listesi
+  Future<void> _fetchDepoData() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('depolar')
+          .get(); // Depolar koleksiyonundan verileri çek
+      List<String> depoNames = [];
+      List<String> depoCollections = [];
+
+      for (var doc in querySnapshot.docs) {
+        depoNames.add(doc['title']);
+        depoCollections.add(doc['collection']);
+      }
+
+      setState(() {
+        _depolar = depoNames;
+        _depoCollection = depoCollections;
+      });
+    } catch (e) {
+      print("Depo verileri alınırken hata oluştu: $e");
+    }
+  }
 
   // Firestore'dan verileri çekme
   Future<void> fetchData(String? collectionName) async {
-    if (collectionName == null) return; // Eğer depo seçilmediyse veri çekme
+    if (collectionName == null) return;
     try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection(collectionName == "Denizli Depo"
-              ? "denizli_depo"
-              : collectionName == "İstanbul Depo"
-                  ? "istanbul_depo"
-                  : collectionName == "Almanya Depo"
-                      ? "almanya_depo"
-                      : collectionName == "Paketleme Atölyesi"
-                          ? "paketleme_stok"
-                          : "denizli_depo")
-          .get();
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection(collectionName).get();
       final data = querySnapshot.docs
           .where((doc) => doc['miktar'] != 0)
           .map((doc) => doc.data())
@@ -51,7 +61,7 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
 
       setState(() {
         allItems = data;
-        filteredItems = allItems; // Başlangıçta tüm veriler gösterilir
+        filteredItems = allItems;
       });
     } catch (e) {
       print("Veri alınırken hata oluştu: $e");
@@ -75,10 +85,11 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-        "Ürünler",
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-      )),
+        title: const Text(
+          "Ürünler",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        ),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -93,15 +104,16 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _depoSelected = newValue;
-                      fetchData(newValue); // Yeni depo seçildiğinde veri çek
+                      final collectionIndex =
+                          _depolar.indexOf(newValue!); // Seçilen depo indexi
+                      final collectionName = _depoCollection[collectionIndex];
+                      fetchData(collectionName); // Seçilen collection ile veri çekme
                     });
                   },
                   icon: Icons.arrow_drop_down,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               // Arama TextField'i
               Expanded(
                 flex: 1,
@@ -128,9 +140,7 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                 ),
               ),
               // Ürün Listesi
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Expanded(
                 flex: 10,
                 child: filteredItems.isEmpty
@@ -139,7 +149,10 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
                           final item = filteredItems[index];
-                          return WorkshopListItem(work: item,atolye: _depoSelected,);
+                          return WorkshopListItem(
+                            work: item,
+                            atolye: _depoSelected,
+                          );
                         },
                       ),
               ),
