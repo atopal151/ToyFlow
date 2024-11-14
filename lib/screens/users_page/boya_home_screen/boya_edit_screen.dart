@@ -150,7 +150,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_miktarController.text == "" ||
+                  if (_selectedMalzeme!.isEmpty ||
                       _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -228,7 +228,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_miktarDonumController.text == "" ||
+                  if (_selectedDonumMalzeme!.isEmpty||_selectedDonumRenk!.isEmpty  ||
                       _miktarDonumController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -296,7 +296,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_fireMiktarController.text == "" ||
+                  if (_selectedFireMalzeme!.isEmpty  ||
                       _fireMiktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

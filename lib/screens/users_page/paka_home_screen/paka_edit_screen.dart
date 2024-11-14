@@ -272,7 +272,7 @@ Future<void> _fetchAksesuarList() async {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_miktarController.text == "" ||
+                  if (_selectedMalzeme!.isEmpty||_selectedBoyut!.isEmpty||_selectedRenk!.isEmpty||
                       _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -376,7 +376,7 @@ Future<void> _fetchAksesuarList() async {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_miktarDonumController.text == "" ||
+                  if (_selectedDonumMalzeme!.isEmpty||_selectedDonumRenk!.isEmpty||_selectedDonumBoyut!.isEmpty||_selectedDonumAksesuar!.isEmpty||
                       _miktarDonumController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
