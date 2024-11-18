@@ -16,10 +16,11 @@ class _StockScreenState extends State<StockScreen> {
 
   // Firestore'dan dokuma_work tablosundaki verileri çeken fonksiyon
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
-    return FirebaseFirestore.instance
-        .collection('dokuma_work')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+    return FirebaseFirestore.instance.collection('dokuma_work').snapshots().map(
+        (snapshot) => snapshot.docs
+            .where((doc) => doc['miktar'] != 0)
+            .map((doc) => doc.data())
+            .toList());
   }
 
   Future<void> _refreshData() async {
@@ -37,7 +38,7 @@ class _StockScreenState extends State<StockScreen> {
         actions: [
           InkWell(
             onTap: () {
-              Get.to(()=>const StockAddScreen());
+              Get.to(() => const StockAddScreen());
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),

@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:toyflow/screens/adminPage/toy_detail_screen/toy_detail_screen.dart';
+import 'package:get/get.dart';
+
+import '../../../toy_detail_screen/toy_detail_screen.dart';
 
 class WorkshopListItem extends StatefulWidget {
   final Map<String, dynamic> work;
   final String? atolye;
+  final VoidCallback? onTap; // onTap fonksiyonunu opsiyonel olarak ekledik
 
-  const WorkshopListItem({super.key, required this.work,this.atolye});
+  const WorkshopListItem({super.key, required this.work, this.atolye, this.onTap});
 
   @override
   State<WorkshopListItem> createState() => _WorkshopListItemState();
@@ -19,7 +21,6 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
   @override
   void initState() {
     super.initState();
-    // Türkçe dil desteğini ekleyin
     timeago.setLocaleMessages('tr', timeago.TrMessages());
   }
 
@@ -39,20 +40,23 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
       DateTime miktarDateTime = (widget.work['miktar'] as Timestamp).toDate();
       miktarTarihi = DateFormat('dd.MM.yyyy').format(miktarDateTime);
     } else {
-      // Eğer miktar bir sayı ise direkt 'miktarTarihi' olarak atıyoruz
       miktarTarihi = widget.work['miktar'].toString();
     }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
-        onTap: () => Get.to(() => ToyDetailScreen(
-              urun: widget.work['urun'],
-              renk: widget.work['renk'],
-              boyut: widget.work['boyut'],
-              aksesuar: widget.work['aksesuar'],
-              atolye: widget.atolye,
-            )),
+        onTap: widget.onTap ??
+            () {
+              // Eğer onTap atanmadıysa ToyDetailScreen'e yönlendir
+              Get.to(() => ToyDetailScreen(
+                    urun: widget.work['urun'],
+                    renk: widget.work['renk'],
+                    boyut: widget.work['boyut'],
+                    aksesuar: widget.work['aksesuar'],
+                    atolye: widget.atolye,
+                  ));
+            },
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -89,11 +93,9 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
-                        "$miktarTarihi Adet", // 'miktar' değeri
+                        "$miktarTarihi Adet",
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
@@ -158,7 +160,7 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
                         ),
                       const SizedBox(height: 6),
                       Text(
-                        "Son Güncelleme: $eklemeTarihi", // 'tarih' değeri göreceli
+                        "Son Güncelleme: $eklemeTarihi",
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 10),
                       ),

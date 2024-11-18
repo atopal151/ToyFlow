@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/users_page/transfer_screen/stok_flow_screen.dart';
 import 'package:toyflow/screens/users_page/transfer_screen/stok_transfer_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../screens/users_page/users_profile_screen/users_profile_screen.dart';
@@ -149,6 +150,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: const Icon(
                   Icons.local_shipping, // Ekstra ikon olarak "add" ikonu
+                  size: 15,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+
+
+           // Eğer workshopName "Paketleme Atölyesi" ise bu ikonu ekle
+        if (workshopName == "Transfer Birimi")
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: GestureDetector(
+              onTap: () {
+                Get.to(()=>const StockFlowScreen());
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 0.5,
+                  ),
+                ),
+                padding: const EdgeInsets.all(8.0),
+                child: const Icon(
+                  Icons.sell, // Ekstra ikon olarak "sell" ikonu
                   size: 15,
                   color: Colors.white,
                 ),

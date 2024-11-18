@@ -41,7 +41,7 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title,style: const TextStyle(fontSize: 15),),
         actions: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -54,13 +54,6 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
       ),
       body: Column(
         children: [
-          // Ürün Listesi Başlığı
-          const Text(
-            'Ürün Listesi',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          // Ürünlerin Listelendiği Kısım
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _firestore

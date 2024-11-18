@@ -17,6 +17,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   String? _userRole;
   List<Map<String, dynamic>> _works = [];
   final AuthService _authService = AuthService();
+  bool isLoading = false; // Yüklenme durumu için bir değişken eklendi
 
   @override
   void initState() {
@@ -82,11 +83,118 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
     }
   }
 
+  Future<void> transferAndResetStock() async {
+    setState(() {
+      isLoading = true; // Yükleme başlatılıyor
+    });
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      QuerySnapshot paketlemeStokSnapshot =
+          await firestore.collection('paketleme_stok').get();
+
+      for (var doc in paketlemeStokSnapshot.docs) {
+        Map<String, dynamic> paketlemeData = doc.data() as Map<String, dynamic>;
+        String urunAdi = paketlemeData['urun'];
+        String? renk = paketlemeData['renk'];
+        String? boyut = paketlemeData['boyut'];
+        String? aksesuar = paketlemeData['aksesuar'];
+        int adet = paketlemeData['miktar'];
+        Timestamp tarih = Timestamp.now(); // O anki zamanı alıyoruz
+
+        QuerySnapshot denizliDepoSnapshot = await firestore
+            .collection('denizli_depo')
+            .where('urun', isEqualTo: urunAdi)
+            .where('renk', isEqualTo: renk)
+            .where('boyut', isEqualTo: boyut)
+            .where('aksesuar', isEqualTo: aksesuar)
+            .get();
+
+        if (denizliDepoSnapshot.docs.isNotEmpty) {
+          var denizliDepoDoc = denizliDepoSnapshot.docs.first;
+          int mevcutAdet = denizliDepoDoc['miktar'];
+          int yeniAdet = mevcutAdet + adet;
+
+          await firestore
+              .collection('denizli_depo')
+              .doc(denizliDepoDoc.id)
+              .update({
+            'miktar': yeniAdet,
+            'tarih': tarih,
+          });
+        } else {
+          await firestore.collection('denizli_depo').add({
+            'urun': urunAdi,
+            'renk': renk,
+            'boyut': boyut,
+            'aksesuar': aksesuar,
+            'miktar': adet,
+            'tarih': tarih,
+          });
+        }
+
+        await firestore
+            .collection('paketleme_stok')
+            .doc(doc.id)
+            .update({'miktar': 0});
+      }
+      _fetchUserRoleAndData();
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ürünler Başarıyla Ana Depoya Aktarıldı.')),
+      ); } catch (e) {
+         ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aktarım sırasında hata oluştu.')),
+      );
+      print("Aktarım sırasında hata oluştu: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Yükleme tamamlandı
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Bekleyen İşler"),
+        title: const Text(
+          "Bekleyen İşler",
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          _userRole == "Transfer"
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: InkWell(
+                    onTap: () async {
+                      await transferAndResetStock();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 142, 172, 83),
+                        shape: BoxShape.circle,
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.redo,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ],
         elevation: 0,
       ),
       body: _works.isEmpty

@@ -136,7 +136,7 @@ class _TransferScreenState extends State<TransferScreen> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withOpacity(0.4),
             ),
           ),
           Row(

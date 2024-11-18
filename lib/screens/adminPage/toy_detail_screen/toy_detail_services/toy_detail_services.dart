@@ -43,6 +43,7 @@ class ToyDetailServices {
         if (snapshot.docs.isNotEmpty) {
           int miktar = snapshot.docs.fold<int>(
             0,
+            // ignore: avoid_types_as_parameter_names
             (sum, doc) => sum + ((doc['miktar'] ?? 0) as int),
           );
           toyDetails.add({
