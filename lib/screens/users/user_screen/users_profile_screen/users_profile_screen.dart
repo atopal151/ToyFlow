@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/chat_screen/chat_screen.dart';
+import 'package:toyflow/screens/users/user_screen/orders/coming_orders/coming_orders.dart';
+import 'package:toyflow/screens/users/user_screen/orders/my_orders/my_orders.dart';
 import 'package:toyflow/screens/users/user_screen/users_notification_screen/users_notification_screen.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../services/product_services.dart';
@@ -106,7 +108,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ChatScreen()),
+                          builder: (context) => const ComingOrders()),
                     );
                     // Bildirimler ekranına yönlendirme
                   },
@@ -130,7 +132,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ChatScreen()),
+                          builder: (context) => const MyOrders()),
                     );
                     // Bildirimler ekranına yönlendirme
                   },

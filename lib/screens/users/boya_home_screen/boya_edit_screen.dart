@@ -73,7 +73,8 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
       _renk = fetchedUrun;
     });
   }
-    Future<void> _fetchGramajList() async {
+
+  Future<void> _fetchGramajList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
     List<String> fetchedGramaj =
         await _dataTableService.getCollectionData('gramaj', 'gramaj');
@@ -81,7 +82,8 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
       _gramajlar = fetchedGramaj;
     });
   }
-    Future<void> _fetchFineList() async {
+
+  Future<void> _fetchFineList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
     List<String> fetchedFine =
         await _dataTableService.getCollectionData('fine', 'fine');
@@ -211,7 +213,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedFine = null;
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null || _selectedGramaj != null) {
-                    _fetchFine(_selectedMalzeme!,_selectedGramaj!);
+                    _fetchFine(_selectedMalzeme!, _selectedGramaj!);
                   }
                 });
               },
@@ -226,8 +228,11 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedFine = newValue;
 
                   // Seçilen ürüne göre renkleri getir
-                  if (_selectedMalzeme != null|| _selectedGramaj != null|| _selectedFine != null) {
-                    _fetchMiktar(_selectedMalzeme!,_selectedGramaj!,_selectedFine!);
+                  if (_selectedMalzeme != null ||
+                      _selectedGramaj != null ||
+                      _selectedFine != null) {
+                    _fetchMiktar(
+                        _selectedMalzeme!, _selectedGramaj!, _selectedFine!);
                   }
                 });
               },
@@ -247,62 +252,72 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
             ),
 
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _miktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedMalzeme!.isEmpty ||_selectedGramaj!.isEmpty ||_selectedFine!.isEmpty ||
-                      _miktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _dokaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedMalzeme!,
-                      gramaj: _selectedGramaj!,
-                      fine: _selectedFine!,
-
-                      miktar: int.parse(_miktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Düşüm Yap',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedMalzeme!.isEmpty ||
+                          _selectedGramaj!.isEmpty ||
+                          _selectedFine!.isEmpty ||
+                          _miktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _dokaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedMalzeme!,
+                          gramaj: _selectedGramaj!,
+                          fine: _selectedFine!,
+                          miktar: int.parse(_miktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Düşüm Yap',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-
-            /*---------------------------------------------------*/
-
             const SizedBox(
               height: 20,
             ),
+            const Divider(),
+            /*---------------------------------------------------*/
+            const SizedBox(
+              height: 20,
+            ),
+
             // Dönüştürülen kumaşı seç
             DropdownSelector(
               hintText: 'Dönüştürülen Ürün',
@@ -327,7 +342,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
-             DropdownSelector(
+            DropdownSelector(
               hintText: 'Fine',
               items: _finelar,
               selectedValue: _selectedDonumFine,
@@ -338,7 +353,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               },
               icon: Icons.color_lens,
             ),
-             DropdownSelector(
+            DropdownSelector(
               hintText: 'Renk',
               items: _renk,
               selectedValue: _selectedDonumRenk,
@@ -350,65 +365,75 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               icon: Icons.color_lens,
             ),
             // Miktar gir
-            TextFieldWithCounter(
-              controller: _miktarDonumController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedDonumMalzeme!.isEmpty ||
-                      _selectedDonumGramaj!.isEmpty ||
-                      _selectedDonumFine!.isEmpty ||
-                      _selectedDonumRenk!.isEmpty ||
-                      _miktarDonumController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _dokaServices.addOrUpdateKumasStock(
-                      context: context,
-                      kumas: _selectedDonumMalzeme!,
-                      gramaj:_selectedDonumGramaj!,
-                      fine:_selectedDonumFine!,
-                      kumasRenk: _selectedDonumRenk!,
-                      miktar: int.parse(_miktarDonumController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarDonumController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Stok Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedDonumMalzeme!.isEmpty ||
+                          _selectedDonumGramaj!.isEmpty ||
+                          _selectedDonumFine!.isEmpty ||
+                          _selectedDonumRenk!.isEmpty ||
+                          _miktarDonumController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _dokaServices.addOrUpdateKumasStock(
+                          context: context,
+                          kumas: _selectedDonumMalzeme!,
+                          gramaj: _selectedDonumGramaj!,
+                          fine: _selectedDonumFine!,
+                          kumasRenk: _selectedDonumRenk!,
+                          miktar: int.parse(_miktarDonumController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Stok Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             const SizedBox(
               height: 20,
             ),
-
+            const Divider(),
             /*---------------------------------------------------*/
+            const SizedBox(
+              height: 20,
+            ),
+
             // Fire düşülecek ipliği seç
             DropdownSelector(
               hintText: 'Fire Ürün',
@@ -417,7 +442,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
-                   _selectedfireGramaj = null;
+                  _selectedfireGramaj = null;
                   _selectedFireFine = null;
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedFireMalzeme != null) {
@@ -427,7 +452,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
-             DropdownSelector(
+            DropdownSelector(
               hintText: 'Gramaj',
               items: _gramaj,
               selectedValue: _selectedfireGramaj,
@@ -436,8 +461,9 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedfireGramaj = newValue;
                   _selectedFireFine = null;
                   // Seçilen ürüne göre renkleri getir
-                  if (_selectedFireMalzeme != null || _selectedfireGramaj != null) {
-                    _fetchFine(_selectedFireMalzeme!,_selectedfireGramaj!);
+                  if (_selectedFireMalzeme != null ||
+                      _selectedfireGramaj != null) {
+                    _fetchFine(_selectedFireMalzeme!, _selectedfireGramaj!);
                   }
                 });
               },
@@ -452,8 +478,11 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                   _selectedFireFine = newValue;
 
                   // Seçilen ürüne göre renkleri getir
-                  if (_selectedFireMalzeme != null|| _selectedfireGramaj != null|| _selectedFireFine != null) {
-                    _fetchMiktar(_selectedFireMalzeme!,_selectedfireGramaj!,_selectedFireFine!);
+                  if (_selectedFireMalzeme != null ||
+                      _selectedfireGramaj != null ||
+                      _selectedFireFine != null) {
+                    _fetchMiktar(_selectedFireMalzeme!, _selectedfireGramaj!,
+                        _selectedFireFine!);
                   }
                 });
               },
@@ -473,61 +502,69 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
             ),
 
             // Miktar gir
-            TextFieldWithCounter(
-              controller: _fireMiktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedFireMalzeme!.isEmpty ||_selectedFireFine!.isEmpty ||_selectedfireGramaj!.isEmpty ||
-                      _fireMiktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _dokaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      gramaj: _selectedfireGramaj!,
-                      fine:_selectedFireFine!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-                    _dokaServices.addFireEntry(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      gramaj: _selectedfireGramaj!,
-                      fine: _selectedFireFine!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _fireMiktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Fire Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedFireMalzeme!.isEmpty ||
+                          _selectedFireFine!.isEmpty ||
+                          _selectedfireGramaj!.isEmpty ||
+                          _fireMiktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _dokaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          gramaj: _selectedfireGramaj!,
+                          fine: _selectedFireFine!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+                        _dokaServices.addFireEntry(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          gramaj: _selectedfireGramaj!,
+                          fine: _selectedFireFine!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Fire Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             /*---------------------------------------------------*/

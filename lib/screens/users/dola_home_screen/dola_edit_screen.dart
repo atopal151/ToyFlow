@@ -17,7 +17,7 @@ class DolaEditScreen extends StatefulWidget {
 
 class _DolaEditScreenState extends State<DolaEditScreen> {
   final DolaServices _dolaServices = DolaServices();
-  final DataTableService _dataTableService=DataTableService();
+  final DataTableService _dataTableService = DataTableService();
 
   //kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
@@ -42,14 +42,11 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
 
   int miktar = 0; // miktar listesi
 
-   List<String> _donusumUrun = [
-  ]; // Ürün listesi
+  List<String> _donusumUrun = []; // Ürün listesi
 
-   List<String> _boyut = [
-  ]; // Ürün listesi
+  List<String> _boyut = []; // Ürün listesi
 
-   List<String> _renk = [
-  ]; // K
+  List<String> _renk = []; // K
 
   @override
   void initState() {
@@ -78,7 +75,7 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
     });
   }
 
-   Future<void> _fetchBoyutList() async {
+  Future<void> _fetchBoyutList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
     List<String> fetchedUrun =
         await _dataTableService.getCollectionData('toy_height', 'boyut');
@@ -86,7 +83,6 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
       _boyut = fetchedUrun;
     });
   }
-
 
   Future<void> _fetchData() async {
     try {
@@ -251,58 +247,69 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
 
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _miktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedMalzeme!.isEmpty ||_selectedBoyut!.isEmpty ||_selectedRenk!.isEmpty ||
-                      _miktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _dolaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedMalzeme!,
-                      boyut: _selectedBoyut!,
-                      renk: _selectedRenk!,
-                      miktar: int.parse(_miktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Düşüm Yap',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedMalzeme!.isEmpty ||
+                          _selectedBoyut!.isEmpty ||
+                          _selectedRenk!.isEmpty ||
+                          _miktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _dolaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedMalzeme!,
+                          boyut: _selectedBoyut!,
+                          renk: _selectedRenk!,
+                          miktar: int.parse(_miktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Düşüm Yap',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
+            const SizedBox(
+              height: 20,
+            ),
+            const Divider(),
             /*---------------------------------------------------*/
-
             const SizedBox(
               height: 20,
             ),
@@ -343,63 +350,72 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
               icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _miktarDonumController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedDonumMalzeme!.isEmpty ||_selectedDonumRenk!.isEmpty ||_selectedDonumBoyut!.isEmpty ||
-                      _miktarDonumController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _dolaServices.addOrUpdateUrunStock(
-                      context: context,
-                      urun: _selectedDonumMalzeme!,
-                      urunRenk: _selectedDonumRenk!,
-                      boyut: _selectedDonumBoyut!,
-                      miktar: int.parse(_miktarDonumController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarDonumController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Stok Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedDonumMalzeme!.isEmpty ||
+                          _selectedDonumRenk!.isEmpty ||
+                          _selectedDonumBoyut!.isEmpty ||
+                          _miktarDonumController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _dolaServices.addOrUpdateUrunStock(
+                          context: context,
+                          urun: _selectedDonumMalzeme!,
+                          urunRenk: _selectedDonumRenk!,
+                          boyut: _selectedDonumBoyut!,
+                          miktar: int.parse(_miktarDonumController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Stok Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             const SizedBox(
               height: 20,
             ),
-
+            const Divider(),
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
-
+            const SizedBox(
+              height: 20,
+            ),
             DropdownSelector(
               hintText: 'Fire Ürün',
               items: _urunler,
@@ -474,66 +490,72 @@ class _DolaEditScreenState extends State<DolaEditScreen> {
             ),
 
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _fireMiktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  // Null kontrolü
-                  if (_selectedFireMalzeme == null ||
-                      _selectedFireBoyut == null ||
-                      _selectedFireRenk == null ||
-                      _fireMiktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Lütfen tüm alanları doldurun')),
-                    );
-                    return;
-                  } else {
-                    _dolaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      boyut: _selectedFireBoyut!,
-                      renk: _selectedFireRenk!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-
-                    _dolaServices.addFireEntry(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      boyut: _selectedFireBoyut!,
-                      renk: _selectedFireRenk!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _fireMiktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Fire Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Null kontrolü
+                      if (_selectedFireMalzeme == null ||
+                          _selectedFireBoyut == null ||
+                          _selectedFireRenk == null ||
+                          _fireMiktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Lütfen tüm alanları doldurun')),
+                        );
+                        return;
+                      } else {
+                        _dolaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          boyut: _selectedFireBoyut!,
+                          renk: _selectedFireRenk!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+
+                        _dolaServices.addFireEntry(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          boyut: _selectedFireBoyut!,
+                          renk: _selectedFireRenk!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Fire Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             /*---------------------------------------------------*/

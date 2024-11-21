@@ -8,7 +8,6 @@ import '../../../services/custom_app_bar.dart';
 import 'dika_edit_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
 class DikaHomeScreen extends StatefulWidget {
   const DikaHomeScreen({super.key});
 
@@ -21,8 +20,7 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
-
-@override
+  @override
   void initState() {
     super.initState();
     // Türkçe dil desteğini ekleyin
@@ -32,11 +30,10 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
   Stream<List<Map<String, dynamic>>> getDikimStokData() {
     return FirebaseFirestore.instance
         .collection('dikim_stok')
-        .orderBy('tarih',descending: true)
+        .orderBy('tarih', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.where((doc) =>
-                doc['miktar'] != 0).map((doc) {
+      return snapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
           'renk': doc['renk'],
@@ -150,7 +147,7 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
+                          eklemeTarihi = timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -228,28 +225,33 @@ class _DikaHomeScreenState extends State<DikaHomeScreen> {
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
-
                                           const SizedBox(width: 10),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
                                           const Icon(
                                             Icons.straighten,
                                             color: Color.fromARGB(
-                                                255, 207, 124, 118),
+                                                255, 225, 191, 66),
                                             size: 16,
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                              ' ${work['boyut'] != null ? "${work['boyut']} cm" : 'Bilinmiyor'}',
+                                            ' ${work['boyut'] != null ? "${work['boyut']}" : 'Bilinmiyor'}',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
-                                          const SizedBox(width: 10),
                                         ],
-                                      ),const SizedBox(height: 5,),
+                                      ),
+                                      const SizedBox(height: 5),
                                       Text(
-                                            eklemeTarihi,
-                                            style:
-                                                const TextStyle(fontSize: 10),
-                                          ),
+                                        eklemeTarihi,
+                                        style: const TextStyle(fontSize: 10),
+                                      ),
                                     ],
                                   ),
                                 ),

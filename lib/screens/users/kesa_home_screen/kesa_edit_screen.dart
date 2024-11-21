@@ -293,60 +293,69 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
             ),
 
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _miktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedMalzeme!.isEmpty ||
-                      _selectedRenk!.isEmpty ||
-                      _miktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _kesaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedMalzeme!,
-                      renk: _selectedRenk!,
-                      gramaj: _selectedGramaj!,
-                      fine: _selectedFine!,
-                      miktar: int.parse(_miktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Düşüm Yap',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedMalzeme!.isEmpty ||
+                          _selectedRenk!.isEmpty ||
+                          _miktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _kesaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedMalzeme!,
+                          renk: _selectedRenk!,
+                          gramaj: _selectedGramaj!,
+                          fine: _selectedFine!,
+                          miktar: int.parse(_miktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Düşüm Yap',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
+            const SizedBox(
+              height: 20,
+            ),
+            const Divider(),
             /*---------------------------------------------------*/
-
             const SizedBox(
               height: 20,
             ),
@@ -387,64 +396,72 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               icon: Icons.arrow_drop_down,
             ),
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _miktarDonumController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedDonumMalzeme!.isEmpty ||
-                      _selectedDonumRenk!.isEmpty ||
-                      _selectedDonumBoyut!.isEmpty ||
-                      _miktarDonumController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _kesaServices.addOrUpdateUrunStock(
-                      context: context,
-                      urun: _selectedDonumMalzeme!,
-                      urunRenk: _selectedDonumRenk!,
-                      boyut: _selectedDonumBoyut!,
-                      miktar: int.parse(_miktarDonumController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarDonumController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Stok Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedDonumMalzeme!.isEmpty ||
+                          _selectedDonumRenk!.isEmpty ||
+                          _selectedDonumBoyut!.isEmpty ||
+                          _miktarDonumController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _kesaServices.addOrUpdateUrunStock(
+                          context: context,
+                          urun: _selectedDonumMalzeme!,
+                          urunRenk: _selectedDonumRenk!,
+                          boyut: _selectedDonumBoyut!,
+                          miktar: int.parse(_miktarDonumController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Stok Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             const SizedBox(
               height: 20,
             ),
-
+            const Divider(),
             /*---------------------------------------------------*/
-            // Ürün seçme dropdown
+            const SizedBox(
+              height: 20,
+            ),
 
             DropdownSelector(
               hintText: 'Fire Ürün',
@@ -454,8 +471,8 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
                 setState(() {
                   _selectedFireMalzeme = newValue;
                   _selectedFireRenk = null;
-                  _selectedFireFine=null;
-                  _selectedFireGramaj=null;
+                  _selectedFireFine = null;
+                  _selectedFireGramaj = null;
                   _renkler.clear(); // Renk listesini temizle
                   _gramaj.clear();
                   _fine.clear();
@@ -475,11 +492,12 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireRenk = newValue;
-                  _selectedFireFine=null;
-                  _selectedFireGramaj=null;
+                  _selectedFireFine = null;
+                  _selectedFireGramaj = null;
                   _gramaj.clear();
                   _fine.clear();
-                  if (_selectedFireRenk != null||_selectedFireMalzeme != null) {
+                  if (_selectedFireRenk != null ||
+                      _selectedFireMalzeme != null) {
                     _fetchGramaj(_selectedFireMalzeme!, _selectedFireRenk!);
                   }
                 });
@@ -493,7 +511,7 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireGramaj = newValue;
-                  _selectedFireFine=null;
+                  _selectedFireFine = null;
                   _fine.clear();
                   if (_selectedFireGramaj != null) {
                     _fetchFine(_selectedFireMalzeme!, _selectedFireRenk!,
@@ -510,7 +528,9 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireFine = newValue;
-                  if (_selectedFireFine != null||_selectedFireRenk != null||_selectedFireMalzeme != null) {
+                  if (_selectedFireFine != null ||
+                      _selectedFireRenk != null ||
+                      _selectedFireMalzeme != null) {
                     _fetchMiktar(_selectedFireMalzeme!, _selectedFireRenk!,
                         _selectedFireGramaj!, _selectedFireFine!);
                   }
@@ -530,62 +550,68 @@ class _KesaEditScreenState extends State<KesaEditScreen> {
               ),
             ),
             // Miktar girme
-            TextFieldWithCounter(
-              controller: _fireMiktarController,
-              hintText: 'Miktar',
-              icon: Icons.shopping_cart,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_selectedFireMalzeme!.isEmpty ||
-                      _selectedFireRenk!.isEmpty ||
-                      _fireMiktarController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    _kesaServices.decreaseStock(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      renk: _selectedFireRenk!,
-                      gramaj: _selectedFireGramaj!,
-                      fine: _selectedFireFine!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-                    _kesaServices.addFireEntry(
-                      context: context,
-                      malzeme: _selectedFireMalzeme!,
-                      renk: _selectedFireRenk!,
-                      miktar: int.parse(_fireMiktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _fireMiktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Fire Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0, right: 16),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedFireMalzeme!.isEmpty ||
+                          _selectedFireRenk!.isEmpty ||
+                          _fireMiktarController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Lütfen tüm alanları doldurun.")),
+                        );
+                      } else {
+                        _kesaServices.decreaseStock(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          renk: _selectedFireRenk!,
+                          gramaj: _selectedFireGramaj!,
+                          fine: _selectedFireFine!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+                        _kesaServices.addFireEntry(
+                          context: context,
+                          malzeme: _selectedFireMalzeme!,
+                          renk: _selectedFireRenk!,
+                          miktar: int.parse(_fireMiktarController.text),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'Fire Ekle',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
             /*---------------------------------------------------*/
