@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:toyflow/screens/users/transfer_screen/transfer_services/transfer_services.dart';
 
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
 
-class StockFlowScreen extends StatefulWidget {
-  const StockFlowScreen({super.key});
+class StockSellScreen extends StatefulWidget {
+  const StockSellScreen({super.key});
 
   @override
-  State<StockFlowScreen> createState() => _StockFlowScreenState();
+  State<StockSellScreen> createState() => _StockSellScreenState();
 }
 
-class _StockFlowScreenState extends State<StockFlowScreen> {
+class _StockSellScreenState extends State<StockSellScreen> {
   final TextEditingController _miktarController = TextEditingController();
+  final TransferServices _transferServices = TransferServices();
 
   String? _selectedDepo;
   String? _selectedMalzeme;
@@ -28,6 +30,7 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
 
   int miktar = 0; // Güncel stok miktarı
 
+  String? _currentDepoCollection; // Depo collection için bir değişken
   @override
   void initState() {
     super.initState();
@@ -52,6 +55,7 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
   }
 
   Future<void> _fetchUrunler(String depoCollection) async {
+    debugPrint("Fetching renkler from collection: $depoCollection");
     final urunSnapshot =
         await FirebaseFirestore.instance.collection(depoCollection).get();
     setState(() {
@@ -161,27 +165,6 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
     }
   }
 
-  Future<void> _updateMiktar(String depoCollection, String urun, String renk,
-      String boyut, String aksesuar, int miktarGirdi) async {
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection(depoCollection)
-        .where('urun', isEqualTo: urun)
-        .where('renk', isEqualTo: renk)
-        .where('boyut', isEqualTo: boyut)
-        .where('aksesuar', isEqualTo: aksesuar)
-        .get();
-
-    if (docSnapshot.docs.isNotEmpty) {
-      final docId = docSnapshot.docs.first.id;
-      final mevcutMiktar = docSnapshot.docs.first['miktar'] as int;
-
-      await FirebaseFirestore.instance
-          .collection(depoCollection)
-          .doc(docId)
-          .update({'miktar': mevcutMiktar - miktarGirdi});
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,7 +177,6 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           DropdownSelector(
             hintText: 'Depo',
             items: _depolar,
@@ -202,10 +184,10 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedDepo = newValue;
-                final depoCollection =
-                    _depoCollectionMap[newValue!]; // Depoya ait koleksiyon ismi
-                if (depoCollection != null) {
-                  _fetchUrunler(depoCollection);
+                _currentDepoCollection = _depoCollectionMap[
+                    newValue!]; // Depo collection kaydediliyor
+                if (_currentDepoCollection != null) {
+                  _fetchUrunler(_currentDepoCollection!);
                   // Alt alanları sıfırla
                   _selectedMalzeme = null;
                   _selectedRenk = null;
@@ -227,8 +209,9 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedMalzeme = newValue;
-                if (newValue != null) {
-                  _fetchRenkler(_selectedDepo!, newValue);
+                if (newValue != null && _currentDepoCollection != null) {
+                  _fetchRenkler(_currentDepoCollection!,
+                      _selectedMalzeme!); // _currentDepoCollection kullanılıyor
                   // Alt alanları sıfırla
                   _selectedRenk = null;
                   _selectedBoyut = null;
@@ -248,8 +231,9 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedRenk = newValue;
-                if (newValue != null) {
-                  _fetchBoyutlar(_selectedDepo!, _selectedMalzeme!, newValue);
+                if (newValue != null && _currentDepoCollection != null) {
+                  _fetchBoyutlar(_currentDepoCollection!, _selectedMalzeme!,
+                      newValue); // _currentDepoCollection kullanılıyor
                   // Alt alanları sıfırla
                   _selectedBoyut = null;
                   _selectedAksesuar = null;
@@ -267,9 +251,9 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedBoyut = newValue;
-                if (newValue != null) {
+                if (newValue != null && _currentDepoCollection != null) {
                   _fetchAksesuarlar(
-                    _selectedDepo!,
+                    _currentDepoCollection!,
                     _selectedMalzeme!,
                     _selectedRenk!,
                     newValue,
@@ -289,9 +273,9 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedAksesuar = newValue;
-                if (newValue != null) {
+                if (newValue != null && _currentDepoCollection != null) {
                   _fetchMiktar(
-                    _selectedDepo!,
+                    _currentDepoCollection!,
                     _selectedMalzeme!,
                     _selectedRenk!,
                     _selectedBoyut!,
@@ -333,9 +317,14 @@ class _StockFlowScreenState extends State<StockFlowScreen> {
                   );
                   return;
                 }
-
-                _updateMiktar(_selectedDepo!, _selectedMalzeme!, _selectedRenk!,
-                    _selectedBoyut!, _selectedAksesuar!, miktarGirdi);
+                _transferServices.sellMiktar(
+                    context,
+                    _currentDepoCollection!,
+                    _selectedMalzeme!,
+                    _selectedRenk!,
+                    _selectedBoyut!,
+                    _selectedAksesuar!,
+                    miktarGirdi);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 49, 51, 52),

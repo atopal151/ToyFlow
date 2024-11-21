@@ -5,15 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/transfer_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../screens/login_screen/login_screen.dart';
-import '../screens/users_page/paka_home_screen/paka_home_screen.dart';
-import '../screens/users_page/boya_home_screen/boya_home_screen.dart';
-import '../screens/users_page/dika_home_screen/dika_home_screen.dart';
-import '../screens/users_page/doka_home_screen/doka_home_screen.dart';
-import '../screens/users_page/dola_home_screen/dola_home_screen.dart';
-import '../screens/users_page/kesa_home_screen/kesa_home_screen.dart';
+import '../screens/users/paka_home_screen/paka_home_screen.dart';
+import '../screens/users/boya_home_screen/boya_home_screen.dart';
+import '../screens/users/dika_home_screen/dika_home_screen.dart';
+import '../screens/users/doka_home_screen/doka_home_screen.dart';
+import '../screens/users/dola_home_screen/dola_home_screen.dart';
+import '../screens/users/kesa_home_screen/kesa_home_screen.dart';
 import 'product_services.dart';
 
 class AuthService {

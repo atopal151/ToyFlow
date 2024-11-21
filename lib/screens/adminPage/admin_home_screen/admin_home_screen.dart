@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/admin_setting_screen/admin_setting_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/transfer_detail_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/transfer_detail_screen.dart';
 import 'package:toyflow/services/get_data_table.dart';
 import '../../../services/product_services.dart';
 import '../admin_work_shop_screen/work_detail_screen/work_detail_screen.dart';

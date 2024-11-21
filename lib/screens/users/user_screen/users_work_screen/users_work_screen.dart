@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../services/auth_service.dart';
+import '../../../../services/auth_service.dart';
 import 'package:intl/intl.dart';
 
 class UsersWorkScreen extends StatefulWidget {
@@ -353,7 +353,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                             color: Colors.blueGrey, size: 16),
                                         const SizedBox(width: 4),
                                         Text(
-                                          "${work['boyut']} cm",
+                                          "${work['boyut']}",
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w500,
                                               fontSize: 12),

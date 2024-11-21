@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/stok_flow_screen.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/stok_transfer_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/stok_sell_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/stok_transfer_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
-import '../screens/users_page/users_profile_screen/users_profile_screen.dart';
+import '../screens/users/user_screen/users_profile_screen/users_profile_screen.dart';
 import 'product_services.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -164,7 +164,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () {
-                Get.to(()=>const StockFlowScreen());
+                Get.to(()=>const StockSellScreen());
               },
               child: Container(
                 decoration: BoxDecoration(

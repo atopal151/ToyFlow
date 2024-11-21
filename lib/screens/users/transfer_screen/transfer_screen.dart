@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/custom_app_bar.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/stok_transfer_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/stok_transfer_screen.dart';
 import 'transfer_detail_screen.dart';
 
 class TransferScreen extends StatefulWidget {

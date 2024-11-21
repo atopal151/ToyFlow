@@ -4,16 +4,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/users_page/boya_home_screen/boya_home_screen.dart';
-import 'package:toyflow/screens/users_page/transfer_screen/transfer_screen.dart';
+import 'package:toyflow/screens/users/boya_home_screen/boya_home_screen.dart';
+import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../login_screen/login_screen.dart';
-import '../users_page/paka_home_screen/paka_home_screen.dart';
-import '../users_page/dika_home_screen/dika_home_screen.dart';
+import '../users/paka_home_screen/paka_home_screen.dart';
+import '../users/dika_home_screen/dika_home_screen.dart';
 import '../../services/auth_service.dart';
-import '../users_page/doka_home_screen/doka_home_screen.dart';
-import '../users_page/dola_home_screen/dola_home_screen.dart';
-import '../users_page/kesa_home_screen/kesa_home_screen.dart';
+import '../users/doka_home_screen/doka_home_screen.dart';
+import '../users/dola_home_screen/dola_home_screen.dart';
+import '../users/kesa_home_screen/kesa_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:toyflow/screens/users_page/doka_home_screen/doka_edit_screen.dart';
+import 'package:toyflow/screens/users/doka_home_screen/doka_edit_screen.dart';
 import 'package:toyflow/services/product_services.dart';
 import '../../../services/custom_app_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
