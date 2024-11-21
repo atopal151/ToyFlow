@@ -2,16 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:get/get.dart';
-
-import '../../../toy_detail_screen/toy_detail_screen.dart';
-
 class WorkshopListItem extends StatefulWidget {
   final Map<String, dynamic> work;
   final String? atolye;
   final VoidCallback? onTap; // onTap fonksiyonunu opsiyonel olarak ekledik
 
-  const WorkshopListItem({super.key, required this.work, this.atolye, this.onTap});
+  const WorkshopListItem(
+      {super.key, required this.work, this.atolye, this.onTap});
 
   @override
   State<WorkshopListItem> createState() => _WorkshopListItemState();
@@ -49,13 +46,15 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
         onTap: widget.onTap ??
             () {
               // Eğer onTap atanmadıysa ToyDetailScreen'e yönlendir
-              Get.to(() => ToyDetailScreen(
+              /*Get.to(() => ToyDetailScreen(
                     urun: widget.work['urun'],
                     renk: widget.work['renk'],
+                    fine: widget.work['fine'],
+                    gramaj: widget.work['gramaj'],
                     boyut: widget.work['boyut'],
                     aksesuar: widget.work['aksesuar'],
                     atolye: widget.atolye,
-                  ));
+                  ));*/
             },
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -107,50 +106,55 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
                           if (widget.work['renk'] != null)
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.color_lens,
-                                  color: Color.fromARGB(255, 81, 124, 146),
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
                                 Text(
                                   "Renk: " + widget.work['renk'],
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 12),
                                 ),
+                                const SizedBox(width: 10),
                               ],
                             ),
-                          const SizedBox(width: 10),
-                          if (widget.work['boyut'] != null)
+                          if (widget.work['fine'] != null)
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.height,
-                                  color: Color.fromARGB(255, 81, 124, 146),
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4),
                                 Text(
-                                  "Boyut: ${widget.work['boyut']} cm",
+                                  "Fine: " + widget.work['fine'],
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 12),
                                 ),
+                                const SizedBox(width: 10),
+                              ],
+                            ),
+                          if (widget.work['boyut'] != null)
+                            Row(
+                              children: [
+                                Text(
+                                  "Boyut: ${widget.work['boyut']}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
                               ],
                             ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      if (widget.work['gramaj'] != null)
+                        Row(
+                          children: [
+                            Text(
+                              "Gramaj: " + widget.work['gramaj'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 12),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
                       if (widget.work['aksesuar'] != null)
                         Row(
                           children: [
-                            const Icon(
-                              Icons.style,
-                              color: Color.fromARGB(255, 81, 124, 146),
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
                             Text(
                               "Aksesuar: ${widget.work['aksesuar']}",
                               style: const TextStyle(

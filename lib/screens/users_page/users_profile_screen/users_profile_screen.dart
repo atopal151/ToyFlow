@@ -91,7 +91,82 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 103, 168, 105),
+                      color: Color.fromARGB(255, 185, 147, 123),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.hourglass_bottom,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  title: const Text('Gelen Siparişler'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChatScreen()),
+                    );
+                    // Bildirimler ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 119, 119, 118),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.shopping_bag,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  title: const Text('Siparişlerim'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChatScreen()),
+                    );
+                    // Bildirimler ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 119, 119, 118),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.pending_actions,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  title: Text(_userRole != "Transfer"
+                      ? 'Bekleyen İşler'
+                      : 'Sevk Edilecek Stok'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UsersWorkScreen(),
+                      ),
+                    );
+                    // Bekleyen işler ekranına yönlendirme
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 119, 119, 118),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -115,7 +190,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 244, 111, 54),
+                      color: Color.fromARGB(255, 119, 119, 118),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -137,60 +212,35 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   },
                 ),
                 if (_userRole != null && _userRole != "Transfer")
-                 
-                ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 235, 85, 72),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                  title: const Text('Firelerim'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FireTakip()),
-                    );
-                    // Üretim raporları ekranına yönlendirme
-                  },
-                ), ListTile(
+                  ListTile(
                     leading: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 110, 145, 183),
+                      color: Color.fromARGB(255, 119, 119, 118),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.pending_actions,
+                        Icons.delete,
                         color: Colors.white,
                         size: 16,
                       ),
                     ),
-                    title:  Text( _userRole!="Transfer" ? 'Bekleyen İşler':'Sevk Edilecek Stok'),
+                    title: const Text('Firelerim'),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const UsersWorkScreen(),
-                        ),
+                            builder: (context) => const FireTakip()),
                       );
-                      // Bekleyen işler ekranına yönlendirme
+                      // Üretim raporları ekranına yönlendirme
                     },
                   ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 173, 121, 117),
+                      color: Color.fromARGB(255, 195, 99, 99),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

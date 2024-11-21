@@ -19,10 +19,14 @@ class _StockAddScreenState extends State<StockAddScreen> {
   String? _selectedUrun;
   List<String> urun = [];
 
+  String? _selectedDenye;
+  List<String> denye = [];
+
   @override
   void initState() {
     super.initState();
     _fetchIplikList();
+    _fetchDenyeList();
   }
 
   Future<void> _fetchIplikList() async {
@@ -33,13 +37,24 @@ class _StockAddScreenState extends State<StockAddScreen> {
     });
   }
 
+   Future<void> _fetchDenyeList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedDenye = await _dataService.getCollectionData('denye','denye');
+    setState(() {
+      denye = fetchedDenye;
+    });
+  }
+
   void _saveStock() {
     String? urun = _selectedUrun;
+
+    String? denye = _selectedDenye;
     int? miktar = int.tryParse(_miktarController.text);
 
-    if (urun != null && miktar != null && miktar > 0) {
+    if (urun != null && miktar != null && denye != null && miktar > 0) {
       _stockService.saveStock(
         urun: urun,
+        denye:denye,
         miktar: miktar,
         context: context,
       );
@@ -66,6 +81,17 @@ class _StockAddScreenState extends State<StockAddScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedUrun = newValue;
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+             DropdownRegisterSelector(
+              hintText: 'Denye Seç',
+              items: denye,
+              selectedValue: _selectedDenye,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDenye = newValue;
                 });
               },
               icon: Icons.arrow_drop_down,

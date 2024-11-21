@@ -10,6 +10,7 @@ class StockService {
 
   Future<void> saveStock({
     required String urun,
+    required String denye,
     required int miktar,
     required BuildContext context,
   }) async {
@@ -35,6 +36,7 @@ class StockService {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('dokuma_work')
           .where('urun', isEqualTo: urun)
+          .where('denye', isEqualTo: denye)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -49,7 +51,7 @@ class StockService {
             .update({'miktar': yeniMiktar});
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mevcut stoğa $miktar kilo eklendi!')),
+          SnackBar(content: Text('Mevcut stoğa $miktar kilo $urun $denye eklendi!')),
         );
 
         await _recordServices.movementRecord(
@@ -57,12 +59,13 @@ class StockService {
           miktar: miktar,
           islemTuru: 'Stok Güncelleme',
           atelye: 'dokuma',
-          aciklama: 'Mevcut stoğa $miktar kilo $urun eklendi!',
+          aciklama: 'Mevcut stoğa $miktar kilo $urun $denye eklendi!',
         );
       } else {
         // Kayıt yoksa yeni bir kayıt oluştur
         await FirebaseFirestore.instance.collection('dokuma_work').add({
           'urun': urun,
+          'denye': denye,
           'miktar': miktar,
           'tarih': FieldValue.serverTimestamp(),
         });
@@ -76,7 +79,7 @@ class StockService {
           miktar: miktar,
           islemTuru: 'Stok Ekleme',
           atelye: 'dokuma',
-          aciklama: 'Yeni stoğa $miktar kilo $urun eklendi!',
+          aciklama: 'Yeni stoğa $miktar kilo $urun $denye eklendi!',
         );
       }
     } catch (e) {

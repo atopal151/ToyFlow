@@ -13,10 +13,10 @@ class WorkshopDataService {
   static Stream<List<Map<String, dynamic>>> getWorkshopData(String? workshop) {
     switch (workshop) {
       case 'Dokuma Atölyesi':
-        return _getCollectionData('dokuma_stok', ['urun', 'miktar', 'tarih']);
+        return _getCollectionData('dokuma_stok', ['urun','fine','gramaj', 'miktar', 'tarih']);
       case 'Boyama Atölyesi':
         return _getCollectionData(
-            'boyama_stok', ['urun', 'renk', 'miktar', 'tarih']);
+            'boyama_stok', ['urun', 'renk','fine','gramaj', 'miktar', 'tarih']);
       case 'Kesim Atölyesi':
         return _getCollectionData(
             'kesim_stok', ['urun', 'renk', 'boyut', 'miktar', 'tarih']);

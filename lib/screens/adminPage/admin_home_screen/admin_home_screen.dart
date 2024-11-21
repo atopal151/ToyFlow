@@ -322,7 +322,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             end: Alignment.bottomRight,
           ),
           image: DecorationImage(
-            image:  AssetImage(title=="Dokuma Atölyesi" ? "images/dokuma.webp" :title=="Kesim Atölyesi" ? "images/kesim.webp" : title=="Dikim Atölyesi" ? "images/dikim.webp" : title=="Dolum Atölyesi" ? "images/dolum.webp" : title=="Paketleme Atölyesi" ? "images/paketleme.webp" : title=="Boyama Atölyesi" ? "images/boyama.webp" : "" ), // Görselin yolu
+            image:  const AssetImage("images/backgorund.webp" ), // Görselin yolu
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(0.4), // Görselin opacity değeri

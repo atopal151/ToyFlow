@@ -20,7 +20,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
-@override
+  @override
   void initState() {
     super.initState();
     // Türkçe dil desteğini ekleyin
@@ -28,17 +28,16 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
   }
 
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
-
-    
     return FirebaseFirestore.instance
         .collection('dokuma_stok')
-        .orderBy('tarih',descending: true)
+        .orderBy('tarih', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.where((doc) =>
-                doc['miktar'] != 0).map((doc) {
+      return snapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
+          'fine': doc['fine'],
+          'gramaj': doc['gramaj'],
           'miktar': doc['miktar'],
           'tarih': doc['tarih'],
         };
@@ -148,7 +147,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
+                          eklemeTarihi = timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -175,7 +174,7 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                   child: Image.asset(
                                     'images/dokuma.webp', // Profil resmi
                                     width: 60,
-                                    height: 60,
+                                    height: 85,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -199,32 +198,61 @@ class _DokaHomeScreenState extends State<DokaHomeScreen> {
                                         overflow: TextOverflow
                                             .ellipsis, // 2 satırı aşarsa üç nokta ekler
                                       ),
+                                          const SizedBox(height: 5),
                                       Row(
                                         children: [
-                                          
-                                          const SizedBox(width: 10),
+
                                           const Icon(
-                                            Icons.layers_sharp,
-                                            color: Color.fromARGB(
-                                                255, 81, 124, 146),
+                                            Icons.scale,
+                                            color: Color.fromARGB(255, 208, 139, 93),
                                             size: 16,
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            ' ${work['miktar'] ?? 'Bilinmiyor'} adet',
+                                            '${work['gramaj'] ?? '--'}',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          const Icon(
+                                            Icons.line_style,
+                                            color: Color.fromARGB(255, 91, 166, 204),
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${work['fine'] ?? '--'}',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 5,),
-                                      Text(
-                                            eklemeTarihi,
-                                            style:
-                                                const TextStyle(fontSize: 10),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.layers_sharp,
+                                            color: Color.fromARGB(255, 211, 171, 104),
+                                            size: 16,
                                           ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${work['miktar'] ?? '--'} kg',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        eklemeTarihi,
+                                        style: const TextStyle(fontSize: 10),
+                                      ),
                                     ],
-                              
                                   ),
                                 ),
                               ],

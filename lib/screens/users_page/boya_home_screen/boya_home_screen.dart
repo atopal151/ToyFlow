@@ -20,7 +20,7 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
 
-@override
+  @override
   void initState() {
     super.initState();
     // Türkçe dil desteğini ekleyin
@@ -28,17 +28,16 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
   }
 
   Stream<List<Map<String, dynamic>>> getBoyamaStokData() {
-
-    
     return FirebaseFirestore.instance
         .collection('boyama_stok')
-        .orderBy('tarih',descending: true)
+        .orderBy('tarih', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.where((doc) =>
-                doc['miktar'] != 0).map((doc) {
+      return snapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
         return {
           'urun': doc['urun'],
+          'gramaj': doc['gramaj'],
+          'fine': doc['fine'],
           'renk': doc['renk'],
           'miktar': doc['miktar'],
           'tarih': doc['tarih'],
@@ -149,7 +148,7 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
-                          eklemeTarihi =timeago.format(dateTime, locale: 'tr');
+                          eklemeTarihi = timeago.format(dateTime, locale: 'tr');
                         }
 
                         return Padding(
@@ -176,7 +175,7 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
                                   child: Image.asset(
                                     'images/box.webp', // Profil resmi
                                     width: 60,
-                                    height: 60,
+                                    height: 85,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -200,6 +199,8 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
                                         overflow: TextOverflow
                                             .ellipsis, // 2 satırı aşarsa üç nokta ekler
                                       ),
+
+                                      const SizedBox(height: 5,),
                                       Row(
                                         children: [
                                           const Icon(
@@ -210,11 +211,39 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            ' ${work['renk'] ?? 'Bilinmiyor'}',
+                                            ' ${work['renk'] ?? '--'}',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
                                           const SizedBox(width: 10),
+                                          const Icon(
+                                            Icons.scale,
+                                            color: Color.fromARGB(
+                                                255, 81, 124, 146),
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            ' ${work['gramaj'] ?? '--'}',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),const SizedBox(width: 10),
+                                          const Icon(
+                                            Icons.line_style,
+                                            color: Color.fromARGB(255, 94, 164, 102),
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            ' ${work['fine'] ?? '--'}',
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5,),
+                                      Row(
+                                        children: [
                                           const Icon(
                                             Icons.layers_sharp,
                                             color: Color.fromARGB(
@@ -223,20 +252,20 @@ class _BoyaHomeScreenState extends State<BoyaHomeScreen> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            ' ${work['miktar'] ?? 'Bilinmiyor'} adet',
+                                            ' ${work['miktar'] ?? '--'} kg',
                                             style:
                                                 const TextStyle(fontSize: 12),
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 5,),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
                                       Text(
-                                            eklemeTarihi,
-                                            style:
-                                                const TextStyle(fontSize: 10),
-                                          ),
+                                        eklemeTarihi,
+                                        style: const TextStyle(fontSize: 10),
+                                      ),
                                     ],
-                              
                                   ),
                                 ),
                               ],

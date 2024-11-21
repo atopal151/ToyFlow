@@ -145,7 +145,18 @@ class _StockScreenState extends State<StockScreen> {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      ' ${work['miktar'] ?? 'Bilinmiyor'} adet',
+                                      ' ${work['miktar'] ?? 'Bilinmiyor'} kg/adet',
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                     const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.texture,
+                                      color: Color.fromARGB(255, 146, 109, 81),
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      ' ${work['denye'] ?? 'Bilinmiyor'}',
                                       style: const TextStyle(fontSize: 12),
                                     ),
                                   ],

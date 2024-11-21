@@ -9,6 +9,118 @@ class ToyAddServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 
+Future<void> addNewDenye({
+    required String denye,
+    required BuildContext context,
+  }) async {
+    // Yükleme animasyonunu göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
+      await _firestore.collection('denye').add({
+        'denye': denye,
+      });
+
+      // Başarılı bir işlem mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Denye başarıyla kaydedildi!')),
+      );
+    } catch (e) {
+      // Hata mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+      );
+    }
+
+    // Yükleme animasyonunu kapat
+    Navigator.pop(context);
+  }
+
+
+Future<void> addNewFine({
+    required String fine,
+    required BuildContext context,
+  }) async {
+    // Yükleme animasyonunu göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
+      await _firestore.collection('fine').add({
+        'fine': fine,
+      });
+
+      // Başarılı bir işlem mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Fine başarıyla kaydedildi!')),
+      );
+    } catch (e) {
+      // Hata mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+      );
+    }
+
+    // Yükleme animasyonunu kapat
+    Navigator.pop(context);
+  }
+
+
+
+Future<void> addNewGramaj({
+    required String gramaj,
+    required BuildContext context,
+  }) async {
+    // Yükleme animasyonunu göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Firestore'da "toy_name" koleksiyonuna veri ekle
+      await _firestore.collection('gramaj').add({
+        'gramaj': gramaj,
+      });
+
+      // Başarılı bir işlem mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gramaj başarıyla kaydedildi!')),
+      );
+    } catch (e) {
+      // Hata mesajı göster
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
+      );
+    }
+
+    // Yükleme animasyonunu kapat
+    Navigator.pop(context);
+  }
+
+
 Future<void> addNewKumas({
     required String kumas,
     required BuildContext context,

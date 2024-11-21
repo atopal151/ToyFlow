@@ -15,7 +15,7 @@ class DokaEditScreen extends StatefulWidget {
 
 class _DokaEditScreenState extends State<DokaEditScreen> {
   final DokaServices _dokaServices = DokaServices();
-  final DataTableService _dataTableService=DataTableService();
+  final DataTableService _dataTableService = DataTableService();
 
   // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
@@ -24,34 +24,59 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
   // eklenecek kumaş stok
   final TextEditingController _miktarDonumController = TextEditingController();
   String? _selectedDonumMalzeme; // Seçilen kumaş
+  String? _selectedDonumGramaj; // Seçilen gramaj
+  String? _selectedDonumFine; // Seçilen fine
 
   // fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
   String? _selectedFireMalzeme; // Seçilen fire ipliği
+  String? _selectedFireDenye; // Seçilen fire ipliği
 
   List<String> _urunler = []; // İplik listesi
 
+  String? _selectedDenye; // Seçilen fire ipliği
+  List<String> _denye = []; // denye listesi
+
   int miktar = 0; // miktar listesi
 
-  List<String> _kumaslar = [
-  ]; // Kumaş listesi
+  List<String> _kumaslar = []; // Kumaş listesi
+  List<String> _gramaj = []; // Kumaş listesi
+  List<String> _fine = []; // Kumaş listesi
 
   @override
   void initState() {
     super.initState();
     _fetchData(); // Verileri Firebase'den çek
     _fetchKumasList();
+    _fetchGramajList();
+    _fetchfineList();
   }
-
 
   Future<void> _fetchKumasList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
-    List<String> fetchedUrun = await _dataTableService.getCollectionData('kumas','kumas');
+    List<String> fetchedUrun =
+        await _dataTableService.getCollectionData('kumas', 'kumas');
     setState(() {
       _kumaslar = fetchedUrun;
     });
   }
+   Future<void> _fetchGramajList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedGramaj =
+        await _dataTableService.getCollectionData('gramaj', 'gramaj');
+    setState(() {
+      _gramaj = fetchedGramaj;
+    });
+  }
 
+   Future<void> _fetchfineList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedFine =
+        await _dataTableService.getCollectionData('fine', 'fine');
+    setState(() {
+      _fine = fetchedFine;
+    });
+  }
 
   // İplik verilerini Firebase'den çek
   Future<void> _fetchData() async {
@@ -71,11 +96,32 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
     }
   }
 
-  Future<void> _fetchMiktar(String selectedIplik) async {
+  Future<void> _fetchDenye(String selectedDenye) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_work')
+          .where('urun', isEqualTo: selectedDenye)
+          .get();
+
+      setState(() {
+        _denye = snapshot.docs
+            .where((doc) =>
+                doc['miktar'] != 0) // miktar alanı 0 olmayanları filtreliyoruz
+            .map((doc) => doc['denye'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> _fetchMiktar(String selectedIplik, String selectedDenye) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('dokuma_work')
           .where('urun', isEqualTo: selectedIplik)
+          .where('denye', isEqualTo: selectedDenye)
           .get();
 
       setState(() {
@@ -109,20 +155,34 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   _selectedMalzeme = newValue;
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null) {
-                    _fetchMiktar(_selectedMalzeme!);
+                    _fetchDenye(_selectedMalzeme!);
                   }
                 });
               },
               icon: Icons.arrow_drop_down,
             ),
-
+            DropdownSelector(
+              hintText: 'Denye',
+              items: _denye,
+              selectedValue: _selectedDenye,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDenye = newValue;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedDenye != null) {
+                    _fetchMiktar(_selectedMalzeme!, _selectedDenye!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
             Padding(
               padding: const EdgeInsets.only(
                 left: 35.0,
                 top: 15,
               ),
               child: Text(
-                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                'Hazır Stok: $miktar kg', // Güncellenmiş miktarı gösterir
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
               ),
@@ -149,6 +209,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                     _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedMalzeme!,
+                      denye: _selectedDenye!,
                       miktar: int.parse(_miktarController.text),
                     );
                   }
@@ -194,6 +255,28 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
+            DropdownSelector(
+              hintText: 'Gramaj',
+              items: _gramaj,
+              selectedValue: _selectedDonumGramaj,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDonumGramaj = newValue;
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Fine',
+              items: _fine,
+              selectedValue: _selectedDonumFine,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDonumFine = newValue;
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
             // Miktar gir
             TextFieldWithCounter(
               controller: _miktarDonumController,
@@ -205,7 +288,7 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedDonumMalzeme!.isEmpty ||
+                  if (_selectedDonumMalzeme!.isEmpty ||_selectedDonumGramaj!.isEmpty ||_selectedDonumFine!.isEmpty ||
                       _miktarDonumController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -214,6 +297,8 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                   } else {
                     _dokaServices.addOrUpdateKumasStock(
                       context: context,
+                      gramaj: _selectedDonumGramaj!,
+                      fine: _selectedDonumFine!,
                       kumas: _selectedDonumMalzeme!,
                       miktar: int.parse(_miktarDonumController.text),
                     );
@@ -256,9 +341,38 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
+                  if (_selectedFireMalzeme != null) {
+                    _fetchDenye(_selectedFireMalzeme!);
+                  }
                 });
               },
               icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Denye',
+              items: _denye,
+              selectedValue: _selectedFireDenye,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireDenye = newValue;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireDenye != null) {
+                    _fetchMiktar(_selectedFireMalzeme!, _selectedFireDenye!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar kg', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
             ),
             // Miktar gir
             TextFieldWithCounter(
@@ -281,11 +395,13 @@ class _DokaEditScreenState extends State<DokaEditScreen> {
                     _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      denye: _selectedFireDenye!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
                     _dokaServices.addFireEntry(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      denye: _selectedFireDenye!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
                   }

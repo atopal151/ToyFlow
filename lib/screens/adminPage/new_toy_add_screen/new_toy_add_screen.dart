@@ -16,11 +16,59 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
   final TextEditingController _toyRenk = TextEditingController();
   final TextEditingController _toyBoyut = TextEditingController();
   final TextEditingController _toyAksesuar = TextEditingController();
+
+  final TextEditingController _denye = TextEditingController();
+  final TextEditingController _gramaj = TextEditingController();
+  final TextEditingController _fine = TextEditingController();
   final ToyAddServices _toyAddServices =
       ToyAddServices(); // ToyAddServices örneği
 
+  void _addFine() {
+    String fine= _fine.text;
 
-void _addKumas() {
+    if (fine.isNotEmpty) {
+      _toyAddServices.addNewFine(
+        fine: fine,
+        context: context,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
+      );
+    }
+  }
+
+  void _addGramaj() {
+    String gramaj = _gramaj.text;
+
+    if (gramaj.isNotEmpty) {
+      _toyAddServices.addNewGramaj(
+        gramaj: gramaj,
+        context: context,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
+      );
+    }
+  }
+
+  void _addDenye() {
+    String denye = _denye.text;
+
+    if (denye.isNotEmpty) {
+      _toyAddServices.addNewDenye(
+        denye: denye,
+        context: context,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
+      );
+    }
+  }
+
+  void _addKumas() {
     String kumas = _kumas.text;
 
     if (kumas.isNotEmpty) {
@@ -128,41 +176,32 @@ void _addKumas() {
                     icon: Icons.style,
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addName(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Oyuncak İsmi Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addName(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
             Row(
               children: [
@@ -170,44 +209,35 @@ void _addKumas() {
                   child: TextFieldWithRegister(
                     controller: _toyRenk,
                     hintText: 'Yeni Renk',
-                    icon: Icons.style,
+                    icon: Icons.color_lens,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addRenk(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addRenk(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Renk Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
             Row(
               children: [
@@ -215,44 +245,35 @@ void _addKumas() {
                   child: TextFieldWithRegister(
                     controller: _toyBoyut,
                     hintText: 'Yeni Boyut',
-                    icon: Icons.style,
+                    icon: Icons.height,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addBoyut(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addBoyut(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Boyut Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
             Row(
               children: [
@@ -263,42 +284,37 @@ void _addKumas() {
                     icon: Icons.style,
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addAksesuar(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Aksesuar Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addAksesuar(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Divider(),
             Row(
               children: [
                 Expanded(
@@ -308,42 +324,73 @@ void _addKumas() {
                     icon: Icons.style,
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addIp(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'İplik İsmi Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addIp(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _denye,
+                    hintText: 'Yeni Denye İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addDenye(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Divider(),
             Row(
               children: [
                 Expanded(
@@ -353,41 +400,104 @@ void _addKumas() {
                     icon: Icons.style,
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _addKumas(); // Kaydetme işlemi başlatılıyor
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Kumaş İsmi Ekle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addKumas(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _gramaj,
+                    hintText: 'Yeni Gramaj İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addGramaj(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _fine,
+                    hintText: 'Yeni Fine İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, top: 15),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _addFine(); // Kaydetme işlemi başlatılıyor
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -6,6 +6,8 @@ import 'toy_detail_services/toy_detail_services.dart';
 class ToyDetailScreen extends StatefulWidget {
   final String urun;
   final String? renk;
+  final String? fine;
+  final String? gramaj;
   final String? boyut;
   final String? aksesuar;
   final String? atolye;
@@ -17,6 +19,8 @@ class ToyDetailScreen extends StatefulWidget {
     this.boyut,
     this.aksesuar,
     this.atolye,
+    this.fine,
+    this.gramaj,
   });
 
   @override
@@ -42,23 +46,21 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   List<Map<String, dynamic>> _depoDetails = []; // Depo detaylarını tutan liste
 
   @override
-void initState() {
-  super.initState();
+  void initState() {
+    super.initState();
 
-  title = widget.urun;
-  _selectedMalzeme = widget.urun;
-  _selectedRenk = widget.renk;
-  _selectedAksesuar = widget.aksesuar;
-  _selectedBoyut = widget.boyut;
+    title = widget.urun;
+    _selectedMalzeme = widget.urun;
+    _selectedRenk = widget.renk;
+    _selectedAksesuar = widget.aksesuar;
+    _selectedBoyut = widget.boyut;
 
-
-  _fetchUrunList();
-  _fetchRenkList();
-  _fetchBoyutList();
-  _fetchAksesuarList();
-  _getDepoDetails();
-}
-
+    _fetchUrunList();
+    _fetchRenkList();
+    _fetchBoyutList();
+    _fetchAksesuarList();
+    _getDepoDetails();
+  }
 
   Future<void> _fetchUrunList() async {
     List<String> fetchedUrun =

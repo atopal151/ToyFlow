@@ -140,10 +140,12 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
             .update({'miktar': 0});
       }
       _fetchUserRoleAndData();
-       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ürünler Başarıyla Ana Depoya Aktarıldı.')),
-      ); } catch (e) {
-         ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Ürünler Başarıyla Ana Depoya Aktarıldı.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Aktarım sırasında hata oluştu.')),
       );
       print("Aktarım sırasında hata oluştu: $e");
@@ -288,22 +290,62 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  const Icon(Icons.color_lens,
-                                      color: Colors.amber, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    work['renk'] ?? 'Bilinmiyor',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  const Icon(Icons.layers,
-                                      color: Colors.blueGrey, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${work['miktar'] ?? 0} Kg/adet',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  const SizedBox(width: 10),
+                                  if (work['gramaj'] != null)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.scale,
+                                            color: Color.fromARGB(
+                                                255, 208, 139, 93),
+                                            size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          work['gramaj'] ?? '--',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                    ),
+                                  if (work['fine'] != null)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.line_style,
+                                            color: Color.fromARGB(
+                                                255, 91, 166, 204),
+                                            size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          work['fine'] ?? '--',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                    ),
+                                  if (work['denye'] != null)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.texture,
+                                            color: Colors.amber, size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          work['denye'] ?? '--',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  if (work['renk'] != null)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.color_lens,
+                                            color: Colors.amber, size: 16),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          work['renk'] ?? '--',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        const SizedBox(width: 10),
+                                      ],
+                                    ),
+                                  
                                   if (work['boyut'] != null)
                                     Row(
                                       children: [
@@ -318,6 +360,18 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                         ),
                                       ],
                                     ),
+                                ],
+                              ),
+                                    const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Icon(Icons.layers,
+                                      color: Colors.blueGrey, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${work['miktar'] ?? 0} Kg/adet',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                 ],
                               ),
                             ],

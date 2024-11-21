@@ -137,9 +137,11 @@ class KesaServices {
     required BuildContext context,
     required String malzeme,
     required String renk,
+    required String gramaj,
+    required String fine,
     required int miktar,
   }) async {
-    if (malzeme.isEmpty || renk.isEmpty || miktar <= 0) {
+    if (malzeme.isEmpty || renk.isEmpty ||gramaj.isEmpty ||fine.isEmpty || miktar <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
       );
@@ -157,6 +159,8 @@ class KesaServices {
           .collection('boyama_stok')
           .where('urun', isEqualTo: malzeme)
           .where('renk', isEqualTo: renk)
+          .where('gramaj', isEqualTo: gramaj)
+          .where('fine', isEqualTo: fine)
           .get();
 
       if (existingRecord.docs.isNotEmpty) {
@@ -176,7 +180,7 @@ class KesaServices {
             renk: renk,
             miktar: miktar,
             islemTuru: 'Stok Düşümü',
-            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $malzeme düşümü yaptı.',
+            aciklama: '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk  $gramaj $fine $malzeme düşümü yaptı.',
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

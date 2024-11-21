@@ -19,24 +19,32 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
 
   // kullanılan stok
   final TextEditingController _miktarController = TextEditingController();
-  String? _selectedMalzeme; // Seçilen iplik
+  String? _selectedMalzeme; // Seçilen kumaş
+  String? _selectedGramaj; // Seçilen gramaj
+  String? _selectedFine; // Seçilen fine
 
   // eklenecek kumaş stok
   final TextEditingController _miktarDonumController = TextEditingController();
   String? _selectedDonumRenk; // Seçilen kumaş rengi
   String? _selectedDonumMalzeme; // Seçilen kumaş
+  String? _selectedDonumGramaj; // Seçilen gramaj
+  String? _selectedDonumFine; // Seçilen fine
 
   // fire stok
   final TextEditingController _fireMiktarController = TextEditingController();
-  String? _selectedFireMalzeme; // Seçilen fire ipliği
+  String? _selectedFireMalzeme; // Seçilen fire kumaş
+  String? _selectedfireGramaj; // Seçilen fire gramaj
+  String? _selectedFireFine; // Seçilen fire fine
 
-  List<String> _urunler = []; // İplik listesi
-
+  List<String> _urunler = []; // kumaş listesi
+  List<String> _gramaj = []; // Kumaş listesi
+  List<String> _fine = []; // Kumaş listesi
   int miktar = 0; // miktar listesi
 
   List<String> _kumaslar = []; // Kumaş listesi
-
   List<String> _renk = []; // Kumaş listesi
+  List<String> _gramajlar = []; // Kumaş listesi
+  List<String> _finelar = []; // Kumaş listesi
 
   @override
   void initState() {
@@ -44,6 +52,8 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
     _fetchData(); // Verileri Firebase'den çek
     _fetchKumasList();
     _fetchRenkList();
+    _fetchGramajList();
+    _fetchFineList();
   }
 
   Future<void> _fetchKumasList() async {
@@ -54,12 +64,29 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
       _kumaslar = fetchedUrun;
     });
   }
-    Future<void> _fetchRenkList() async {
+
+  Future<void> _fetchRenkList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
     List<String> fetchedUrun =
         await _dataTableService.getCollectionData('toy_renk', 'renk');
     setState(() {
       _renk = fetchedUrun;
+    });
+  }
+    Future<void> _fetchGramajList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedGramaj =
+        await _dataTableService.getCollectionData('gramaj', 'gramaj');
+    setState(() {
+      _gramajlar = fetchedGramaj;
+    });
+  }
+    Future<void> _fetchFineList() async {
+    // 'iplik' koleksiyonundan verileri çekiyoruz
+    List<String> fetchedFine =
+        await _dataTableService.getCollectionData('fine', 'fine');
+    setState(() {
+      _finelar = fetchedFine;
     });
   }
 
@@ -81,11 +108,58 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
     }
   }
 
-  Future<void> _fetchMiktar(String selectedIplik) async {
+  Future<void> _fetchGramaj(String selectedMalzeme) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('dokuma_stok')
-          .where('urun', isEqualTo: selectedIplik)
+          .where('urun', isEqualTo: selectedMalzeme)
+          .get();
+
+      setState(() {
+        _gramaj = snapshot.docs
+            .where((doc) =>
+                doc['miktar'] != 0) // miktar alanı 0 olmayanları filtreliyoruz
+            .map((doc) => doc['gramaj'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> _fetchFine(String selectedMalzeme, String selectedGramaj) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .where('gramaj', isEqualTo: selectedGramaj)
+          .get();
+
+      setState(() {
+        _fine = snapshot.docs
+            .where((doc) =>
+                doc['miktar'] != 0) // miktar alanı 0 olmayanları filtreliyoruz
+            .map((doc) => doc['fine'] as String)
+            .toSet() // Aynı renklerin tekrarını önlemek için set kullanıyoruz
+            .toList();
+      });
+    } catch (e) {
+      print("Renk verileri alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> _fetchMiktar(
+    String selectedMalzeme,
+    String selectedGramaj,
+    String selectedFine,
+  ) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('dokuma_stok')
+          .where('urun', isEqualTo: selectedMalzeme)
+          .where('gramaj', isEqualTo: selectedGramaj)
+          .where('fine', isEqualTo: selectedFine)
           .get();
 
       setState(() {
@@ -117,10 +191,43 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedMalzeme = newValue;
-
+                  _selectedGramaj = null;
+                  _selectedFine = null;
                   // Seçilen ürüne göre renkleri getir
                   if (_selectedMalzeme != null) {
-                    _fetchMiktar(_selectedMalzeme!);
+                    _fetchGramaj(_selectedMalzeme!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Gramaj',
+              items: _gramaj,
+              selectedValue: _selectedGramaj,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedGramaj = newValue;
+                  _selectedFine = null;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null || _selectedGramaj != null) {
+                    _fetchFine(_selectedMalzeme!,_selectedGramaj!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Fine',
+              items: _fine,
+              selectedValue: _selectedFine,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFine = newValue;
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedMalzeme != null|| _selectedGramaj != null|| _selectedFine != null) {
+                    _fetchMiktar(_selectedMalzeme!,_selectedGramaj!,_selectedFine!);
                   }
                 });
               },
@@ -150,7 +257,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedMalzeme!.isEmpty ||
+                  if (_selectedMalzeme!.isEmpty ||_selectedGramaj!.isEmpty ||_selectedFine!.isEmpty ||
                       _miktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -160,6 +267,9 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedMalzeme!,
+                      gramaj: _selectedGramaj!,
+                      fine: _selectedFine!,
+
                       miktar: int.parse(_miktarController.text),
                     );
                   }
@@ -207,6 +317,28 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
             ),
             // Kumaş rengini seç
             DropdownSelector(
+              hintText: 'Gramaj',
+              items: _gramajlar,
+              selectedValue: _selectedDonumGramaj,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDonumGramaj = newValue;
+                });
+              },
+              icon: Icons.color_lens,
+            ),
+             DropdownSelector(
+              hintText: 'Fine',
+              items: _finelar,
+              selectedValue: _selectedDonumFine,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDonumFine = newValue;
+                });
+              },
+              icon: Icons.color_lens,
+            ),
+             DropdownSelector(
               hintText: 'Renk',
               items: _renk,
               selectedValue: _selectedDonumRenk,
@@ -228,7 +360,10 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedDonumMalzeme!.isEmpty||_selectedDonumRenk!.isEmpty  ||
+                  if (_selectedDonumMalzeme!.isEmpty ||
+                      _selectedDonumGramaj!.isEmpty ||
+                      _selectedDonumFine!.isEmpty ||
+                      _selectedDonumRenk!.isEmpty ||
                       _miktarDonumController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -238,6 +373,8 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     _dokaServices.addOrUpdateKumasStock(
                       context: context,
                       kumas: _selectedDonumMalzeme!,
+                      gramaj:_selectedDonumGramaj!,
+                      fine:_selectedDonumFine!,
                       kumasRenk: _selectedDonumRenk!,
                       miktar: int.parse(_miktarDonumController.text),
                     );
@@ -280,9 +417,59 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedFireMalzeme = newValue;
+                   _selectedfireGramaj = null;
+                  _selectedFireFine = null;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireMalzeme != null) {
+                    _fetchGramaj(_selectedFireMalzeme!);
+                  }
                 });
               },
               icon: Icons.arrow_drop_down,
+            ),
+             DropdownSelector(
+              hintText: 'Gramaj',
+              items: _gramaj,
+              selectedValue: _selectedfireGramaj,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedfireGramaj = newValue;
+                  _selectedFireFine = null;
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireMalzeme != null || _selectedfireGramaj != null) {
+                    _fetchFine(_selectedFireMalzeme!,_selectedfireGramaj!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Fine',
+              items: _fine,
+              selectedValue: _selectedFireFine,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFireFine = newValue;
+
+                  // Seçilen ürüne göre renkleri getir
+                  if (_selectedFireMalzeme != null|| _selectedfireGramaj != null|| _selectedFireFine != null) {
+                    _fetchMiktar(_selectedFireMalzeme!,_selectedfireGramaj!,_selectedFireFine!);
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
+              ),
+              child: Text(
+                'Hazır Stok: $miktar adet', // Güncellenmiş miktarı gösterir
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
             ),
 
             // Miktar gir
@@ -296,7 +483,7 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedFireMalzeme!.isEmpty  ||
+                  if (_selectedFireMalzeme!.isEmpty ||_selectedFireFine!.isEmpty ||_selectedfireGramaj!.isEmpty ||
                       _fireMiktarController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -306,11 +493,15 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     _dokaServices.decreaseStock(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      gramaj: _selectedfireGramaj!,
+                      fine:_selectedFireFine!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
                     _dokaServices.addFireEntry(
                       context: context,
                       malzeme: _selectedFireMalzeme!,
+                      gramaj: _selectedfireGramaj!,
+                      fine: _selectedFireFine!,
                       miktar: int.parse(_fireMiktarController.text),
                     );
                   }
