@@ -61,13 +61,7 @@ class DokaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -135,13 +129,7 @@ class DokaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       // Denye ve malzeme değerine göre stok sorgulama
@@ -191,13 +179,7 @@ class DokaServices {
     required BuildContext context,
     required int miktar,
   }) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
     try {
       await _firestore.collection('dokuma_fire').add({
         'urun': malzeme,

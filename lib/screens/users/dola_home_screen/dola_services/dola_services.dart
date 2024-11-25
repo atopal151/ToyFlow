@@ -67,13 +67,7 @@ class DolaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -151,13 +145,7 @@ class DolaServices {
      
       return;
     }
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dikim_stok')
@@ -215,13 +203,7 @@ class DolaServices {
     required int miktar,
   }) async {
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
     try {
       await _firestore.collection('dolum_fire').add({
         'urun': malzeme,

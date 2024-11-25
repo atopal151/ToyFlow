@@ -102,13 +102,7 @@ class TransferServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
 
     try {
       // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz
@@ -197,15 +191,7 @@ Future<void> sellMiktar(
     return;
   }
 
-  // Yüklenme göstergesi göster
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return const Center(child: CircularProgressIndicator());
-    },
-  );
-
+  
   try {
     final docSnapshot = await FirebaseFirestore.instance
         .collection(depoCollection)
@@ -269,13 +255,7 @@ Future<void> sellMiktar(
      
       return;
     }
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz

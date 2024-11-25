@@ -35,7 +35,7 @@ class _MyOrdersState extends State<MyOrders> {
   void initState() {
     super.initState();
     print(productServices.role.value);
-    print("object");
+    print("buradayız");
   }
 
   Future<void> transferOrder(String orderId) async {
@@ -106,6 +106,7 @@ class _MyOrdersState extends State<MyOrders> {
           ],
         ),
         body: Obx(() {
+          print(productServices.role.value);
           if (productServices.role.value.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -233,7 +234,7 @@ class _MyOrdersState extends State<MyOrders> {
                                       boyut: orderData['boyut'],
                                       urunRenk: orderData['renk']);
                                 }
-                                deleteOrder(order.id);
+                                transferOrder(order.id);
                               },
                             ),
                         ],

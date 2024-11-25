@@ -64,13 +64,7 @@ class BoyaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -139,13 +133,7 @@ class BoyaServices {
 
       return;
     }
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dokuma_stok')
@@ -192,13 +180,7 @@ class BoyaServices {
     required BuildContext context,
     required int miktar,
   }) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
 
     try {
       await _firestore.collection('boyama_fire').add({

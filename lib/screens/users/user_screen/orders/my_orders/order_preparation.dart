@@ -21,6 +21,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
   final ProductServices productServices = Get.find<ProductServices>();
   final DataTableService _dataTableService = DataTableService();
   final TextEditingController _miktarController = TextEditingController();
+  final TextEditingController _aciklamaController = TextEditingController();
 
   String? _selectedUrun;
   String? _selectedIpler;
@@ -276,6 +277,11 @@ class _OrderPreparationState extends State<OrderPreparation> {
                     });
                   },
                 ),
+               TextFieldWithCounter(
+                      controller: _aciklamaController,
+                      hintText: 'Açıklama',
+                      icon: Icons.description,
+                    ),
               Row(
                 children: [
                   Expanded(
@@ -313,6 +319,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               fine: _selectedFine,
                               denye: _selectedDenye,
                               miktar: _miktarController.text,
+                              aciklama:_aciklamaController.text,
                               status: "Bekliyor",
                               role: productServices.role.value);
 

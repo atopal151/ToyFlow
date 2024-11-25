@@ -68,13 +68,7 @@ class PakaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -156,13 +150,7 @@ class PakaServices {
      
       return;
     }
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
     try {
       QuerySnapshot existingRecord = await _firestore
           .collection('dolum_stok')
@@ -219,13 +207,7 @@ class PakaServices {
     required String renk,
     required int miktar,
   }) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
     try {
       await _firestore.collection('paketleme_fire').add({
         'urun': malzeme,

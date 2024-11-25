@@ -15,6 +15,7 @@ Future<void> saveOrderToFirestore({
   required String? denye,
   required String miktar,
   required String role,
+  required String? aciklama,
   required String status,
   required BuildContext context, // Context ekliyoruz
 }) async {
@@ -43,6 +44,7 @@ Future<void> saveOrderToFirestore({
       'denye': denye ?? '',
       'miktar': miktar,
       'role': role,
+      "aciklama":aciklama,
       'status':status,
       'timestamp': FieldValue.serverTimestamp(), // Sipariş zamanı
     });

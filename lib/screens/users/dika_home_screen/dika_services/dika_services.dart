@@ -65,13 +65,7 @@ class DikaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+    
 
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -141,13 +135,7 @@ class DikaServices {
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
 
     try {
       QuerySnapshot existingRecord = await _firestore
@@ -198,13 +186,7 @@ class DikaServices {
     required String renk,
     required int miktar,
   }) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+   
     try {
       await _firestore.collection('dikim_fire').add({
         'urun': malzeme,
