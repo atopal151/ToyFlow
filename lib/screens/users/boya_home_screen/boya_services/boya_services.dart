@@ -8,6 +8,7 @@ import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/record_services.dart';
 
 import '../../../../services/product_services.dart';
+import '../../../../services/user_services/alert_dialog_service.dart';
 
 class BoyaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,9 +59,8 @@ class BoyaServices {
     required int miktar,
   }) async {
     if (kumas.isEmpty || kumasRenk.isEmpty || miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
-      );
+      showAlertDialog(context, "Gerekli alanları doldur.");
+
       return;
     }
 
@@ -89,12 +89,8 @@ class BoyaServices {
             .collection('boyama_stok')
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar});
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo  $kumasRenk $kumas $gramaj $fine  ekledi!')),
-        );
+        showAlertDialog(context,
+            '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo  $kumasRenk $kumas $gramaj $fine  ekledi!');
 
         await _recordMovement(
           malzeme: kumas,
@@ -113,10 +109,7 @@ class BoyaServices {
           'miktar': miktar,
           'tarih': FieldValue.serverTimestamp(),
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeni stok başarıyla kaydedildi!')),
-        );
+        showAlertDialog(context, "Yeni stok başarıyla kaydedildi!");
 
         await _recordMovement(
           malzeme: kumas,
@@ -128,9 +121,7 @@ class BoyaServices {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
-      );
+      showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e");
     } finally {
       Navigator.pop(context); // Yükleme animasyonunu kapat
     }
@@ -144,9 +135,8 @@ class BoyaServices {
     required int miktar,
   }) async {
     if (malzeme.isEmpty || miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-      );
+      showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+
       return;
     }
     showDialog(
@@ -172,9 +162,7 @@ class BoyaServices {
           await _firestore.collection('dokuma_stok').doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Stok başarıyla güncellendi.")),
-          );
+          showAlertDialog(context, "Stok başarıyla güncellendi.");
 
           await _recordMovement(
             malzeme: malzeme,
@@ -184,19 +172,14 @@ class BoyaServices {
                 '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo  $malzeme $gramaj $fine düşümü yaptı.',
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Yetersiz stok miktarı.")),
-          );
+          
+          showAlertDialog(context, "Yetersiz stok miktarı.");
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
-        );
+        showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
-      );
+      showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
     } finally {
       Navigator.pop(context); // Yükleme animasyonunu kapat
     }

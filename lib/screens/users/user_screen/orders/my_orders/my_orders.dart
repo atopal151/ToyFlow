@@ -3,9 +3,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/users/boya_home_screen/boya_services/boya_services.dart';
+import 'package:toyflow/screens/users/dika_home_screen/dika_services/dika_services.dart';
+import 'package:toyflow/screens/users/dola_home_screen/dola_services/dola_services.dart';
+import 'package:toyflow/screens/users/kesa_home_screen/kesa_services/kesa_services.dart';
+import 'package:toyflow/screens/users/paka_home_screen/paka_services/paka_services.dart';
 import 'package:toyflow/screens/users/user_screen/orders/my_orders/order_preparation.dart';
 
 import '../../../../../services/product_services.dart';
+import '../../../../../services/user_services/alert_dialog_service.dart';
+import '../../../doka_home_screen/doka_services/doka_services.dart';
 
 class MyOrders extends StatefulWidget {
   const MyOrders({super.key});
@@ -17,6 +24,12 @@ class MyOrders extends StatefulWidget {
 class _MyOrdersState extends State<MyOrders> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices productServices = Get.find<ProductServices>();
+  final DokaServices dokaServices = DokaServices();
+  final BoyaServices boyaServices = BoyaServices();
+  final KesaServices kesaServices = KesaServices();
+  final DikaServices dikaServices = DikaServices();
+  final DolaServices dolaServices = DolaServices();
+  final PakaServices pakaServices = PakaServices();
 
   @override
   void initState() {
@@ -28,13 +41,10 @@ class _MyOrdersState extends State<MyOrders> {
   Future<void> transferOrder(String orderId) async {
     try {
       await _firestore.collection('orders').doc(orderId).delete();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Sipariş başarıyla silindi."),
-      ));
+      showAlertDialog(context, "Sipariş başarıyla stoğa aktarıldı.");
+      
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Hata $e"),
-      ));
+      showAlertDialog(context, "Hata $e");
     }
   }
 
@@ -192,7 +202,38 @@ class _MyOrdersState extends State<MyOrders> {
                               icon: const Icon(Icons.transfer_within_a_station,
                                   color: Color.fromARGB(255, 241, 126, 38)),
                               onPressed: () {
-                                transferOrder(order.id);
+                                if (productServices.role.value == "Dokuma") {
+                                  dokaServices.addOrUpdateKumasStock(
+                                    context: context,
+                                    kumas: orderData['urun'],
+                                    gramaj: orderData['gramaj'],
+                                    fine: orderData['fine'],
+                                   miktar: int.tryParse(orderData['miktar'].toString()) ?? 0,
+
+                                  );
+                                }
+                                if (productServices.role.value == "Boyama") {
+                                  boyaServices.addOrUpdateKumasStock(
+                                      context: context,
+                                      kumas: orderData['urun'],
+                                      gramaj: orderData['gramaj'],
+                                      fine: orderData['fine'],
+                                      miktar: int.tryParse(orderData['miktar'].toString()) ?? 0,
+
+                                      kumasRenk: orderData['renk']);
+                                }
+
+                                if (productServices.role.value == "Dikim") {
+                                  dikaServices.addOrUpdateUrunStock(
+                                      context: context,
+                                      urun: orderData['urun'],
+                                      miktar: int.tryParse(
+                                              orderData['miktar'].toString()) ??
+                                          0,
+                                      boyut: orderData['boyut'],
+                                      urunRenk: orderData['renk']);
+                                }
+                                deleteOrder(order.id);
                               },
                             ),
                         ],

@@ -8,6 +8,8 @@ import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/product_services.dart';
 import 'package:toyflow/services/record_services.dart';
 
+import '../../../../services/user_services/alert_dialog_service.dart';
+
 class DikaServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices _productServices = Get.find();
@@ -59,9 +61,7 @@ class DikaServices {
     required int miktar,
   }) async {
     if (urun.isEmpty || urunRenk.isEmpty || boyut.isEmpty || miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
-      );
+      showAlertDialog(context, "Gerekli Alanları Doldur!!");
       return;
     }
 
@@ -90,11 +90,8 @@ class DikaServices {
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar});
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!')),
-        );
+        showAlertDialog(context,
+            '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!');
 
         await _recordMovement(
           malzeme: urun,
@@ -114,9 +111,7 @@ class DikaServices {
           'tarih': FieldValue.serverTimestamp(),
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeni stok başarıyla kaydedildi!')),
-        );
+        showAlertDialog(context, "Yeni Stok Başarı ile Kaydedildi.");
 
         await _recordMovement(
           malzeme: urun,
@@ -129,11 +124,7 @@ class DikaServices {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
-      );
-    } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
+      showAlertDialog(context, "Hata $e");
     }
   }
 
@@ -146,9 +137,7 @@ class DikaServices {
     required int miktar,
   }) async {
     if (malzeme.isEmpty || renk.isEmpty || boyut.isEmpty || miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-      );
+      showAlertDialog(context, "Lütfen tüm alanları doldurun.");
       return;
     }
 
@@ -176,9 +165,8 @@ class DikaServices {
           await _firestore.collection('kesim_stok').doc(doc.id).update({
             'miktar': currentMiktar - miktar,
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Stok başarıyla güncellendi.")),
-          );
+
+          showAlertDialog(context, "stok başarı ile güncellendi.");
 
           await _recordMovement(
             malzeme: malzeme,
@@ -190,19 +178,13 @@ class DikaServices {
                 '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Stoktan $miktar kilo $renk $boyut cm $malzeme düşümü yaptı.',
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Yetersiz stok miktarı.")),
-          );
+          showAlertDialog(context, "Yetersiz stok miktarı.");
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
-        );
+        showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
-      );
+      showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
     } finally {
       Navigator.pop(context); // Dialogu kapatmak için ekledik
     }

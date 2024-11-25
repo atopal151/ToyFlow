@@ -8,6 +8,8 @@ import 'package:toyflow/services/auth_service.dart';
 import 'package:toyflow/services/product_services.dart';
 import 'package:toyflow/services/record_services.dart';
 
+import '../../../../services/user_services/alert_dialog_service.dart';
+
 class TransferServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices _productServices = Get.find();
@@ -94,9 +96,9 @@ class TransferServices {
         boyut.isEmpty ||
         aksesuar.isEmpty ||
         miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gerekli Alanları Doldur!!')),
-      );
+
+      showAlertDialog(context, "Gerekli Alanları Doldur! ");
+      
       return;
     }
 
@@ -128,11 +130,9 @@ class TransferServices {
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar});
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı!')),
-        );
+
+      showAlertDialog(context, "$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı! ");
+       
 
         await _recordMovement(
           malzeme: urun,
@@ -154,9 +154,8 @@ class TransferServices {
           'tarih': FieldValue.serverTimestamp(),
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$addDepo stoğuna ürün başarıyla aktarıldı!')),
-        );
+      showAlertDialog(context, "Ha$addDepo stoğuna ürün başarıyla aktarıldı!ta ");
+        
 
         await _recordMovement(
           malzeme: urun,
@@ -170,9 +169,9 @@ class TransferServices {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
-      );
+
+      showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
+      
     } finally {
       Navigator.pop(context);
     }
@@ -192,9 +191,9 @@ Future<void> sellMiktar(
       boyut.isEmpty ||
       aksesuar.isEmpty ||
       miktarGirdi <= 0) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-    );
+
+      showAlertDialog(context, "Lütfen tüm alanları doldurun. ");
+   
     return;
   }
 
@@ -226,24 +225,23 @@ Future<void> sellMiktar(
             .doc(docId)
             .update({'miktar': mevcutMiktar - miktarGirdi});
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Stok düşümü başarıyla gerçekleştirildi.")),
-        );
+      showAlertDialog(context, "Stok düşümü başarıyla gerçekleştirildi. ");
+       
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Yetersiz stok miktarı.")),
-        );
+
+      showAlertDialog(context, "Yetersiz stok miktarı. ");
+       
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Belirtilen ürün bulunamadı.")),
-      );
+
+      showAlertDialog(context, "Belirtilen ürün bulunamadı. ");
+      
     }
   } catch (e) {
     print("Hata: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("İşlem sırasında bir hata oluştu: $e")),
-    );
+
+      showAlertDialog(context, "İşlem sırasında bir hata oluştu: $e ");
+   
   } finally {
     // Yüklenme göstergesini kapat
     Navigator.of(context).pop();
@@ -266,9 +264,9 @@ Future<void> sellMiktar(
         boyut.isEmpty ||
         aksesuar.isEmpty ||
         miktar <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen tüm alanları doldurun.")),
-      );
+
+      showAlertDialog(context, "Lütfen tüm alanları doldurun. ");
+     
       return;
     }
     showDialog(
@@ -299,12 +297,8 @@ Future<void> sellMiktar(
             'miktar': currentMiktar - miktar,
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text("$downDepo stoğundan ürün düşümü başarıyla yapıldı.")),
-          );
-
+      showAlertDialog(context, "$downDepo stoğundan ürün düşümü başarıyla yapıldı. ");
+         
           await _recordMovement(
             malzeme: malzeme,
             boyut: boyut,
@@ -316,20 +310,20 @@ Future<void> sellMiktar(
                 '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $downDepo $miktar adet $renk $boyut cm $malzeme düşüm yaptı.',
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Yetersiz stok miktarı.")),
-          );
+
+      showAlertDialog(context, "Yetersiz stok miktarı. ");
+          
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Böyle bir ürün bulunmamaktadır.")),
-        );
+
+      showAlertDialog(context, "Böyle bir ürün bulunmamaktadır. ");
+        
       }
     } catch (e) {
+
+      showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
       print("Hata: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Kaydetme işlemi sırasında hata oluştu: $e")),
-      );
+      
     } finally {
       Navigator.pop(context);
     }
