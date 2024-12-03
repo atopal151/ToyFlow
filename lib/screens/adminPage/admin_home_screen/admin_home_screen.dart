@@ -21,7 +21,7 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
   final AdminHomeService adminHomeService = AdminHomeService();
-  final DataTableService _dataTableService=DataTableService();
+  final DataTableService _dataTableService = DataTableService();
 
   int dokumaAllStock = 0;
   int boyamaAllStock = 0;
@@ -39,7 +39,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   List<String> _depoName = []; // İplik listesi
 
-  List<String> _depoCollection= []; // İplik listesi
+  List<String> _depoCollection = []; // İplik listesi
   @override
   void initState() {
     super.initState();
@@ -47,6 +47,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     _fetchDepoTitleList();
     _fetchDepoCollectionList();
   }
+
   Future<void> _fetchDepoTitleList() async {
     // 'iplik' koleksiyonundan verileri çekiyoruz
     List<String> fetchedUrun =
@@ -153,20 +154,34 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
               return Stack(
                 children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications,
-                      color: Colors.black,
-                      size: 30,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 0.5,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Icon(
+                          Icons.notifications,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                      onTap: () {
+                        Get.to(() => const MoverScreen());
+                      },
                     ),
-                    onPressed: () {
-                      Get.to(() => const MoverScreen());
-                    },
                   ),
                   if (unreadCount > 0)
                     Positioned(
-                      right: 8,
-                      top: 8,
+                      right: 5,
+                      top: 1,
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -227,7 +242,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   "Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
               const SizedBox(
                 height: 10,
-              ), _buildAtolyeRow(
+              ),
+              _buildAtolyeRow(
                   "Boyama Atölyesi", boyamaAllStock, boyamaAtolyesiStock),
               const SizedBox(
                 height: 10,
@@ -253,7 +269,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const Text(
                 "Depolar",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),const SizedBox(height: 10),
+              ),
+              const SizedBox(height: 10),
               // Dinamik olarak depo listeleme
               ListView.builder(
                 shrinkWrap: true,
@@ -322,7 +339,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             end: Alignment.bottomRight,
           ),
           image: DecorationImage(
-            image:  const AssetImage("images/backgorund.webp" ), // Görselin yolu
+            image: const AssetImage("images/backgorund.webp"), // Görselin yolu
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(0.4), // Görselin opacity değeri
@@ -341,23 +358,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         ),
         child: Row(
           children: [
-            
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               
                 Row(
                   children: [
-                     Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-            
-                const SizedBox(width: 4),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
                     const Text(
                       " Stok:",
                       style: TextStyle(
@@ -367,8 +381,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     Text(
                       count,
-                      style:
-                          const TextStyle(fontSize: 13, color: Colors.white),
+                      style: const TextStyle(fontSize: 13, color: Colors.white),
                     )
                   ],
                 ),
@@ -384,7 +397,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.transfer_within_a_station,color:Colors.grey, size: 16),
+                      const Icon(Icons.transfer_within_a_station,
+                          color: Colors.grey, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         percentage,
@@ -400,7 +414,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ),
               ],
             ),
-            
           ],
         ),
       ),

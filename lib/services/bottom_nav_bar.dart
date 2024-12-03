@@ -76,7 +76,7 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
       margin: EdgeInsets.only(bottom: isSelected ? 6 : 0), // Daha küçük zıplama etkisi
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? Colors.black : Colors.transparent,
+        color: isSelected ? Colors.black87 : Colors.transparent,
       ),
       padding: EdgeInsets.all(isSelected ? 8.0 : 4.0), // Daha ince padding
       child: Icon(

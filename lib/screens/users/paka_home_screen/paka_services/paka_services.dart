@@ -86,7 +86,7 @@ class PakaServices {
         await _firestore
             .collection('paketleme_stok')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
       showAlertDialog(context, "$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar adet ürün ekledi! ");
         
@@ -128,8 +128,7 @@ class PakaServices {
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
     
     } finally {
-      Navigator.pop(context);
-    }
+       }
   }
 
 //-----stok düşümü-------
@@ -195,8 +194,7 @@ class PakaServices {
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e ");
      
     } finally {
-      Navigator.pop(context);
-    }
+      }
   }
 
 //----fire kayıt alanı-----
@@ -232,7 +230,6 @@ class PakaServices {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
     } finally {
-      Navigator.pop(context);
     }
   }
 }

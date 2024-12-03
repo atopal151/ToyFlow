@@ -14,31 +14,32 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
     {
       'title': 'Dokuma Atölyesi',
       'icon': Icons.abc_sharp,
-      'image': 'images/dokuma.webp'
-    },{
+      'image': 'images/backgorund.webp'
+    },
+    {
       'title': 'Boyama Atölyesi',
       'icon': Icons.color_lens,
-      'image': 'images/boyama.webp'
+      'image': 'images/backgorund.webp'
     },
     {
       'title': 'Kesim Atölyesi',
-      'icon': Icons.cut, 
-      'image': 'images/kesim.webp'
+      'icon': Icons.cut,
+      'image': 'images/backgorund.webp'
     },
     {
       'title': 'Dikim Atölyesi',
       'icon': Icons.ad_units,
-      'image': 'images/dikim.webp'
+      'image': 'images/backgorund.webp'
     },
     {
       'title': 'Dolum Atölyesi',
       'icon': Icons.local_florist,
-      'image': 'images/dolum.webp'
+      'image': 'images/backgorund.webp'
     },
     {
       'title': 'Paketleme Atölyesi',
       'icon': Icons.archive,
-      'image': 'images/paketleme.webp'
+      'image': 'images/backgorund.webp'
     },
   ];
 
@@ -75,6 +76,7 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
+                 
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
                     image: AssetImage(
@@ -94,17 +96,20 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
                   ],
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 8),
-                    Text(
-                      workshop['title'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        workshop['title'],
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

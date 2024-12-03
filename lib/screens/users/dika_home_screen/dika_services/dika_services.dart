@@ -82,7 +82,7 @@ class DikaServices {
         await _firestore
             .collection('dikim_stok')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
         showAlertDialog(context,
             '$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi!');
@@ -174,8 +174,7 @@ class DikaServices {
     } catch (e) {
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
     } finally {
-      Navigator.pop(context); // Dialogu kapatmak için ekledik
-    }
+       }
   }
 
 //----fire kayıt alanı-----
@@ -211,7 +210,6 @@ class DikaServices {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
-    }
+      }
   }
 }

@@ -12,7 +12,9 @@ import 'package:toyflow/screens/users/user_screen/orders/my_orders/order_prepara
 
 import '../../../../../services/product_services.dart';
 import '../../../../../services/user_services/alert_dialog_service.dart';
+import '../../../../adminPage/stock_screen/stock_services/stock_services.dart';
 import '../../../doka_home_screen/doka_services/doka_services.dart';
+import '../../../transfer_screen/transfer_services/transfer_services.dart';
 
 class MyOrders extends StatefulWidget {
   const MyOrders({super.key});
@@ -24,12 +26,14 @@ class MyOrders extends StatefulWidget {
 class _MyOrdersState extends State<MyOrders> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices productServices = Get.find<ProductServices>();
+  final StockService stockService = StockService();
   final DokaServices dokaServices = DokaServices();
   final BoyaServices boyaServices = BoyaServices();
   final KesaServices kesaServices = KesaServices();
   final DikaServices dikaServices = DikaServices();
   final DolaServices dolaServices = DolaServices();
   final PakaServices pakaServices = PakaServices();
+  final TransferServices transferServices = TransferServices();
 
   @override
   void initState() {
@@ -38,44 +42,54 @@ class _MyOrdersState extends State<MyOrders> {
     print("buradayız");
   }
 
-  Future<void> transferOrder(String orderId) async {
-    try {
-      await _firestore.collection('orders').doc(orderId).delete();
+ Future<void> transferOrder(String orderId) async {
+  try {
+    await _firestore.collection('orders').doc(orderId).delete();
+    if (mounted) {
       showAlertDialog(context, "Sipariş başarıyla stoğa aktarıldı.");
-      
-    } catch (e) {
+    }
+  } catch (e) {
+    if (mounted) {
       showAlertDialog(context, "Hata $e");
     }
   }
+}
+
 
   Future<void> deleteOrder(String orderId) async {
-    try {
-      await _firestore.collection('orders').doc(orderId).delete();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Sipariş başarıyla silindi."),
-      ));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Hata $e"),
-      ));
+  try {
+    await _firestore.collection('orders').doc(orderId).delete();
+    if (mounted) {
+     
+      showAlertDialog(context, "Sipariş başaıyla silindi. ");
+    }
+  } catch (e) {
+    if (mounted) {
+      
+      showAlertDialog(context, "Hata $e ");
     }
   }
+}
 
-  Future<void> approveOrder(String orderId) async {
-    try {
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .update({'status': 'Tamamlandı'});
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Sipariş onaylandı."),
-      ));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Hata $e"),
-      ));
+Future<void> approveOrder(String orderId) async {
+  try {
+    await _firestore
+        .collection('orders')
+        .doc(orderId)
+        .update({'status': 'Tamamlandı'});
+    if (mounted) {
+
+      showAlertDialog(context, "Sipariş onaylandı. ");
+      
+    }
+  } catch (e) {
+    if (mounted) {
+
+      showAlertDialog(context, "Hata $e ");
+      
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +205,7 @@ class _MyOrdersState extends State<MyOrders> {
                                 approveOrder(order.id);
                               },
                             ),
-                          if (status != 'Tamamlandı')
+                          if (status == 'Tamamlandı')
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () {
@@ -203,28 +217,53 @@ class _MyOrdersState extends State<MyOrders> {
                               icon: const Icon(Icons.transfer_within_a_station,
                                   color: Color.fromARGB(255, 241, 126, 38)),
                               onPressed: () {
-                                if (productServices.role.value == "Dokuma") {
-                                  dokaServices.addOrUpdateKumasStock(
-                                    context: context,
-                                    kumas: orderData['urun'],
-                                    gramaj: orderData['gramaj'],
-                                    fine: orderData['fine'],
-                                   miktar: int.tryParse(orderData['miktar'].toString()) ?? 0,
+                                print(orderData['iplik']);
 
+                                print(orderData['denye']);
+                                if (productServices.role.value == "Dokuma") {
+                                  stockService.saveStock(
+                                    context: context,
+                                    urun: orderData['iplik'],
+                                    denye: orderData['denye'],
+                                    miktar: int.tryParse(
+                                            orderData['miktar'].toString()) ??
+                                        0,
                                   );
                                 }
                                 if (productServices.role.value == "Boyama") {
-                                  boyaServices.addOrUpdateKumasStock(
-                                      context: context,
-                                      kumas: orderData['urun'],
-                                      gramaj: orderData['gramaj'],
-                                      fine: orderData['fine'],
-                                      miktar: int.tryParse(orderData['miktar'].toString()) ?? 0,
-
-                                      kumasRenk: orderData['renk']);
+                                  dokaServices.addOrUpdateKumasStock(
+                                    context: context,
+                                    kumas: orderData['kumas'],
+                                    gramaj: orderData['gramaj'],
+                                    fine: orderData['fine'],
+                                    miktar: int.tryParse(
+                                            orderData['miktar'].toString()) ??
+                                        0,
+                                  );
                                 }
 
+                                if (productServices.role.value == "Kesim") {
+                                  boyaServices.addOrUpdateKumasStock(
+                                      context: context,
+                                      kumas: orderData['kumas'],
+                                      gramaj: orderData['gramaj'],
+                                      fine: orderData['fine'],
+                                      miktar: int.tryParse(
+                                              orderData['miktar'].toString()) ??
+                                          0,
+                                      kumasRenk: orderData['renk']);
+                                }
                                 if (productServices.role.value == "Dikim") {
+                                  kesaServices.addOrUpdateUrunStock(
+                                      context: context,
+                                      urun: orderData['urun'],
+                                      miktar: int.tryParse(
+                                              orderData['miktar'].toString()) ??
+                                          0,
+                                      boyut: orderData['boyut'],
+                                      urunRenk: orderData['renk']);
+                                }
+                                if (productServices.role.value == "Dolum") {
                                   dikaServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
@@ -233,6 +272,29 @@ class _MyOrdersState extends State<MyOrders> {
                                           0,
                                       boyut: orderData['boyut'],
                                       urunRenk: orderData['renk']);
+                                }
+                                if (productServices.role.value == "Paketleme") {
+                                  dolaServices.addOrUpdateUrunStock(
+                                      context: context,
+                                      urun: orderData['urun'],
+                                      miktar: int.tryParse(
+                                              orderData['miktar'].toString()) ??
+                                          0,
+                                      boyut: orderData['boyut'],
+                                      urunRenk: orderData['renk']);
+                                }
+                                if (productServices.role.value == "Transfer") {
+                                  pakaServices.addOrUpdateUrunStock(
+                                      context: context,
+                                      urun: orderData['urun'],
+                                      miktar: int.tryParse(
+                                              orderData['miktar'].toString()) ??
+                                          0,
+                                      boyut: orderData['boyut'],
+                                      aksesuar: orderData['aksesuar'],
+                                      urunRenk: orderData['renk']);
+                                  showAlertDialog(context,
+                                      "Sipariş Onaylandı Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
                                 }
                                 transferOrder(order.id);
                               },

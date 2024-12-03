@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/auth_service.dart';
 import '../../../services/product_services.dart';
+import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
 import '../new_storage_add/new_storage_add.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';
 import '../register_screen/register_screen.dart';
@@ -67,6 +68,31 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
           Expanded(
             child: ListView(
               children: [
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 185, 147, 123),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.hourglass_bottom,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  title: const Text('Gelen Siparişler'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ComingOrders()),
+                    );
+                    // Bildirimler ekranına yönlendirme
+                  },
+                ),
+                
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(10),

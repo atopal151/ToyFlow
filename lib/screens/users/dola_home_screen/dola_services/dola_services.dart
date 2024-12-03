@@ -84,7 +84,7 @@ class DolaServices {
         await _firestore
             .collection('dolum_stok')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
       showAlertDialog(context, "$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi! ");
         
@@ -123,8 +123,7 @@ class DolaServices {
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
       
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
-    }
+      }
   }
 
 //-----stok düşümü-------
@@ -190,8 +189,7 @@ class DolaServices {
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e ");
       
     } finally {
-      Navigator.pop(context);
-    }
+      }
   }
 
 //----fire kayıt alanı-----
@@ -229,7 +227,6 @@ class DolaServices {
       rethrow;
     }
     finally{
-      Navigator.pop(context);
-    }
+     }
   }
 }

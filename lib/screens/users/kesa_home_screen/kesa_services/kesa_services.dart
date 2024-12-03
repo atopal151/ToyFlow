@@ -82,7 +82,7 @@ class KesaServices {
         await _firestore
             .collection('kesim_stok')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
       showAlertDialog(context, "$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut stoğa $miktar kilo ekledi! ");
        
@@ -121,7 +121,6 @@ class KesaServices {
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
       
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 
@@ -185,7 +184,6 @@ class KesaServices {
      
     }
     finally{
-      Navigator.pop(context);
     }
   }
 //----fire kayıt alanı-----
@@ -221,7 +219,6 @@ class KesaServices {
       rethrow;
     }
     finally{
-      Navigator.pop(context);
-    }
+      }
   }
 }

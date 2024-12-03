@@ -122,7 +122,7 @@ class TransferServices {
         await _firestore
             .collection(collectionPath)
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
 
       showAlertDialog(context, "$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı! ");
@@ -167,8 +167,7 @@ class TransferServices {
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
       
     } finally {
-      Navigator.pop(context);
-    }
+     }
   }
 Future<void> sellMiktar(
   BuildContext context,
@@ -209,7 +208,7 @@ Future<void> sellMiktar(
         await FirebaseFirestore.instance
             .collection(depoCollection)
             .doc(docId)
-            .update({'miktar': mevcutMiktar - miktarGirdi});
+            .update({'miktar': mevcutMiktar - miktarGirdi,'tarih':FieldValue.serverTimestamp()});
 
       showAlertDialog(context, "Stok düşümü başarıyla gerçekleştirildi. ");
        
@@ -229,9 +228,7 @@ Future<void> sellMiktar(
       showAlertDialog(context, "İşlem sırasında bir hata oluştu: $e ");
    
   } finally {
-    // Yüklenme göstergesini kapat
-    Navigator.of(context).pop();
-  }
+    }
 }
 
 // Stok düşümü yapma
@@ -305,7 +302,6 @@ Future<void> sellMiktar(
       print("Hata: $e");
       
     } finally {
-      Navigator.pop(context);
-    }
+      }
   }
 }

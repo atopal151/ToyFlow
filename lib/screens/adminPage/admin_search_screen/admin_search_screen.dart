@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import '../../../services/user_services/dropdown_selector.dart';
 import '../admin_work_shop_screen/work_detail_screen/work_module/work_shop_list_item.dart';
+import '../toy_detail_screen/toy_detail_screen.dart';
 
 class AdminSearchScreen extends StatefulWidget {
   const AdminSearchScreen({super.key});
@@ -11,7 +13,6 @@ class AdminSearchScreen extends StatefulWidget {
 }
 
 class _AdminSearchScreenState extends State<AdminSearchScreen> {
-
   List<Map<String, dynamic>> allItems = []; // Firestore'dan alınan tüm veriler
   List<Map<String, dynamic>> filteredItems = []; // Filtrelenmiş veriler
   TextEditingController searchController = TextEditingController();
@@ -25,28 +26,31 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
     super.initState();
     _fetchDepoData(); // Depo isimlerini ve collection verilerini çekiyoruz
   }
+Future<void> _fetchDepoData() async {
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('depolar')
+        .get(); // Depolar koleksiyonundan verileri çek
+    List<String> depoNames = [];
+    List<String> depoCollections = [];
 
-  Future<void> _fetchDepoData() async {
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('depolar')
-          .get(); // Depolar koleksiyonundan verileri çek
-      List<String> depoNames = [];
-      List<String> depoCollections = [];
-
-      for (var doc in querySnapshot.docs) {
-        depoNames.add(doc['title']);
-        depoCollections.add(doc['collection']);
-      }
-
-      setState(() {
-        _depolar = depoNames;
-        _depoCollection = depoCollections;
-      });
-    } catch (e) {
-      print("Depo verileri alınırken hata oluştu: $e");
+    for (var doc in querySnapshot.docs) {
+      depoNames.add(doc['title']);
+      depoCollections.add(doc['collection']);
     }
+
+    setState(() {
+      _depolar = depoNames;
+      _depoCollection = depoCollections;
+      if (_depolar.isNotEmpty) {
+        _depoSelected = _depolar.last; // İlk elemanı seç
+        fetchData(_depoCollection.first); // İlk depo verisini yükle
+      }
+    });
+  } catch (e) {
+    print("Depo verileri alınırken hata oluştu: $e");
   }
+}
 
   // Firestore'dan verileri çekme
   Future<void> fetchData(String? collectionName) async {
@@ -107,7 +111,8 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                       final collectionIndex =
                           _depolar.indexOf(newValue!); // Seçilen depo indexi
                       final collectionName = _depoCollection[collectionIndex];
-                      fetchData(collectionName); // Seçilen collection ile veri çekme
+                      fetchData(
+                          collectionName); // Seçilen collection ile veri çekme
                     });
                   },
                   icon: Icons.arrow_drop_down,
@@ -148,10 +153,22 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
                     : ListView.builder(
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
-                          final item = filteredItems[index];
-                          return WorkshopListItem(
-                            work: item,
-                            atolye: _depoSelected,
+                          final item =
+                              filteredItems[index]; // Her bir öğeyi alıyoruz
+                          return InkWell(
+                            onTap: () {
+                              print("object");
+                              Get.to(() => ToyDetailScreen(
+                                    urun: item['urun'],
+                                    renk: item['renk'],
+                                    boyut: item['boyut'],
+                                    aksesuar: item['aksesuar'],
+                                  ));
+                            },
+                            child: WorkshopListItem(
+                              work: item,
+                              atolye: _depoSelected,
+                            ),
                           );
                         },
                       ),

@@ -68,6 +68,7 @@ class _ComingOrdersState extends State<ComingOrders> {
           "Kesim": "Dikim",
           "Dikim": "Dolum",
           "Dolum": "Paketleme",
+          "Paketleme": "Transfer",
         };
 
         // Hedef role belirleme

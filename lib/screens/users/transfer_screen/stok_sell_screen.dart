@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_services/transfer_services.dart';
+import 'package:toyflow/services/user_services/alert_dialog_service.dart';
 
+import '../../../services/user_services/cutom_loading_button.dart';
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
 
@@ -13,6 +15,7 @@ class StockSellScreen extends StatefulWidget {
 }
 
 class _StockSellScreenState extends State<StockSellScreen> {
+  bool isLoading = false;
   final TextEditingController _miktarController = TextEditingController();
   final TransferServices _transferServices = TransferServices();
 
@@ -296,58 +299,53 @@ class _StockSellScreenState extends State<StockSellScreen> {
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
             ),
           ),
-          TextFieldWithCounter(
-            controller: _miktarController,
-            hintText: 'Miktar',
-            icon: Icons.shopping_cart,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                final miktarGirdi = int.tryParse(_miktarController.text);
-                if (_selectedMalzeme == null ||
-                    _selectedRenk == null ||
-                    _selectedBoyut == null ||
-                    _selectedAksesuar == null ||
-                    miktarGirdi == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Lütfen tüm alanları doldurun.")),
-                  );
-                  return;
-                }
-                _transferServices.sellMiktar(
-                    context,
-                    _currentDepoCollection!,
-                    _selectedMalzeme!,
-                    _selectedRenk!,
-                    _selectedBoyut!,
-                    _selectedAksesuar!,
-                    miktarGirdi);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextFieldWithCounter(
+                  controller: _miktarController,
+                  hintText: 'Miktar',
+                  icon: Icons.shopping_cart,
                 ),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(width: 8),
-                  Text(
-                    'Satıldı',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+              CustomLoadingButton(
+                isLoading: isLoading,
+                onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+
+                  try {
+                    final miktarGirdi = int.tryParse(_miktarController.text);
+                    if (_selectedMalzeme == null ||
+                        _selectedRenk == null ||
+                        _selectedBoyut == null ||
+                        _selectedAksesuar == null ||
+                        miktarGirdi == null) {
+                      showAlertDialog(context, "Lüften boş alanları doldur.");
+                      return;
+                    }
+                    _transferServices.sellMiktar(
+                        context,
+                        _currentDepoCollection!,
+                        _selectedMalzeme!,
+                        _selectedRenk!,
+                        _selectedBoyut!,
+                        _selectedAksesuar!,
+                        miktarGirdi);
+                    // Burada işlemlerini gerçekleştirebilirsin
+                    await Future.delayed(
+                        const Duration(seconds: 1)); // Örnek bir gecikme
+                  } finally {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                },
+                text: "Satıldı",
               ),
-            ),
+            ],
           ),
         ],
       ),

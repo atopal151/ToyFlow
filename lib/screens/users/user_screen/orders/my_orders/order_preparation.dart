@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/services/product_services.dart';
+import 'package:toyflow/services/user_services/alert_dialog_service.dart';
 import 'package:toyflow/services/user_services/dropdown_selector.dart';
 import 'package:toyflow/services/user_services/text_field_with_counter.dart';
 
@@ -106,7 +107,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
   Future<void> _fetchAksesuarList() async {
     // 'aksesuarlar' koleksiyonundan verileri çekiyoruz
     List<String> fetchedUrun =
-        await _dataTableService.getCollectionData('aksesuar', 'aksesuar');
+        await _dataTableService.getCollectionData('toy_aksesuar', 'aksesuar');
     setState(() {
       aksesuarlar = fetchedUrun;
     });
@@ -160,6 +161,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               if (productServices.role.value == "Dikim" ||
+                  productServices.role.value == "Transfer" ||
                   productServices.role.value == "Dolum" ||
                   productServices.role.value == "Paketleme")
                 DropdownSelector(
@@ -201,6 +203,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
               if (productServices.role.value == "Kesim" ||
                   productServices.role.value == "Dikim" ||
                   productServices.role.value == "Dolum" ||
+                  productServices.role.value == "Transfer" ||
                   productServices.role.value == "Paketleme")
                 DropdownSelector(
                   hintText: "Renk",
@@ -214,6 +217,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                   },
                 ),
               if (productServices.role.value == "Dikim" ||
+                  productServices.role.value == "Transfer" ||
                   productServices.role.value == "Dolum" ||
                   productServices.role.value == "Paketleme")
                 DropdownSelector(
@@ -227,7 +231,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                     });
                   },
                 ),
-              if (productServices.role.value == "Paketleme")
+              if (productServices.role.value == "Transfer")
                 DropdownSelector(
                   hintText: "Aksesuar",
                   items: aksesuarlar,
@@ -277,11 +281,11 @@ class _OrderPreparationState extends State<OrderPreparation> {
                     });
                   },
                 ),
-               TextFieldWithCounter(
-                      controller: _aciklamaController,
-                      hintText: 'Açıklama',
-                      icon: Icons.description,
-                    ),
+              TextFieldWithCounter(
+                controller: _aciklamaController,
+                hintText: 'Açıklama',
+                icon: Icons.description,
+              ),
               Row(
                 children: [
                   Expanded(
@@ -297,37 +301,160 @@ class _OrderPreparationState extends State<OrderPreparation> {
                     child: ElevatedButton(
                       onPressed: () async {
                         {
-                          if (_miktarController.text.isEmpty) {
-                            // Eğer miktar boş ise bir uyarı gösterebilirsiniz
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text("Lütfen Miktar Girin."),
-                            ));
-                            return;
+                          if (productServices.role.value == "Dokuma") {
+                            if ((_selectedIpler ?? '').isNotEmpty &&
+                                (_selectedDenye ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  iplik: _selectedIpler,
+                                  denye: _selectedDenye,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
+
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
                           }
+                          if (productServices.role.value == "Boyama") {
+                            if ((_selectedKumas ?? '').isNotEmpty &&
+                                (_selectedFine ?? '').isNotEmpty &&
+                                (_selectedGramaj ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  kumas: _selectedKumas,
+                                  gramaj: _selectedGramaj,
+                                  fine: _selectedFine,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
 
-                          // Firestore'a kaydetme işlemi
-                          await saveOrderToFirestore(
-                              context: context,
-                              urun: _selectedUrun,
-                              iplik: _selectedIpler,
-                              kumas: _selectedKumas,
-                              renk: _selectedRenk,
-                              boyut: _selectedBoyut,
-                              aksesuar: _selectedAksesuar,
-                              gramaj: _selectedGramaj,
-                              fine: _selectedFine,
-                              denye: _selectedDenye,
-                              miktar: _miktarController.text,
-                              aciklama:_aciklamaController.text,
-                              status: "Bekliyor",
-                              role: productServices.role.value);
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            }else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
+                          if (productServices.role.value == "Kesim") {
+                            if ((_selectedKumas ?? '').isNotEmpty &&
+                                (_selectedFine ?? '').isNotEmpty &&
+                                (_selectedRenk ?? '').isNotEmpty &&
+                                (_selectedGramaj ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+// Firestore'a kaydetme işlemi
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  kumas: _selectedKumas,
+                                  renk: _selectedRenk,
+                                  gramaj: _selectedGramaj,
+                                  fine: _selectedFine,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
 
-                          // Kaydetme sonrası bir mesaj gösterebilirsiniz
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text("Sipariş başarıyla kaydedildi."),
-                          ));
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
+                          if (productServices.role.value == "Dikim") {
+                            if ((_selectedUrun ?? '').isNotEmpty &&
+                                (_selectedRenk ?? '').isNotEmpty &&
+                                (_selectedBoyut ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+// Firestore'a kaydetme işlemi
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  urun: _selectedUrun,
+                                  renk: _selectedRenk,
+                                  boyut: _selectedBoyut,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
+
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
+                          if (productServices.role.value == "Dolum") {
+                            if ((_selectedUrun ?? '').isNotEmpty &&
+                                (_selectedRenk ?? '').isNotEmpty &&
+                                (_selectedBoyut ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+// Firestore'a kaydetme işlemi
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  urun: _selectedUrun,
+                                  renk: _selectedRenk,
+                                  boyut: _selectedBoyut,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
+
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
+                          if (productServices.role.value == "Paketleme") {
+                            if ((_selectedUrun ?? '').isNotEmpty &&
+                                (_selectedRenk ?? '').isNotEmpty &&
+                                (_selectedBoyut ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+// Firestore'a kaydetme işlemi
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  urun: _selectedUrun,
+                                  renk: _selectedRenk,
+                                  boyut: _selectedBoyut,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
+
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
+                          if (productServices.role.value == "Transfer") {
+                            if ((_selectedUrun ?? '').isNotEmpty &&
+                                (_selectedRenk ?? '').isNotEmpty &&
+                                (_selectedBoyut ?? '').isNotEmpty &&
+                                (_selectedAksesuar ?? '').isNotEmpty &&
+                                _miktarController.text.trim().isNotEmpty) {
+// Firestore'a kaydetme işlemi
+                              await saveOrderToFirestore(
+                                  context: context,
+                                  urun: _selectedUrun,
+                                  renk: _selectedRenk,
+                                  boyut: _selectedBoyut,
+                                  aksesuar: _selectedAksesuar,
+                                  miktar: _miktarController.text,
+                                  aciklama: _aciklamaController.text,
+                                  status: "Bekliyor",
+                                  role: productServices.role.value);
+
+                              showAlertDialog(
+                                  context, "Sipariş başarıyla kaydedildi.");
+                            } else {
+                              showAlertDialog(context, "Boş alanları doldurun");
+                            }
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

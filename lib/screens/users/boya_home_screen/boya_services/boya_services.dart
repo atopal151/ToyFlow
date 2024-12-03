@@ -117,7 +117,6 @@ class BoyaServices {
     } catch (e) {
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e");
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 
@@ -169,7 +168,6 @@ class BoyaServices {
     } catch (e) {
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 
@@ -204,7 +202,6 @@ class BoyaServices {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
     }
   }
 }

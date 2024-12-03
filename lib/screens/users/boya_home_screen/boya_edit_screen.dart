@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:toyflow/services/get_data_table.dart';
 
+import '../../../services/user_services/cutom_loading_button.dart';
 import 'boya_services/boya_services.dart';
 import '../../../services/user_services/dropdown_selector.dart';
 import '../../../services/user_services/text_field_with_counter.dart';
@@ -14,6 +15,10 @@ class BoyaEditScreen extends StatefulWidget {
 }
 
 class _BoyaEditScreenState extends State<BoyaEditScreen> {
+  bool isLoading = false;
+  bool isLoading1 = false;
+  bool isLoading2 = false;
+
   final BoyaServices _dokaServices = BoyaServices();
   final DataTableService _dataTableService = DataTableService();
 
@@ -262,10 +267,14 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     icon: Icons.shopping_cart,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, right: 16),
-                  child: ElevatedButton(
-                    onPressed: () {
+                CustomLoadingButton(
+                  isLoading: isLoading,
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    try {
                       if (_selectedMalzeme!.isEmpty ||
                           _selectedGramaj!.isEmpty ||
                           _selectedFine!.isEmpty ||
@@ -283,29 +292,16 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                           miktar: int.parse(_miktarController.text),
                         );
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 8),
-                        Text(
-                          'Düşüm Yap',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      // Burada işlemlerini gerçekleştirebilirsin
+                      await Future.delayed(
+                          const Duration(seconds: 1)); // Örnek bir gecikme
+                    } finally {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                  text: "Düşüm Yap",
                 ),
               ],
             ),
@@ -375,10 +371,14 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     icon: Icons.shopping_cart,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, right: 16),
-                  child: ElevatedButton(
-                    onPressed: () {
+                CustomLoadingButton(
+                  isLoading: isLoading1,
+                  onPressed: () async {
+                    setState(() {
+                      isLoading1 = true;
+                    });
+
+                    try {
                       if (_selectedDonumMalzeme!.isEmpty ||
                           _selectedDonumGramaj!.isEmpty ||
                           _selectedDonumFine!.isEmpty ||
@@ -398,29 +398,16 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                           miktar: int.parse(_miktarDonumController.text),
                         );
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 8),
-                        Text(
-                          'Stok Ekle',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      // Burada işlemlerini gerçekleştirebilirsin
+                      await Future.delayed(
+                          const Duration(seconds: 1)); // Örnek bir gecikme
+                    } finally {
+                      setState(() {
+                        isLoading1 = false;
+                      });
+                    }
+                  },
+                  text: "Stok Ekle",
                 ),
               ],
             ),
@@ -512,10 +499,14 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                     icon: Icons.shopping_cart,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, right: 16),
-                  child: ElevatedButton(
-                    onPressed: () {
+                CustomLoadingButton(
+                  isLoading: isLoading2,
+                  onPressed: () async {
+                    setState(() {
+                      isLoading2 = true;
+                    });
+
+                    try {
                       if (_selectedFireMalzeme!.isEmpty ||
                           _selectedFireFine!.isEmpty ||
                           _selectedfireGramaj!.isEmpty ||
@@ -540,29 +531,16 @@ class _BoyaEditScreenState extends State<BoyaEditScreen> {
                           miktar: int.parse(_fireMiktarController.text),
                         );
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 8),
-                        Text(
-                          'Fire Ekle',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      // Burada işlemlerini gerçekleştirebilirsin
+                      await Future.delayed(
+                          const Duration(seconds: 1)); // Örnek bir gecikme
+                    } finally {
+                      setState(() {
+                        isLoading2 = false;
+                      });
+                    }
+                  },
+                  text: "Fire Ekle",
                 ),
               ],
             ),

@@ -4,18 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 Future<void> saveOrderToFirestore({
-  required String? urun,
-  required String? iplik,
-  required String? kumas,
-  required String? renk,
-  required String? boyut,
-  required String? aksesuar,
-  required String? gramaj,
-  required String? fine,
-  required String? denye,
+   String? urun,
+   String? iplik,
+   String? kumas,
+   String? renk,
+   String? boyut,
+   String? aksesuar,
+   String? gramaj,
+   String? fine,
+   String? denye,
   required String miktar,
   required String role,
-  required String? aciklama,
+  String? aciklama,
   required String status,
   required BuildContext context, // Context ekliyoruz
 }) async {

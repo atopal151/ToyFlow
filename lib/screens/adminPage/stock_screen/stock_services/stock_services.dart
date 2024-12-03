@@ -3,6 +3,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:toyflow/services/user_services/alert_dialog_service.dart';
 import '../../../../services/record_services.dart';
 
 class StockService {
@@ -16,20 +17,9 @@ class StockService {
   }) async {
     // Eğer miktar geçerli değilse uyarı göster
     if (miktar <= 0) {
-      _showAlert(context, 'Lütfen geçerli bir miktar girin!');
+      showAlertDialog(context, 'Lütfen geçerli bir miktar girin!');
       return;
     }
-
-    // Yükleme animasyonunu göster
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
 
     try {
       // Firestore'da aynı ürün ve renge sahip bir kayıt var mı kontrol et
@@ -48,11 +38,10 @@ class StockService {
         await FirebaseFirestore.instance
             .collection('dokuma_work')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mevcut stoğa $miktar kilo $urun $denye eklendi!')),
-        );
+        showAlertDialog(
+            context, "Mevcut stoğa $miktar kilo $urun $denye eklendi!");
 
         await _recordServices.movementRecord(
           malzeme: urun,
@@ -69,10 +58,7 @@ class StockService {
           'miktar': miktar,
           'tarih': FieldValue.serverTimestamp(),
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeni stok başarıyla kaydedildi!')),
-        );
+        showAlertDialog(context, 'Yeni stok başarıyla kaydedildi!');
 
         await _recordServices.movementRecord(
           malzeme: urun,
@@ -83,30 +69,7 @@ class StockService {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
-      );
+      showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e");
     }
-
-    Navigator.pop(context);
-    Navigator.pop(context);
-  }
-
-  void _showAlert(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Uyarı'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Tamam'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

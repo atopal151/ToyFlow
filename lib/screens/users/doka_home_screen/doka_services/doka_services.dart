@@ -61,8 +61,6 @@ class DokaServices {
       return;
     }
 
-   
-
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('dokuma_stok')
@@ -80,7 +78,7 @@ class DokaServices {
         await _firestore
             .collection('dokuma_stok')
             .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar});
+            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
         showAlertDialog(context,
             "'$userRole atölyesinden ${_productServices.firstName.value} ${_productServices.lastName.value} Mevcut  $kumas $gramaj $fine stoğa $miktar kilo ekledi!");
 
@@ -113,7 +111,8 @@ class DokaServices {
     } catch (e) {
       showAlertDialog(context, "Stok kaydı sırasından hata $e");
     } finally {
-      Navigator.pop(context); // Yükleme animasyonunu kapat
+      if (context.mounted) {
+      }
     }
   }
 
@@ -128,8 +127,6 @@ class DokaServices {
 
       return;
     }
-
-   
 
     try {
       // Denye ve malzeme değerine göre stok sorgulama
@@ -169,8 +166,10 @@ class DokaServices {
     } catch (e) {
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
     } finally {
-      Navigator.pop(context);
-    }
+  if (context.mounted) {
+  }
+}
+
   }
 
   Future<void> addFireEntry({
@@ -179,7 +178,6 @@ class DokaServices {
     required BuildContext context,
     required int miktar,
   }) async {
-    
     try {
       await _firestore.collection('dokuma_fire').add({
         'urun': malzeme,
@@ -200,7 +198,9 @@ class DokaServices {
       print("Fire kaydı sırasında hata oluştu: $e");
       rethrow;
     } finally {
-      Navigator.pop(context);
-    }
+  if (context.mounted) {
+  }
+}
+
   }
 }
