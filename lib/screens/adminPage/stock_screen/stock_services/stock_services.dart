@@ -3,8 +3,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:toyflow/services/user_services/alert_dialog_service.dart';
-import '../../../../services/record_services.dart';
+import 'package:toyflow/services/user_component/alert_dialog_service.dart';
+import '../../../../services/user_services/record_services.dart';
 
 class StockService {
   final RecordServices _recordServices = RecordServices();

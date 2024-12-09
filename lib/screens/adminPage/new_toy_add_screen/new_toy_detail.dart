@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_add_screen.dart';
-import '../../../services/user_services/dropdown_selector.dart';
+import '../../../services/user_component/dropdown_selector.dart';
 
 class NewToyDetail extends StatefulWidget {
   const NewToyDetail({super.key});

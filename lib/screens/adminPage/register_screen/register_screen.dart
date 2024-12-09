@@ -2,7 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../services/auth_service.dart';
+import '../../../services/user_services/auth_service.dart';
 import 'registerServices/dropdown_style_file.dart';
 import 'registerServices/textbox_style_file.dart';
 

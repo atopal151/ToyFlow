@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
-import 'package:toyflow/services/bottom_nav_bar.dart';
+import 'package:toyflow/services/user_services/bottom_nav_bar.dart';
 import '../login_screen/login_screen.dart';
 import '../users/atolye_screen/atolye_home_screen.dart';
-import '../../services/auth_service.dart';
+import '../../services/user_services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

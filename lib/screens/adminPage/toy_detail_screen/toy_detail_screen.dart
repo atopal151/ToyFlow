@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:toyflow/services/get_data_table.dart';
-import '../../../services/user_services/cutom_loading_button.dart';
-import '../../../services/user_services/dropdown_selector.dart';
+import 'package:toyflow/services/user_services/get_data_table.dart';
+import '../../../services/user_component/cutom_loading_button.dart';
+import '../../../services/user_component/dropdown_selector.dart';
 import 'toy_detail_services/toy_detail_services.dart';
 
 class ToyDetailScreen extends StatefulWidget {

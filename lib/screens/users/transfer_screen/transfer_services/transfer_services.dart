@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/services/auth_service.dart';
-import 'package:toyflow/services/product_services.dart';
-import 'package:toyflow/services/record_services.dart';
+import 'package:toyflow/services/user_services/auth_service.dart';
+import 'package:toyflow/services/user_services/product_services.dart';
+import 'package:toyflow/services/user_services/record_services.dart';
 
-import '../../../../services/user_services/alert_dialog_service.dart';
+import '../../../../services/user_component/alert_dialog_service.dart';
 
 class TransferServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

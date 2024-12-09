@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/services/product_services.dart';
-import 'package:toyflow/services/user_services/alert_dialog_service.dart';
-import 'package:toyflow/services/user_services/dropdown_selector.dart';
-import 'package:toyflow/services/user_services/text_field_with_counter.dart';
+import 'package:toyflow/services/user_services/product_services.dart';
+import 'package:toyflow/services/user_component/alert_dialog_service.dart';
+import 'package:toyflow/services/user_component/dropdown_selector.dart';
+import 'package:toyflow/services/user_component/text_field_with_counter.dart';
 
-import '../../../../../services/get_data_table.dart';
+import '../../../../../services/user_services/get_data_table.dart';
 import 'oders_service/orders_service.dart';
 
 class OrderPreparation extends StatefulWidget {

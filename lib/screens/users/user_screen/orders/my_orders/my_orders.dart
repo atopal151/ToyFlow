@@ -3,17 +3,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/users/boya_home_screen/boya_services/boya_services.dart';
-import 'package:toyflow/screens/users/dika_home_screen/dika_services/dika_services.dart';
-import 'package:toyflow/screens/users/dola_home_screen/dola_services/dola_services.dart';
-import 'package:toyflow/screens/users/kesa_home_screen/kesa_services/kesa_services.dart';
-import 'package:toyflow/screens/users/paka_home_screen/paka_services/paka_services.dart';
+import 'package:toyflow/screens/users/atolye_screen/atolye_services/atolye_services.dart';
 import 'package:toyflow/screens/users/user_screen/orders/my_orders/order_preparation.dart';
 
-import '../../../../../services/product_services.dart';
-import '../../../../../services/user_services/alert_dialog_service.dart';
+import '../../../../../services/user_services/product_services.dart';
+import '../../../../../services/user_component/alert_dialog_service.dart';
 import '../../../../adminPage/stock_screen/stock_services/stock_services.dart';
-import '../../../doka_home_screen/doka_services/doka_services.dart';
 import '../../../transfer_screen/transfer_services/transfer_services.dart';
 
 class MyOrders extends StatefulWidget {
@@ -27,12 +22,7 @@ class _MyOrdersState extends State<MyOrders> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices productServices = Get.find<ProductServices>();
   final StockService stockService = StockService();
-  final DokaServices dokaServices = DokaServices();
-  final BoyaServices boyaServices = BoyaServices();
-  final KesaServices kesaServices = KesaServices();
-  final DikaServices dikaServices = DikaServices();
-  final DolaServices dolaServices = DolaServices();
-  final PakaServices pakaServices = PakaServices();
+  final AtolyeServices atolyeServices = AtolyeServices();
   final TransferServices transferServices = TransferServices();
 
   @override
@@ -231,9 +221,9 @@ Future<void> approveOrder(String orderId) async {
                                   );
                                 }
                                 if (productServices.role.value == "Boyama") {
-                                  dokaServices.addOrUpdateKumasStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                     context: context,
-                                    kumas: orderData['kumas'],
+                                    urun: orderData['kumas'],
                                     gramaj: orderData['gramaj'],
                                     fine: orderData['fine'],
                                     miktar: int.tryParse(
@@ -243,48 +233,48 @@ Future<void> approveOrder(String orderId) async {
                                 }
 
                                 if (productServices.role.value == "Kesim") {
-                                  boyaServices.addOrUpdateKumasStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                       context: context,
-                                      kumas: orderData['kumas'],
+                                      urun: orderData['kumas'],
                                       gramaj: orderData['gramaj'],
                                       fine: orderData['fine'],
                                       miktar: int.tryParse(
                                               orderData['miktar'].toString()) ??
                                           0,
-                                      kumasRenk: orderData['renk']);
+                                      renk: orderData['renk']);
                                 }
                                 if (productServices.role.value == "Dikim") {
-                                  kesaServices.addOrUpdateUrunStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
                                       miktar: int.tryParse(
                                               orderData['miktar'].toString()) ??
                                           0,
                                       boyut: orderData['boyut'],
-                                      urunRenk: orderData['renk']);
+                                      renk: orderData['renk']);
                                 }
                                 if (productServices.role.value == "Dolum") {
-                                  dikaServices.addOrUpdateUrunStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
                                       miktar: int.tryParse(
                                               orderData['miktar'].toString()) ??
                                           0,
                                       boyut: orderData['boyut'],
-                                      urunRenk: orderData['renk']);
+                                      renk: orderData['renk']);
                                 }
                                 if (productServices.role.value == "Paketleme") {
-                                  dolaServices.addOrUpdateUrunStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
                                       miktar: int.tryParse(
                                               orderData['miktar'].toString()) ??
                                           0,
                                       boyut: orderData['boyut'],
-                                      urunRenk: orderData['renk']);
+                                      renk: orderData['renk']);
                                 }
                                 if (productServices.role.value == "Transfer") {
-                                  pakaServices.addOrUpdateUrunStock(
+                                 atolyeServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
                                       miktar: int.tryParse(
@@ -292,7 +282,7 @@ Future<void> approveOrder(String orderId) async {
                                           0,
                                       boyut: orderData['boyut'],
                                       aksesuar: orderData['aksesuar'],
-                                      urunRenk: orderData['renk']);
+                                      renk: orderData['renk']);
                                   showAlertDialog(context,
                                       "Sipariş Onaylandı Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
                                 }

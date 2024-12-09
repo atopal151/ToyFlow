@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../services/get_data_table.dart';
-import '../../../services/user_services/cutom_loading_button.dart';
+import '../../../services/user_services/get_data_table.dart';
+import '../../../services/user_component/cutom_loading_button.dart';
 import '../register_screen/registerServices/dropdown_style_file.dart';
 import '../register_screen/registerServices/textbox_style_file.dart';
 import 'stock_services/stock_services.dart';

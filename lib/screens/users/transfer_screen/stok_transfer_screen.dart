@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../services/get_data_table.dart';
-import '../../../services/user_services/dropdown_selector.dart';
-import '../../../services/user_services/text_field_with_counter.dart';
+import '../../../services/user_services/get_data_table.dart';
+import '../../../services/user_component/dropdown_selector.dart';
+import '../../../services/user_component/text_field_with_counter.dart';
 import 'transfer_services/transfer_services.dart';
 
 class StokTransfer extends StatefulWidget {

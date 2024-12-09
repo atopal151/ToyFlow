@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/services/get_data_table.dart';
+import 'package:toyflow/services/user_services/get_data_table.dart';
 
-import '../../../services/product_services.dart';
-import '../../../services/user_services/cutom_loading_button.dart';
-import '../../../services/user_services/dropdown_selector.dart';
-import '../../../services/user_services/text_field_with_counter.dart';
+import '../../../services/user_services/product_services.dart';
+import '../../../services/user_component/cutom_loading_button.dart';
+import '../../../services/user_component/dropdown_selector.dart';
+import '../../../services/user_component/text_field_with_counter.dart';
 import 'atolye_services/atolye_services.dart';
 
 class AtolyeEditScreen extends StatefulWidget {

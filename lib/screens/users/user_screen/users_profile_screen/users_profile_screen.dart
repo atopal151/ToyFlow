@@ -5,8 +5,8 @@ import 'package:toyflow/screens/chat_screen/chat_screen.dart';
 import 'package:toyflow/screens/users/user_screen/orders/coming_orders/coming_orders.dart';
 import 'package:toyflow/screens/users/user_screen/orders/my_orders/my_orders.dart';
 import 'package:toyflow/screens/users/user_screen/users_notification_screen/users_notification_screen.dart';
-import '../../../../services/auth_service.dart';
-import '../../../../services/product_services.dart';
+import '../../../../services/user_services/auth_service.dart';
+import '../../../../services/user_services/product_services.dart';
 import '../users_work_screen/users_work_screen.dart';
 import '../waste/waste_flow.dart';
 

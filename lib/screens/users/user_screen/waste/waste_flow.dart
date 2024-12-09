@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:toyflow/services/product_services.dart';
+import 'package:toyflow/services/user_services/product_services.dart';
 
 class FireTakip extends StatefulWidget {
   const FireTakip({super.key});

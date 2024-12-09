@@ -6,9 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
-import 'package:toyflow/services/bottom_nav_bar.dart';
-import '../screens/login_screen/login_screen.dart';
-import '../screens/users/atolye_screen/atolye_home_screen.dart';
+import 'package:toyflow/services/user_services/bottom_nav_bar.dart';
+import '../../screens/login_screen/login_screen.dart';
+import '../../screens/users/atolye_screen/atolye_home_screen.dart';
 import 'product_services.dart';
 
 class AuthService {

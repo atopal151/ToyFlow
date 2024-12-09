@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_services/transfer_services.dart';
-import 'package:toyflow/services/user_services/alert_dialog_service.dart';
+import 'package:toyflow/services/user_component/alert_dialog_service.dart';
 
-import '../../../services/user_services/cutom_loading_button.dart';
-import '../../../services/user_services/dropdown_selector.dart';
-import '../../../services/user_services/text_field_with_counter.dart';
+import '../../../services/user_component/cutom_loading_button.dart';
+import '../../../services/user_component/dropdown_selector.dart';
+import '../../../services/user_component/text_field_with_counter.dart';
 
 class StockSellScreen extends StatefulWidget {
   const StockSellScreen({super.key});

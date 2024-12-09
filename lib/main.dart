@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/splash_screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:toyflow/services/product_services.dart';
-import 'package:toyflow/services/record_services.dart';
-import 'services/auth_service.dart';
+import 'package:toyflow/services/user_services/product_services.dart';
+import 'package:toyflow/services/user_services/record_services.dart';
+import 'services/user_services/auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

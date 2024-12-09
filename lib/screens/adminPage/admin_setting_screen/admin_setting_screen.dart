@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
-import 'package:toyflow/services/auth_service.dart';
-import '../../../services/product_services.dart';
+import 'package:toyflow/services/user_services/auth_service.dart';
+import '../../../services/user_services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
 import '../new_storage_add/new_storage_add.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:toyflow/screens/adminPage/admin_home_screen/admin_home_screen.dart';
 import 'package:toyflow/screens/adminPage/admin_work_shop_screen/admin_work_shop_screen.dart';
 import 'package:toyflow/screens/chat_screen/chat_screen.dart';
-import '../screens/adminPage/admin_search_screen/admin_search_screen.dart';
+import '../../screens/adminPage/admin_search_screen/admin_search_screen.dart';
 
 class BottomNavBarWithPages extends StatefulWidget {
   @override
