@@ -3,8 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:toyflow/services/product_services.dart';
 import '../../../../services/auth_service.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../services/user_services/dropdown_selector.dart';
 
 class UsersWorkScreen extends StatefulWidget {
   const UsersWorkScreen({super.key});
@@ -16,69 +20,152 @@ class UsersWorkScreen extends StatefulWidget {
 class _UsersWorkScreenState extends State<UsersWorkScreen> {
   String? _userRole;
   List<Map<String, dynamic>> _works = [];
+  final List<String> _atolye = [];
+  String? _oncekiRol;
+  String? _selectedAtolye;
+  final ProductServices _productServices = Get.find();
   final AuthService _authService = AuthService();
   bool isLoading = false; // Yüklenme durumu için bir değişken eklendi
-
+  List<Map<String, String>> fetchedAtolyeler = [];
+  String? _selectedAtolyeCollection;
   @override
   void initState() {
     super.initState();
-    _fetchUserRoleAndData();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _productServices.getAtolyeCollectionDetails();
+    print(
+        "Seçilen Atölye Koleksiyonu: ${_productServices.atolyeCollection.value}");
+    await fetchOncekiRol();
+    print("Seçilen Koleksiyon: $_selectedAtolyeCollection");
+    print(
+        "Product Services Collection: ${_productServices.atolyeCollection.value}");
+
+    if (_selectedAtolyeCollection == null ||
+        _selectedAtolyeCollection!.isEmpty) {
+      print("Hata: Koleksiyon bilgisi eksik.");
+      return;
+    }
+
+    await _fetchUserRoleAndData();
+  }
+
+  Future<void> fetchOncekiRol() async {
+    try {
+      // "connected_work_shop" tablosundan "onceki" değerini al
+      QuerySnapshot connectedSnapshot = await FirebaseFirestore.instance
+          .collection('connected_work_shop')
+          .where('rol', isEqualTo: _productServices.workshopName.value)
+          .get();
+
+      if (connectedSnapshot.docs.isEmpty) {
+        print("Belirtilen rol için bağlantı bulunamadı.");
+        return;
+      }
+
+      // İlk belge üzerinden "onceki" değerini al
+      _oncekiRol = connectedSnapshot.docs.first['onceki'];
+
+      print("Onceki Rol: $_oncekiRol");
+
+      // "oncekiRol" değeriyle atolyeler verilerini getiren ikinci fonksiyonu çağır
+      if (_oncekiRol != null) {
+        await fetchAtolyeler(_oncekiRol!);
+      }
+    } catch (e) {
+      print("Onceki rol alınırken hata oluştu: $e");
+    }
+  }
+
+  Future<void> fetchAtolyeler(String oncekiRol) async {
+    try {
+      // "atolyeler" tablosundan "oncekiRol" ile eşleşen belgeleri getir
+      QuerySnapshot atolyelerSnapshot = await FirebaseFirestore.instance
+          .collection('atolyeler')
+          .where('nitelik', isEqualTo: oncekiRol)
+          .get();
+
+      fetchedAtolyeler = atolyelerSnapshot.docs.map((doc) {
+        return {
+          'name': doc['name'].toString(), // Name alanı
+          'collection': doc['collection'].toString(), // Collection alanı
+        };
+      }).toList();
+
+      setState(() {
+        _atolye.clear();
+        _atolye
+            .addAll(fetchedAtolyeler.map((e) => e['name']!)); // Dropdown için
+        if (_atolye.isNotEmpty) {
+          _selectedAtolye = _atolye.first; // İlk atölyeyi seçili yap
+          _selectedAtolyeCollection =
+              fetchedAtolyeler.first['collection']; // İlk koleksiyon değeri
+        }
+      });
+
+      print("Fetched Atolyeler: $fetchedAtolyeler");
+    } catch (e) {
+      print("Atolyeler alınırken hata oluştu: $e");
+    }
   }
 
   Future<void> _fetchUserRoleAndData() async {
     User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      _userRole = await _authService.getUserRole(user.uid);
-
-      try {
-        QuerySnapshot querySnapshot;
-
-        if (_userRole == 'Dokuma') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('dokuma_work').get();
-        } else if (_userRole == 'Boyama') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('dokuma_stok').get();
-        } else if (_userRole == 'Kesim') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('boyama_stok').get();
-        } else if (_userRole == 'Dikim') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('kesim_stok').get();
-        } else if (_userRole == 'Dolum') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('dikim_stok').get();
-        } else if (_userRole == 'Paketleme') {
-          querySnapshot =
-              await FirebaseFirestore.instance.collection('dolum_stok').get();
-          print(querySnapshot);
-        } else if (_userRole == 'Transfer') {
-          querySnapshot = await FirebaseFirestore.instance
-              .collection('paketleme_stok')
-              .get();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text("Bu kullanıcı için geçerli bir iş yok.")),
-          );
-          return;
-        }
-
-        setState(() {
-          _works =
-              querySnapshot.docs.where((doc) => doc['miktar'] != 0).map((doc) {
-            return {
-              'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
-            };
-          }).toList();
-        });
-      } catch (e) {
-        print("Veriler alınırken hata oluştu: $e");
-      }
-    } else {
+    if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Kullanıcı oturumu açık değil.")),
+      );
+      return;
+    }
+
+    // Kullanıcının rolünü al
+    _userRole = await _authService.getUserRole(user.uid);
+
+    if (_userRole == null || _userRole!.isEmpty) {
+      print("Kullanıcı rolü alınamadı.");
+      return;
+    }
+
+    if (_selectedAtolyeCollection == null ||
+        _selectedAtolyeCollection!.isEmpty) {
+      print("Tablo seçimi yapılmadı.");
+      return;
+    }
+
+    try {
+      // Firestore'dan tabloyu al
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection(_selectedAtolyeCollection!) // Dinamik tablo adı
+          .get();
+
+      print("$_selectedAtolyeCollection tablosundaki veriler çekiliyor...");
+
+      // Verileri _works listesine ekle
+      setState(() {
+        _works = querySnapshot.docs
+            .where((doc) =>
+                doc['miktar'] != null && // Miktar alanı null olmamalı
+                doc['miktar'] > 0) // Miktar 0'dan büyük olmalı
+            .map((doc) {
+          return {
+            'id': doc.id,
+            ...doc.data() as Map<String, dynamic>,
+          };
+        }).toList();
+        if (_selectedAtolyeCollection == null ||
+            _selectedAtolyeCollection!.isEmpty) {
+          print("Hata: Firestore koleksiyon yolu boş.");
+          return;
+        }
+      });
+
+      print("Tablodan alınan veriler: $_works");
+    } catch (e) {
+      print("Veriler alınırken hata oluştu: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Veri alınırken hata oluştu: $e")),
       );
     }
   }
@@ -90,9 +177,18 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+    if (_selectedAtolyeCollection == null ||
+        _selectedAtolyeCollection!.isEmpty) {
+      print("Hata: Seçilen koleksiyon boş.");
+      setState(() {
+        isLoading = false; // Yükleme durdur
+      });
+      return;
+    }
+
     try {
       QuerySnapshot paketlemeStokSnapshot =
-          await firestore.collection('paketleme_stok').get();
+          await firestore.collection(_selectedAtolyeCollection!).get();
 
       for (var doc in paketlemeStokSnapshot.docs) {
         Map<String, dynamic> paketlemeData = doc.data() as Map<String, dynamic>;
@@ -103,8 +199,16 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         int adet = paketlemeData['miktar'];
         Timestamp tarih = Timestamp.now(); // O anki zamanı alıyoruz
 
+        if (_productServices.atolyeCollection.value.isEmpty) {
+          print("Hata: Depo koleksiyon yolu boş.");
+          setState(() {
+            isLoading = false; // Yükleme durdur
+          });
+          return;
+        }
+
         QuerySnapshot denizliDepoSnapshot = await firestore
-            .collection('denizli_depo')
+            .collection(_productServices.atolyeCollection.value)
             .where('urun', isEqualTo: urunAdi)
             .where('renk', isEqualTo: renk)
             .where('boyut', isEqualTo: boyut)
@@ -117,14 +221,16 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
           int yeniAdet = mevcutAdet + adet;
 
           await firestore
-              .collection('denizli_depo')
+              .collection(_productServices.atolyeCollection.value)
               .doc(denizliDepoDoc.id)
               .update({
             'miktar': yeniAdet,
             'tarih': tarih,
           });
         } else {
-          await firestore.collection('denizli_depo').add({
+          await firestore
+              .collection(_productServices.atolyeCollection.value)
+              .add({
             'urun': urunAdi,
             'renk': renk,
             'boyut': boyut,
@@ -135,7 +241,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         }
 
         await firestore
-            .collection('paketleme_stok')
+            .collection(_selectedAtolyeCollection!)
             .doc(doc.id)
             .update({'miktar': 0});
       }
@@ -146,7 +252,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aktarım sırasında hata oluştu.')),
+        SnackBar(content: Text('Aktarım sırasında hata oluştu: $e')),
       );
       print("Aktarım sırasında hata oluştu: $e");
     } finally {
@@ -199,190 +305,245 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         ],
         elevation: 0,
       ),
-      body: _works.isEmpty
-          ? Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'images/emptymov.webp',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _works.length,
-              itemBuilder: (context, index) {
-                final work = _works[index];
-                String eklemeTarihi = 'Bilinmiyor';
+      body: Column(
+        children: [
+          // DropdownButton
+          DropdownSelector(
+            hintText: "Atölye seç",
+            items: _atolye, // Tüm name değerlerini içeren liste
+            selectedValue: _selectedAtolye,
+            icon: Icons.arrow_drop_down,
+            onChanged: (value) {
+              setState(() {
+                _selectedAtolye = value;
 
-                if (work['tarih'] != null && work['tarih'] is Timestamp) {
-                  Timestamp timestamp = work['tarih'];
-                  DateTime dateTime = timestamp.toDate();
-                  eklemeTarihi = DateFormat('dd.MM.yyyy').format(dateTime);
-                }
+                // Seçilen "name" değerine göre "collection" değerini bul ve ata
+                _selectedAtolyeCollection = fetchedAtolyeler.firstWhere(
+                  (e) =>
+                      e['name'] ==
+                      _selectedAtolye, // Seçilen name ile eşleşeni bul
+                  orElse: () =>
+                      {'collection': "null"}, // Eğer eşleşme yoksa null döndür
+                )['collection'];
+                _fetchUserRoleAndData();
+                print("Seçilen Atölye: $_selectedAtolye");
+                print("Seçilen Koleksiyon: $_selectedAtolyeCollection");
+              });
+            },
+          ),
 
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+          const SizedBox(
+            height: 20,
+          ),
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _works.isEmpty
+                  ? Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5000),
+                        child: Image.asset(
+                          'images/emptymov.webp',
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            'images/fullmov.webp',
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _userRole == 'Dokuma' && work['urun'] != null
-                                    ? 'Dokunacak ${work['urun']}'
-                                    : _userRole == 'Paketleme' &&
-                                            work['urun'] != null
-                                        ? 'Paketlenecek ${work['urun']}'
-                                        : _userRole == 'Boyama' &&
-                                                work['urun'] != null
-                                            ? 'Boyanacak ${work['urun']}'
-                                            : _userRole == 'Dolum' &&
-                                                    work['urun'] != null
-                                                ? 'Doldurulacak ${work['urun']}'
-                                                : _userRole == 'Dikim' &&
-                                                        work['urun'] != null
-                                                    ? 'Dikilecek ${work['urun']}'
-                                                    : _userRole == 'Kesim' &&
-                                                            work['urun'] != null
-                                                        ? 'Kesilecek ${work['urun']}'
-                                                        : _userRole ==
-                                                                    'Transfer' &&
-                                                                work['urun'] !=
-                                                                    null
-                                                            ? 'Aktarılacak ${work['urun']}'
-                                                            : (work['urun'] ??
-                                                                'Ürün Yok'),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  if (work['gramaj'] != null)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.scale,
-                                            color: Color.fromARGB(
-                                                255, 208, 139, 93),
-                                            size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          work['gramaj'] ?? '--',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 4),
-                                      ],
-                                    ),
-                                  if (work['fine'] != null)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.line_style,
-                                            color: Color.fromARGB(
-                                                255, 91, 166, 204),
-                                            size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          work['fine'] ?? '--',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 4),
-                                      ],
-                                    ),
-                                  if (work['denye'] != null)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.texture,
-                                            color: Colors.amber, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          work['denye'] ?? '--',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  if (work['renk'] != null)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.color_lens,
-                                            color: Colors.amber, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          work['renk'] ?? '--',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        const SizedBox(width: 10),
-                                      ],
-                                    ),
-                                  
-                                  if (work['boyut'] != null)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.straighten,
-                                            color: Colors.blueGrey, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          "${work['boyut']}",
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                ],
-                              ),
-                                    const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  const Icon(Icons.layers,
-                                      color: Colors.blueGrey, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${work['miktar'] ?? 0} Kg/adet',
-                                    style: const TextStyle(fontSize: 12),
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        itemCount: _works.length,
+                        itemBuilder: (context, index) {
+                          final work = _works[index];
+                          String eklemeTarihi = 'Bilinmiyor';
+
+                          if (work['tarih'] != null &&
+                              work['tarih'] is Timestamp) {
+                            Timestamp timestamp = work['tarih'];
+                            DateTime dateTime = timestamp.toDate();
+                            eklemeTarihi =
+                                DateFormat('dd.MM.yyyy').format(dateTime);
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ],
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.asset(
+                                      'images/fullmov.webp',
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _userRole == 'Dokuma' &&
+                                                  work['urun'] != null
+                                              ? 'Dokunacak ${work['urun']}'
+                                              : _userRole == 'Paketleme' &&
+                                                      work['urun'] != null
+                                                  ? 'Paketlenecek ${work['urun']}'
+                                                  : _userRole == 'Boyama' &&
+                                                          work['urun'] != null
+                                                      ? 'Boyanacak ${work['urun']}'
+                                                      : _userRole == 'Dolum' &&
+                                                              work['urun'] !=
+                                                                  null
+                                                          ? 'Doldurulacak ${work['urun']}'
+                                                          : _userRole ==
+                                                                      'Dikim' &&
+                                                                  work['urun'] !=
+                                                                      null
+                                                              ? 'Dikilecek ${work['urun']}'
+                                                              : _userRole ==
+                                                                          'Kesim' &&
+                                                                      work['urun'] !=
+                                                                          null
+                                                                  ? 'Kesilecek ${work['urun']}'
+                                                                  : _userRole ==
+                                                                              'Transfer' &&
+                                                                          work['urun'] !=
+                                                                              null
+                                                                      ? 'Aktarılacak ${work['urun']}'
+                                                                      : (work['urun'] ??
+                                                                          'Ürün Yok'),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            if (work['gramaj'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.scale,
+                                                      color: Color.fromARGB(
+                                                          255, 208, 139, 93),
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    work['gramaj'] ?? '--',
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                ],
+                                              ),
+                                            if (work['fine'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.line_style,
+                                                      color: Color.fromARGB(
+                                                          255, 91, 166, 204),
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    work['fine'] ?? '--',
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                ],
+                                              ),
+                                            if (work['denye'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.texture,
+                                                      color: Colors.amber,
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    work['denye'] ?? '--',
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                ],
+                                              ),
+                                            if (work['renk'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.color_lens,
+                                                      color: Colors.amber,
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    work['renk'] ?? '--',
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                ],
+                                              ),
+                                            if (work['boyut'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.straighten,
+                                                      color: Colors.blueGrey,
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    "${work['boyut']}",
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12),
+                                                  ),
+                                                ],
+                                              ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.layers,
+                                                color: Colors.blueGrey,
+                                                size: 16),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${work['miktar'] ?? 0} Kg/adet',
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+        ],
+      ),
     );
   }
 }

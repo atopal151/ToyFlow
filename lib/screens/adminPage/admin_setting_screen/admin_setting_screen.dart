@@ -8,6 +8,7 @@ import '../../../services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
 import '../new_storage_add/new_storage_add.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';
+import '../new_work_shop/work_shop_add.dart';
 import '../register_screen/register_screen.dart';
 import '../stock_screen/stok_screen.dart';
 
@@ -61,9 +62,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
             ),
             child: const Text('Profili Düzenle'),
           ),
-          const SizedBox(height: 30),
-          // Ayarlar Listesi
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           // Menü Seçenekleri
           Expanded(
             child: ListView(
@@ -187,6 +186,25 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const StorageNewAdd());
+                  },
+                ),
+               ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 117, 175, 203),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.work_history,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Atölye Ekle'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Get.to(() => const WorkShopNewAdd());
                   },
                 ),
                

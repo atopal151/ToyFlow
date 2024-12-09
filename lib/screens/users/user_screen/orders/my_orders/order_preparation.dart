@@ -155,11 +155,6 @@ class _OrderPreparationState extends State<OrderPreparation> {
         return SingleChildScrollView(
           child: Column(
             children: [
-              Text(
-                "Kullanıcı Rolü: ${productServices.role.value}",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
               if (productServices.role.value == "Dikim" ||
                   productServices.role.value == "Transfer" ||
                   productServices.role.value == "Dolum" ||

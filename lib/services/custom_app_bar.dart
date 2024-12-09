@@ -27,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     } else {
       return ''; // Cinsiyet yoksa varsayılan boş
     }
+    
   }
 
   @override
@@ -49,6 +50,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
             return Obx(() {
               final productServices = Get.find<ProductServices>();
+              print(productServices.workshopName.value);
               return Row(
                 children: [
                   Padding(

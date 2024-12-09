@@ -8,12 +8,7 @@ import 'package:get/get.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../screens/login_screen/login_screen.dart';
-import '../screens/users/paka_home_screen/paka_home_screen.dart';
-import '../screens/users/boya_home_screen/boya_home_screen.dart';
-import '../screens/users/dika_home_screen/dika_home_screen.dart';
-import '../screens/users/doka_home_screen/doka_home_screen.dart';
-import '../screens/users/dola_home_screen/dola_home_screen.dart';
-import '../screens/users/kesa_home_screen/kesa_home_screen.dart';
+import '../screens/users/atolye_screen/atolye_home_screen.dart';
 import 'product_services.dart';
 
 class AuthService {
@@ -57,22 +52,22 @@ class AuthService {
               destination = BottomNavBarWithPages();
               break;
             case 'Dikim':
-              destination = const DikaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Dokuma':
-              destination = const DokaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Boyama':
-              destination = const BoyaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Dolum':
-              destination = const DolaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Kesim':
-              destination = const KesaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Paketleme':
-              destination = const PakaHomeScreen();
+              destination = const AtolyeHomeScreen();
               break;
             case 'Transfer':
               destination = const TransferScreen();

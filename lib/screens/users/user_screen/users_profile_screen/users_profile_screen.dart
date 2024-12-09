@@ -89,6 +89,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
           Expanded(
             child: ListView(
               children: [
+                if(_productService.role.value!="Transfer")
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),

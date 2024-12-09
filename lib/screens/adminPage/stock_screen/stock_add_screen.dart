@@ -133,7 +133,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 12.0, right: 16),
+              padding: const EdgeInsets.only(right:8.0,left: 22),
               child: CustomLoadingButton(
                 isLoading: isLoading,
                 onPressed: () async {

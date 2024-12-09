@@ -4,16 +4,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/users/boya_home_screen/boya_home_screen.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_screen.dart';
 import 'package:toyflow/services/bottom_nav_bar.dart';
 import '../login_screen/login_screen.dart';
-import '../users/paka_home_screen/paka_home_screen.dart';
-import '../users/dika_home_screen/dika_home_screen.dart';
+import '../users/atolye_screen/atolye_home_screen.dart';
 import '../../services/auth_service.dart';
-import '../users/doka_home_screen/doka_home_screen.dart';
-import '../users/dola_home_screen/dola_home_screen.dart';
-import '../users/kesa_home_screen/kesa_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -38,17 +33,17 @@ class _SplashScreenState extends State<SplashScreen> {
         if (role == 'admin') {
           Get.offAll(() => BottomNavBarWithPages());
         } else if (role == 'Dikim') {
-          Get.offAll(() => const DikaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Dokuma') {
-          Get.offAll(() => const DokaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Boyama') {
-          Get.offAll(() => const BoyaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Dolum') {
-          Get.offAll(() => const DolaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Kesim') {
-          Get.offAll(() => const KesaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Paketleme') {
-          Get.offAll(() => const PakaHomeScreen());
+          Get.offAll(() => const AtolyeHomeScreen());
         } else if (role == 'Transfer') {
           Get.offAll(() => const TransferScreen());
         }

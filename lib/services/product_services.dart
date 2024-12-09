@@ -8,6 +8,8 @@ class ProductServices extends GetxController {
   var firstName = ''.obs; // Ad
   var lastName = ''.obs; // Soyad
   var role = ''.obs; // Rol
+  var workshopName = ''.obs; //atolye ismi
+  var atolyeCollection = ''.obs; //atolye ismi
 
   @override
   void onInit() {
@@ -28,6 +30,34 @@ class ProductServices extends GetxController {
     });
   }
 
+  Future<void> getAtolyeCollectionDetails() async {
+    try {
+      // Firestore sorgusu: workshopName ile name alanı eşleşen belgeyi bul
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('atolyeler')
+          .where('name',
+              isEqualTo: workshopName.value) // Değişken değerini kullanıyoruz
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        print("Atölye bulunamadı: ${workshopName.value}");
+        return;
+      }
+
+      // İlk belgeden "collection" alanını al
+      String? fetchedCollection = querySnapshot.docs.first['collection'];
+
+      print("Eşleşen Atölye Collection: $fetchedCollection");
+
+      // Atölye koleksiyonunu ProductServices değişkenine ata
+      atolyeCollection.value =
+          fetchedCollection ?? "Koleksiyon bilgisi bulunamadı";
+      print("Atölye Collection Değeri: ${atolyeCollection.value}");
+    } catch (e) {
+      print("Atölye koleksiyon bilgisi alınırken hata oluştu: $e");
+    }
+  }
+
   // Kullanıcı bilgilerini Firestore'dan al
   Future<void> _getUserDetails(String userId) async {
     try {
@@ -39,10 +69,12 @@ class ProductServices extends GetxController {
       if (userDoc.exists && userDoc.data() != null) {
         Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
 
-        userEmail.value = FirebaseAuth.instance.currentUser?.email ?? 'Email bulunamadı';
+        userEmail.value =
+            FirebaseAuth.instance.currentUser?.email ?? 'Email bulunamadı';
         firstName.value = data['firstName'] ?? 'Ad bulunamadı';
         lastName.value = data['lastName'] ?? 'Soyad bulunamadı';
         role.value = data['role'] ?? 'Rol bulunamadı';
+        workshopName.value = data['workshop'] ?? "Atölye ismi bulunamadı.";
       } else {
         _resetUserDetails(); // Kullanıcı belgesi bulunamadıysa bilgileri sıfırla
       }
@@ -58,5 +90,6 @@ class ProductServices extends GetxController {
     firstName.value = 'Ad bulunamadı';
     lastName.value = 'Soyad bulunamadı';
     role.value = 'Rol bulunamadı';
+    workshopName.value = 'Atölye ismi bulunamadı';
   }
 }

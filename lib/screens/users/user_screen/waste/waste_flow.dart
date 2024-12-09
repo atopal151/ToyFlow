@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:toyflow/services/product_services.dart';
 
 class FireTakip extends StatefulWidget {
   const FireTakip({super.key});
@@ -11,6 +12,8 @@ class FireTakip extends StatefulWidget {
 }
 
 class _FireTakipState extends State<FireTakip> {
+  final ProductServices _productServices = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -18,60 +21,21 @@ class _FireTakipState extends State<FireTakip> {
     timeago.setLocaleMessages('tr', timeago.TrShortMessages());
   }
 
-  // Firestore'dan kullanıcı rolünü al
-  Future<String> getUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists && userDoc.data() != null) {
-        return (userDoc.data() as Map<String, dynamic>)['role'] ??
-            "Rol bulunamadı";
-      } else {
-        print(
-            "Uyarı: Kullanıcı rolü bulunamadı, varsayılan değer kullanılacak.");
-      }
-    } else {
-      print("Uyarı: Kullanıcı oturumu bulunamadı.");
-    }
-    return ""; // Boş değer veya varsayılan rol bulunamadı uyarısı
-  }
-
-  Stream<QuerySnapshot> getFireDataStream(String role) {
-    // Rol ve koleksiyon eşlemesi
-    final roleToCollectionMap = {
-      "Dokuma": "dokuma_fire",
-      "Boyama": "boyama_fire",
-      "Kesim": "kesim_fire",
-      "Dikim": "dikim_fire",
-      "Dolum": "dolum_fire",
-      "Paketleme": "paketleme_fire",
-    };
-
-    if (roleToCollectionMap.containsKey(role)) {
-      String collectionName = roleToCollectionMap[role]!;
-      print("Kullanıcı rolü: $role, Seçilen koleksiyon: $collectionName");
-
-      return FirebaseFirestore.instance
-          .collection(collectionName)
-          .orderBy('tarih', descending: true)
-          .snapshots();
-    } else {
-      print("Uyarı: Belirtilen rol için geçerli bir koleksiyon bulunamadı.");
-      return const Stream
-          .empty(); // Geçerli bir koleksiyon yoksa boş bir stream döndür
-    }
+  Stream<QuerySnapshot> getFireDataStream() {
+    return FirebaseFirestore.instance
+        .collection("fireler")
+        .where("atolye", isEqualTo: _productServices.workshopName.value)
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: FutureBuilder<String>(
-        future: getUserRole(),
+      appBar: AppBar(
+        title: const Text("Fire Takip"),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: getFireDataStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -79,136 +43,176 @@ class _FireTakipState extends State<FireTakip> {
           if (snapshot.hasError) {
             return Center(child: Text('Hata: ${snapshot.error}'));
           }
-          if (!snapshot.hasData) {
-            return const Center(child: Text('Rol bulunamadı.'));
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Veri bulunamadı.'));
           }
 
-          String role = snapshot.data!;
-          return StreamBuilder<QuerySnapshot>(
-            stream: getFireDataStream(role),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Hata: ${snapshot.error}'));
-              }
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text('Veri bulunamadı.'));
-              }
+          return ListView.builder(
+            padding: const EdgeInsets.all(8.0),
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var data =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              String urun = data['urun'] ?? '--';
+              String renk = data['renk'] ?? '--';
+              String boyut = data['boyut'] ?? '--';
+              String gramaj = data['gramaj'] ?? '--';
+              String fine = data['fine'] ?? '--';
+              String denye = data['denye'] ?? '--';
+              String miktar = data['miktar'] != null
+                  ? "${data['miktar']} kg/adet"
+                  : 'Bilinmiyor';
+              String tarih = data['tarih'] != null
+                  ? timeago.format((data['tarih'] as Timestamp).toDate(),
+                      locale: 'tr')
+                  : 'Tarih Bilinmiyor';
 
-              return ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  var data =
-                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                  String urun = data['urun'] ?? '--';
-                  String renk = data['renk'] ?? '--';
-                  String boyut = data['boyut'] ?? '--';
-                  String miktar = data['miktar'] != null
-                      ? "${data['miktar']} kg/adet"
-                      : 'Bilinmiyor';
-                  // Tarihi kontrol et ve biçimlendir
-                  String tarih = data['tarih'] != null
-                      ? timeago.format((data['tarih'] as Timestamp).toDate(),
-                          locale: 'tr')
-                      : 'Tarih Bilinmiyor';
-
-                  return Card(
-                    color: Colors.white,
-                    elevation: 3,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 12.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              return Card(
+                color: Colors.white,
+                elevation: 6,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'images/fire.webp',
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
                     ),
-                    child: ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'images/fire.webp', // Profil resmi
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.cover,
+                  ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        urun,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            urun,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      const SizedBox(height: 4),
+                      if (_productServices.role.value == "Dokuma")
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.lens,
+                              color: Color.fromARGB(255, 99, 148, 182),
+                              size: 15,
                             ),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.color_lens,
-                                color: Color.fromARGB(255, 99, 148, 182),
-                                size: 15,
+                            const SizedBox(width: 4),
+                            Text(
+                              denye,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
-                              const SizedBox(
-                                width: 4,
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 4),
+                      if (_productServices.role.value == "Boyama" ||
+                          _productServices.role.value == "Kesim")
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.lens,
+                              color: Color.fromARGB(255, 99, 148, 182),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              gramaj,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
-                              Text(
-                                renk,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
+                            ),
+                            const SizedBox(width: 10),
+                            const Icon(
+                              Icons.height,
+                              color: Color.fromARGB(255, 99, 148, 182),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              fine,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
-                              const SizedBox(
-                                width: 10,
+                            )
+                          ],
+                        ),
+                      Row(
+                        children: [
+                          if (_productServices.role.value == "Dikim" ||
+                              _productServices.role.value == "Dolum" ||
+                              _productServices.role.value == "Paketleme") ...[
+
+                      const SizedBox(height: 4),
+                            const Icon(
+                              Icons.color_lens,
+                              color: Color.fromARGB(255, 99, 148, 182),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              renk,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
-                              const Icon(
-                                Icons.height,
-                                color: Color.fromARGB(255, 99, 148, 182),
-                                size: 15,
+                            ),
+                          ],
+                          if (_productServices.role.value == "Dikim" ||
+                              _productServices.role.value == "Dolum" ||
+                              _productServices.role.value == "Paketleme") ...[
+                            const SizedBox(width: 10),
+                            const Icon(
+                              Icons.height,
+                              color: Color.fromARGB(255, 99, 148, 182),
+                              size: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              boyut,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
                               ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                "$boyut cm",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              )
-                            ],
-                          )
+                            )
+                          ],
                         ],
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 6),
-                          Text(
-                            "Miktar: $miktar",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color.fromARGB(255, 183, 89, 89),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            tarih,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.black45,
-                            ),
-                          ),
-                        ],
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 6),
+                      Text(
+                        "Miktar: $miktar",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color.fromARGB(255, 183, 89, 89),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                      const SizedBox(height: 4),
+                      Text(
+                        tarih,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.black45,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );

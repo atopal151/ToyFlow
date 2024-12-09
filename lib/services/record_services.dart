@@ -10,6 +10,9 @@ class RecordServices {
     required String islemTuru,
     String? boyut,
     String? aksesuar,
+    String? denye,
+    String? gramaj,
+    String? fine,
     required String aciklama,
     required String atelye,
   }) async {

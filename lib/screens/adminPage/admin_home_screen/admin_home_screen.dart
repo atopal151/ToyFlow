@@ -155,33 +155,23 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               return Stack(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: InkWell(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 0.5,
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        child: const Icon(
-                          Icons.notifications,
-                          color: Colors.white,
-                          size: 22,
-                        ),
+                      child: const Icon(
+                        Icons.notifications,
+                        color: Colors.black,
+                        size: 25,
                       ),
                       onTap: () {
                         Get.to(() => const MoverScreen());
                       },
                     ),
                   ),
+                  
                   if (unreadCount > 0)
                     Positioned(
-                      right: 5,
-                      top: 1,
+                      right: 10,
+                      top: 5,
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(

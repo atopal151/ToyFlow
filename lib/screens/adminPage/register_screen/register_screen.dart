@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../services/auth_service.dart';
 import 'registerServices/dropdown_style_file.dart';
@@ -23,28 +24,68 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _selectedWorkshop; // Seçilen atölye
   String? _selectedCins; // Seçilen Cins
 
-  // Rol ve atölye listeleri
-  final List<String> roles = ['Dokuma','Boyama', 'Kesim', 'Dikim', 'Dolum', 'Paketleme','Transfer','Depo'];
-  final List<String> workshops = [
-    'Dokuma Atölyesi',
-    'Boya Atölyesi',
-    'Kesim Atölyesi',
-    'Dikim Atölyesi',
-    'Dolum Atölyesi',
-    'Paketleme Atölyesi',
-    'Transfer Birimi',
-    'Taşınır Kayıt'
+  // Rol ve cinsiyet listeleri
+  final List<String> roles = [
+    'Dokuma',
+    'Boyama',
+    'Kesim',
+    'Dikim',
+    'Dolum',
+    'Paketleme',
+    'Transfer',
+    'Depo'
   ];
   final List<String> cins = ['Erkek', 'Kadın'];
+
+  List<String> workshops = []; // Firestore'dan dinamik olarak gelecek
 
   // Yüklenme durumu için değişken
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchWorkshops(); // Firestore'dan atölye listesini çekiyoruz
+  }
+
+  Future<void> _fetchWorkshops() async {
+    if (_selectedRole == null || _selectedRole!.isEmpty) {
+      // Rol seçilmemişse workshops listesini temizle
+      setState(() {
+        workshops = [];
+      });
+      return;
+    }
+
+    try {
+      final QuerySnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('atolyeler') // 'atolyeler' koleksiyonu
+              .where('nitelik',
+                  isEqualTo: _selectedRole) // 'nitelik' alanı rol ile eşleşmeli
+              .get();
+
+      List<String> fetchedWorkshops = snapshot.docs
+          .map((doc) => doc['name'] as String) // 'name' alanını alıyoruz
+          .toList();
+
+      setState(() {
+        workshops = fetchedWorkshops; // Listeyi güncelle
+        _selectedWorkshop = null; // Yeni liste için seçimi sıfırla
+      });
+    } catch (e) {
+      print('Atölyeler alınırken bir hata oluştu: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Personel Kaydet",style: TextStyle(fontSize: 15),),
+        title: const Text(
+          "Personel Kaydet",
+          style: TextStyle(fontSize: 15),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -70,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               icon: Icons.lock,
             ),
 
-            // cinsiyet Dropdown
+            // Cinsiyet Dropdown
             DropdownRegisterSelector(
               hintText: 'Cinsiyet Seçin',
               items: cins,
@@ -83,18 +124,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               icon: Icons.arrow_drop_down,
             ),
 
-            // rol Dropdown
-          DropdownRegisterSelector(
+            // Rol Dropdown
+            DropdownRegisterSelector(
               hintText: 'Rol Seç',
               items: roles,
               selectedValue: _selectedRole,
               onChanged: (String? newValue) {
                 setState(() {
                   _selectedRole = newValue;
+                  _fetchWorkshops();
                 });
               },
               icon: Icons.arrow_drop_down,
             ),
+
             // Atölye Dropdown
             DropdownRegisterSelector(
               hintText: 'Atölye Seç',
@@ -107,28 +150,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
-           
+
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: ElevatedButton(
                 onPressed: isLoading
                     ? null
                     : () async {
-                        // Buton tıklanabilirliği
                         setState(() {
                           isLoading = true; // Yüklenme durumunu başlat
                         });
 
                         // Kullanıcı kaydetme işlemi
                         await _authService.createUser(
-                            _emailController.text,
-                            _passwordController.text,
-                            _firstNameController.text,
-                            _lastNameController.text,
-                            _selectedRole ?? '', // Seçilen rolü al
-                            _selectedWorkshop ?? '',
-                            _selectedCins ?? '' // Seçilen cinsiyeti al
-                            );
+                          _emailController.text,
+                          _passwordController.text,
+                          _firstNameController.text,
+                          _lastNameController.text,
+                          _selectedRole ?? '', // Seçilen rolü al
+                          _selectedWorkshop ?? '',
+                          _selectedCins ?? '', // Seçilen cinsiyeti al
+                        );
 
                         // Kayıt tamamlandığında geri dön
                         Navigator.of(context).pop();
@@ -153,15 +195,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       )
                     : const Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center, // İkon ve metni ortala
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             'Kaydet',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white, // Yazı rengi
+                              color: Colors.white,
                             ),
                           ),
                         ],
