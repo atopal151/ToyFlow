@@ -8,7 +8,7 @@ import 'package:toyflow/screens/users/user_screen/orders/my_orders/order_prepara
 
 import '../../../../../services/user_services/product_services.dart';
 import '../../../../../services/user_component/alert_dialog_service.dart';
-import '../../../../admin/stock_screen/stock_services/stock_services.dart';
+import '../../../../adminPage/stock_screen/stock_services/stock_services.dart';
 import '../../../transfer_screen/transfer_services/transfer_services.dart';
 
 class MyOrders extends StatefulWidget {
