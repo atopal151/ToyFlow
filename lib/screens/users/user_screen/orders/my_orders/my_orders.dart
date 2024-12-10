@@ -29,87 +29,81 @@ class _MyOrdersState extends State<MyOrders> {
   void initState() {
     super.initState();
     print(productServices.role.value);
-    print("buradayız"); 
+    print("buradayız");
   }
 
- Future<void> transferOrder(String orderId) async {
-  try {
-    await _firestore.collection('orders').doc(orderId).delete();
-    if (mounted) {
-      showAlertDialog(context, "Sipariş başarıyla stoğa aktarıldı.");
-    }
-  } catch (e) {
-    if (mounted) {
-      showAlertDialog(context, "Hata $e");
+  Future<void> transferOrder(String orderId) async {
+    try {
+      await _firestore.collection('orders').doc(orderId).delete();
+      if (mounted) {
+        showAlertDialog(context, "Sipariş başarıyla stoğa aktarıldı.");
+      }
+    } catch (e) {
+      if (mounted) {
+        showAlertDialog(context, "Hata $e");
+      }
     }
   }
-}
-
 
   Future<void> deleteOrder(String orderId) async {
-  try {
-    await _firestore.collection('orders').doc(orderId).delete();
-    if (mounted) {
-     
-      showAlertDialog(context, "Sipariş başaıyla silindi. ");
-    }
-  } catch (e) {
-    if (mounted) {
-      
-      showAlertDialog(context, "Hata $e ");
-    }
-  }
-}
-
-Future<void> approveOrder(String orderId) async {
-  try {
-    await _firestore
-        .collection('orders')
-        .doc(orderId)
-        .update({'status': 'Tamamlandı'});
-    if (mounted) {
-
-      showAlertDialog(context, "Sipariş onaylandı. ");
-      
-    }
-  } catch (e) {
-    if (mounted) {
-
-      showAlertDialog(context, "Hata $e ");
-      
+    try {
+      await _firestore.collection('orders').doc(orderId).delete();
+      if (mounted) {
+        showAlertDialog(context, "Sipariş başaıyla silindi. ");
+      }
+    } catch (e) {
+      if (mounted) {
+        showAlertDialog(context, "Hata $e ");
+      }
     }
   }
-}
+
+  Future<void> approveOrder(String orderId) async {
+    try {
+      await _firestore
+          .collection('orders')
+          .doc(orderId)
+          .update({'status': 'Tamamlandı'});
+      if (mounted) {
+        showAlertDialog(context, "Sipariş onaylandı. ");
+      }
+    } catch (e) {
+      if (mounted) {
+        showAlertDialog(context, "Hata $e ");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Siparişlerim"),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: InkWell(
-                onTap: () {
-                  Get.to(() => const OrderPreparation());
-                },
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(10.0),
-                  child: const Icon(
-                    Icons.edit,
-                    size: 14,
-                    color: Colors.white,
-                  ),
+      appBar: AppBar(
+        title: const Text("Siparişlerim"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: InkWell(
+              onTap: () {
+                Get.to(() => const OrderPreparation());
+              },
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(10.0),
+                child: const Icon(
+                  Icons.edit,
+                  size: 14,
+                  color: Colors.white,
                 ),
               ),
             ),
-          ],
-        ),
-        body: Obx(() {
+          ),
+        ],
+      ),
+      body: Obx(
+        () {
           print(productServices.role.value);
           if (productServices.role.value.isEmpty) {
             return const Center(child: CircularProgressIndicator());
@@ -161,13 +155,11 @@ Future<void> approveOrder(String orderId) async {
                                   entry.value.toString().isNotEmpty &&
                                   entry.key != 'timestamp' &&
                                   entry.key != 'id' &&
-                                  //entry.key != 'role' &&
                                   entry.key != 'status')
                               .map((entry) {
                             return Text("${entry.key}: ${entry.value}");
                           }).toList(),
                           const SizedBox(height: 8),
-                          // Status durumu
                           Text(
                             "Durum: $status",
                             style: TextStyle(
@@ -178,8 +170,7 @@ Future<void> approveOrder(String orderId) async {
                                       ? Colors.green
                                       : status == "Hazırlanıyor"
                                           ? Colors.orange
-                                          : Colors
-                                              .grey, // Varsayılan renk (isteğe bağlı)
+                                          : Colors.grey,
                             ),
                           ),
                         ],
@@ -274,7 +265,7 @@ Future<void> approveOrder(String orderId) async {
                                       renk: orderData['renk']);
                                 }
                                 if (productServices.role.value == "Transfer") {
-                                 atolyeServices.addOrUpdateUrunStock(
+                                  atolyeServices.addOrUpdateUrunStock(
                                       context: context,
                                       urun: orderData['urun'],
                                       miktar: int.tryParse(
@@ -297,6 +288,8 @@ Future<void> approveOrder(String orderId) async {
               );
             },
           );
-        }));
+        },
+      ),
+    );
   }
 }

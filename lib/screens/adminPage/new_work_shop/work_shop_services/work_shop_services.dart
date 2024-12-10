@@ -12,8 +12,7 @@ Future<void> addNewWorkShop({
     required String name,
     required String collectionName,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -24,26 +23,21 @@ Future<void> addNewWorkShop({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('atolyeler').add({
         'nitelik': nitelik,
         'name':name,
         'collection':collectionName,
       });
-
-      // Başarılı bir işlem mesajı göster
+ 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Atölye başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Atölye kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -53,8 +47,7 @@ Future<void> connectedWorkShop({
     required String rol,
     required String sonrakiBirim,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -65,26 +58,21 @@ Future<void> connectedWorkShop({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('connected_work_shop').add({
         'onceki': oncekiBirim,
         'rol':rol,
         'sonraki':sonrakiBirim,
       });
-
-      // Başarılı bir işlem mesajı göster
+ 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Bağlılıklar başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Bağlılıkların kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 

@@ -27,8 +27,7 @@ class AuthService {
         password: password,
       );
 
-      final ProductServices productServices = Get.find();
-      // Kullanıcı bilgilerini güncelle
+      final ProductServices productServices = Get.find(); 
       productServices.userEmail.value =
           userCredential.user?.email ?? 'Email bulunamadı';
 
@@ -122,12 +121,12 @@ class AuthService {
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
         Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-        return data?['role'] ?? 'user'; // Varsayılan rol 'user'
+        return data?['role'] ?? 'user';  
       }
-      return 'user'; // Kullanıcı bulunamazsa varsayılan rol
+      return 'user';  
     } catch (e) {
       print("Rol alınırken hata: $e");
-      return 'user'; // Hata durumunda varsayılan rol
+      return 'user';  
     }
   }
 
@@ -148,12 +147,10 @@ class AuthService {
 
   Future<void> logout() async {
     try {
-      await _auth.signOut(); // Firebase oturumu kapat
-      print("Oturum kapatıldı.");
-
-      // LoginScreen'e yönlendir
+      await _auth.signOut();  
+      print("Oturum kapatıldı."); 
       Get.offAll(() =>
-          const LoginScreen()); // Tüm sayfa yığınını temizleyip LoginScreen'e yönlendir
+          const LoginScreen());  
     } catch (e) {
       print("Oturum kapatma hatası: $e");
     }

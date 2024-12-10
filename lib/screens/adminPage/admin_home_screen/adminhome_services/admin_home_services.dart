@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminHomeService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
 
   Future<int> fetchDailyStockOperations(String atelye) async {
     final DateTime today = DateTime.now();
@@ -23,7 +24,7 @@ class AdminHomeService {
       return totalStock;
     } catch (e) {
       print("Error fetching data: $e");
-      return 0; // Eğer hata oluşursa varsayılan değer döndür
+      return 0; 
     }
   }
 
@@ -41,7 +42,7 @@ class AdminHomeService {
       return totalStock;
     } catch (e) {
       print("Error fetching data from $collectionName: $e");
-      return 0; // Eğer hata oluşursa varsayılan değer döndür
+      return 0; 
     }
   }
 }

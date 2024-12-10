@@ -23,14 +23,14 @@ class DropdownRegisterSelector extends StatelessWidget {
       padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, // Arka plan rengi beyaz
+          color: Colors.white,  
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 8,
-              offset: const Offset(0, 4), // Gölgenin pozisyonu
+              offset: const Offset(0, 4),  
             ),
           ],
         ),
@@ -65,8 +65,8 @@ class DropdownRegisterSelector extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           ),
-          icon: const SizedBox.shrink(), // Varsayılan açılır simgeyi gizlemek için
-          dropdownColor: Colors.white, // Açılan listenin arka planı
+          icon: const SizedBox.shrink(),  
+          dropdownColor: Colors.white,  
         ),
       ),
     );

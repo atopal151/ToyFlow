@@ -77,7 +77,7 @@ void _addStorage() {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () {
-                  _addStorage(); // Kaydetme işlemi başlatılıyor
+                  _addStorage(); 
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

@@ -10,16 +10,15 @@ class AdminWorkShopScreen extends StatefulWidget {
 }
 
 class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
-  List<Map<String, dynamic>> workshops = []; // Atölye bilgileri
-  bool isLoading = true; // Yüklenme durumu
+  List<Map<String, dynamic>> workshops = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchWorkshops(); // Atölye bilgilerini al
+    _fetchWorkshops();
   }
 
-  /// Firestore'dan atölye bilgilerini alır
   Future<void> _fetchWorkshops() async {
     try {
       QuerySnapshot querySnapshot =
@@ -28,17 +27,17 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
       setState(() {
         workshops = querySnapshot.docs.map((doc) {
           return {
-            'title': doc['name'], // Atölye ismi
-            'icon': Icons.settings, // Varsayılan bir ikon
-            'image': 'images/backgorund.webp', // Varsayılan görsel
+            'title': doc['name'],
+            'icon': Icons.settings,
+            'image': 'images/backgorund.webp',
           };
         }).toList();
-        isLoading = false; // Yüklenme tamamlandı
+        isLoading = false;
       });
     } catch (e) {
       print("Atölyeler alınırken hata oluştu: $e");
       setState(() {
-        isLoading = false; // Yüklenme tamamlandı (hata durumunda da)
+        isLoading = false;
       });
     }
   }
@@ -54,7 +53,7 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(), // Yükleniyor göstergesi
+              child: CircularProgressIndicator(),
             )
           : workshops.isEmpty
               ? const Center(
@@ -66,11 +65,12 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
               : Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // İki sütunlu grid
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1, // Kare görünüm
+                      childAspectRatio: 1,
                     ),
                     itemCount: workshops.length,
                     itemBuilder: (context, index) {

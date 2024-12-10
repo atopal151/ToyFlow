@@ -14,23 +14,20 @@ class StockService {
     required String denye,
     required int miktar,
     required BuildContext context,
-  }) async {
-    // Eğer miktar geçerli değilse uyarı göster
+  }) async { 
     if (miktar <= 0) {
       showAlertDialog(context, 'Lütfen geçerli bir miktar girin!');
       return;
     }
 
-    try {
-      // Firestore'da aynı ürün ve renge sahip bir kayıt var mı kontrol et
+    try { 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('dokuma_work')
           .where('urun', isEqualTo: urun)
           .where('denye', isEqualTo: denye)
           .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        // Kayıt varsa miktarı güncelle
+      if (querySnapshot.docs.isNotEmpty) { 
         DocumentSnapshot existingDoc = querySnapshot.docs.first;
         int existingMiktar = existingDoc['miktar'];
 
@@ -50,8 +47,7 @@ class StockService {
           atelye: 'dokuma',
           aciklama: 'Mevcut stoğa $miktar kilo $urun $denye eklendi!',
         );
-      } else {
-        // Kayıt yoksa yeni bir kayıt oluştur
+      } else { 
         await FirebaseFirestore.instance.collection('dokuma_work').add({
           'urun': urun,
           'denye': denye,

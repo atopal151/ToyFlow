@@ -17,23 +17,21 @@ Future<void> saveOrderToFirestore({
   required String role,
   String? aciklama,
   required String status,
-  required BuildContext context, // Context ekliyoruz
+  required BuildContext context,  
 }) async {
-  try {
-    // Loading dialog gösteriliyor
+  try { 
     showDialog(
       context: context,
-      barrierDismissible: false, // Kullanıcı dışına tıklayarak kapatamaz
+      barrierDismissible: false, 
       builder: (BuildContext context) {
         return const Center(
           child: CircularProgressIndicator(),
         );
       },
     );
-
-    // Firestore'daki 'orders' koleksiyonuna veri ekleme
+ 
     await FirebaseFirestore.instance.collection('orders').add({
-      'urun': urun ?? '', // Seçilmemişse boş bırak
+      'urun': urun ?? '', 
       'iplik': iplik ?? '',
       'kumas': kumas ?? '',
       'renk': renk ?? '',
@@ -46,19 +44,17 @@ Future<void> saveOrderToFirestore({
       'role': role,
       "aciklama":aciklama,
       'status':status,
-      'timestamp': FieldValue.serverTimestamp(), // Sipariş zamanı
+      'timestamp': FieldValue.serverTimestamp(),  
     });
-
-    // Başarılı işlem sonrası loading dialog kapatılıyor
-    Navigator.pop(context); // Dialog'u kapat
+ 
+    Navigator.pop(context);  
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Sipariş başarıyla kaydedildi."),
       ),
     );
-  } catch (e) {
-    // Hata durumunda loading dialog kapatılıyor ve hata gösteriliyor
-    Navigator.pop(context); // Dialog'u kapat
+  } catch (e) { 
+    Navigator.pop(context); 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Sipariş kaydedilirken bir hata oluştu: $e"),

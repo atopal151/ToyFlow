@@ -12,9 +12,7 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
-  final searchQuery = ''.obs; // GetX ile arama sorgusu yönetimi
-
-  // Firestore'dan dokuma_work tablosundaki verileri çeken fonksiyon
+  final searchQuery = ''.obs; 
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
     return FirebaseFirestore.instance.collection('dokuma_work').snapshots().map(
         (snapshot) => snapshot.docs
@@ -115,7 +113,7 @@ class _StockScreenState extends State<StockScreen> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.asset(
-                              'images/box.webp', // Profil resmi
+                              'images/box.webp', 
                               width: 60,
                               height: 60,
                               fit: BoxFit.cover,

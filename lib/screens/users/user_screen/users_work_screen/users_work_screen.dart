@@ -25,7 +25,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   String? _selectedAtolye;
   final ProductServices _productServices = Get.find();
   final AuthService _authService = AuthService();
-  bool isLoading = false; // Yüklenme durumu için bir değişken eklendi
+  bool isLoading = false;
   List<Map<String, String>> fetchedAtolyeler = [];
   String? _selectedAtolyeCollection;
   @override
@@ -54,7 +54,6 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
   Future<void> fetchOncekiRol() async {
     try {
-      // "connected_work_shop" tablosundan "onceki" değerini al
       QuerySnapshot connectedSnapshot = await FirebaseFirestore.instance
           .collection('connected_work_shop')
           .where('rol', isEqualTo: _productServices.workshopName.value)
@@ -65,12 +64,10 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         return;
       }
 
-      // İlk belge üzerinden "onceki" değerini al
       _oncekiRol = connectedSnapshot.docs.first['onceki'];
 
       print("Onceki Rol: $_oncekiRol");
 
-      // "oncekiRol" değeriyle atolyeler verilerini getiren ikinci fonksiyonu çağır
       if (_oncekiRol != null) {
         await fetchAtolyeler(_oncekiRol!);
       }
@@ -81,7 +78,6 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
   Future<void> fetchAtolyeler(String oncekiRol) async {
     try {
-      // "atolyeler" tablosundan "oncekiRol" ile eşleşen belgeleri getir
       QuerySnapshot atolyelerSnapshot = await FirebaseFirestore.instance
           .collection('atolyeler')
           .where('nitelik', isEqualTo: oncekiRol)
@@ -89,19 +85,17 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
       fetchedAtolyeler = atolyelerSnapshot.docs.map((doc) {
         return {
-          'name': doc['name'].toString(), // Name alanı
-          'collection': doc['collection'].toString(), // Collection alanı
+          'name': doc['name'].toString(),
+          'collection': doc['collection'].toString(),
         };
       }).toList();
 
       setState(() {
         _atolye.clear();
-        _atolye
-            .addAll(fetchedAtolyeler.map((e) => e['name']!)); // Dropdown için
+        _atolye.addAll(fetchedAtolyeler.map((e) => e['name']!));
         if (_atolye.isNotEmpty) {
-          _selectedAtolye = _atolye.first; // İlk atölyeyi seçili yap
-          _selectedAtolyeCollection =
-              fetchedAtolyeler.first['collection']; // İlk koleksiyon değeri
+          _selectedAtolye = _atolye.first;
+          _selectedAtolyeCollection = fetchedAtolyeler.first['collection'];
         }
       });
 
@@ -120,7 +114,6 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       return;
     }
 
-    // Kullanıcının rolünü al
     _userRole = await _authService.getUserRole(user.uid);
 
     if (_userRole == null || _userRole!.isEmpty) {
@@ -135,19 +128,15 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
     }
 
     try {
-      // Firestore'dan tabloyu al
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection(_selectedAtolyeCollection!) // Dinamik tablo adı
+          .collection(_selectedAtolyeCollection!)
           .get();
 
       print("$_selectedAtolyeCollection tablosundaki veriler çekiliyor...");
 
-      // Verileri _works listesine ekle
       setState(() {
         _works = querySnapshot.docs
-            .where((doc) =>
-                doc['miktar'] != null && // Miktar alanı null olmamalı
-                doc['miktar'] > 0) // Miktar 0'dan büyük olmalı
+            .where((doc) => doc['miktar'] != null && doc['miktar'] > 0)
             .map((doc) {
           return {
             'id': doc.id,
@@ -172,7 +161,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
 
   Future<void> transferAndResetStock() async {
     setState(() {
-      isLoading = true; // Yükleme başlatılıyor
+      isLoading = true;
     });
 
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -181,7 +170,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         _selectedAtolyeCollection!.isEmpty) {
       print("Hata: Seçilen koleksiyon boş.");
       setState(() {
-        isLoading = false; // Yükleme durdur
+        isLoading = false;
       });
       return;
     }
@@ -197,12 +186,12 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
         String? boyut = paketlemeData['boyut'];
         String? aksesuar = paketlemeData['aksesuar'];
         int adet = paketlemeData['miktar'];
-        Timestamp tarih = Timestamp.now(); // O anki zamanı alıyoruz
+        Timestamp tarih = Timestamp.now();
 
         if (_productServices.atolyeCollection.value.isEmpty) {
           print("Hata: Depo koleksiyon yolu boş.");
           setState(() {
-            isLoading = false; // Yükleme durdur
+            isLoading = false;
           });
           return;
         }
@@ -257,7 +246,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       print("Aktarım sırasında hata oluştu: $e");
     } finally {
       setState(() {
-        isLoading = false; // Yükleme tamamlandı
+        isLoading = false;
       });
     }
   }
@@ -307,23 +296,18 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       ),
       body: Column(
         children: [
-          // DropdownButton
           DropdownSelector(
             hintText: "Atölye seç",
-            items: _atolye, // Tüm name değerlerini içeren liste
+            items: _atolye,
             selectedValue: _selectedAtolye,
             icon: Icons.arrow_drop_down,
             onChanged: (value) {
               setState(() {
                 _selectedAtolye = value;
 
-                // Seçilen "name" değerine göre "collection" değerini bul ve ata
                 _selectedAtolyeCollection = fetchedAtolyeler.firstWhere(
-                  (e) =>
-                      e['name'] ==
-                      _selectedAtolye, // Seçilen name ile eşleşeni bul
-                  orElse: () =>
-                      {'collection': "null"}, // Eğer eşleşme yoksa null döndür
+                  (e) => e['name'] == _selectedAtolye,
+                  orElse: () => {'collection': "null"},
                 )['collection'];
                 _fetchUserRoleAndData();
                 print("Seçilen Atölye: $_selectedAtolye");
@@ -331,7 +315,6 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
               });
             },
           ),
-
           const SizedBox(
             height: 20,
           ),

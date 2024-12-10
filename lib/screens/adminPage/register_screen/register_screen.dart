@@ -20,11 +20,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _selectedRole; // Seçilen rol
-  String? _selectedWorkshop; // Seçilen atölye
-  String? _selectedCins; // Seçilen Cins
-
-  // Rol ve cinsiyet listeleri
+  String? _selectedRole;  
+  String? _selectedWorkshop;  
+  String? _selectedCins;  
+ 
   final List<String> roles = [
     'Dokuma',
     'Boyama',
@@ -37,20 +36,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   ];
   final List<String> cins = ['Erkek', 'Kadın'];
 
-  List<String> workshops = []; // Firestore'dan dinamik olarak gelecek
-
-  // Yüklenme durumu için değişken
+  List<String> workshops = [];   
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchWorkshops(); // Firestore'dan atölye listesini çekiyoruz
+    _fetchWorkshops(); 
   }
 
   Future<void> _fetchWorkshops() async {
-    if (_selectedRole == null || _selectedRole!.isEmpty) {
-      // Rol seçilmemişse workshops listesini temizle
+    if (_selectedRole == null || _selectedRole!.isEmpty) { 
       setState(() {
         workshops = [];
       });
@@ -60,18 +56,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
-              .collection('atolyeler') // 'atolyeler' koleksiyonu
+              .collection('atolyeler')  
               .where('nitelik',
-                  isEqualTo: _selectedRole) // 'nitelik' alanı rol ile eşleşmeli
+                  isEqualTo: _selectedRole)  
               .get();
 
       List<String> fetchedWorkshops = snapshot.docs
-          .map((doc) => doc['name'] as String) // 'name' alanını alıyoruz
+          .map((doc) => doc['name'] as String)  
           .toList();
 
       setState(() {
-        workshops = fetchedWorkshops; // Listeyi güncelle
-        _selectedWorkshop = null; // Yeni liste için seçimi sıfırla
+        workshops = fetchedWorkshops;  
+        _selectedWorkshop = null;  
       });
     } catch (e) {
       print('Atölyeler alınırken bir hata oluştu: $e');
@@ -110,8 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               hintText: 'Şifre',
               icon: Icons.lock,
             ),
-
-            // Cinsiyet Dropdown
+ 
             DropdownRegisterSelector(
               hintText: 'Cinsiyet Seçin',
               items: cins,
@@ -123,8 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
-
-            // Rol Dropdown
+ 
             DropdownRegisterSelector(
               hintText: 'Rol Seç',
               items: roles,
@@ -137,8 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
               icon: Icons.arrow_drop_down,
             ),
-
-            // Atölye Dropdown
+ 
             DropdownRegisterSelector(
               hintText: 'Atölye Seç',
               items: workshops,
@@ -158,25 +151,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ? null
                     : () async {
                         setState(() {
-                          isLoading = true; // Yüklenme durumunu başlat
+                          isLoading = true;  
                         });
-
-                        // Kullanıcı kaydetme işlemi
+ 
                         await _authService.createUser(
                           _emailController.text,
                           _passwordController.text,
                           _firstNameController.text,
                           _lastNameController.text,
-                          _selectedRole ?? '', // Seçilen rolü al
+                          _selectedRole ?? '',  
                           _selectedWorkshop ?? '',
-                          _selectedCins ?? '', // Seçilen cinsiyeti al
+                          _selectedCins ?? '', 
                         );
-
-                        // Kayıt tamamlandığında geri dön
+ 
                         Navigator.of(context).pop();
 
                         setState(() {
-                          isLoading = false; // Yüklenme durumunu bitir
+                          isLoading = false;  
                         });
                       },
                 style: ElevatedButton.styleFrom(

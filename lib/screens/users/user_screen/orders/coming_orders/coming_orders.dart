@@ -16,7 +16,6 @@ class _ComingOrdersState extends State<ComingOrders> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ProductServices productServices = Get.find<ProductServices>();
 
-  // Role eşleme tablosu
   final Map<String, String> roleMapping = {
     "admin": "Dokuma",
     "Dokuma": "Boyama",
@@ -44,7 +43,6 @@ class _ComingOrdersState extends State<ComingOrders> {
 
   @override
   Widget build(BuildContext context) {
-    // Role eşleme kontrolü
     final currentRole = productServices.role.value;
     final targetRole = roleMapping[currentRole];
 
@@ -52,120 +50,115 @@ class _ComingOrdersState extends State<ComingOrders> {
       appBar: AppBar(
         title: const Text("Gelen Siparişler"),
       ),
-      body: Obx(() {
-        final currentRole = productServices.role.value;
+      body: Obx(
+        () {
+          final currentRole = productServices.role.value;
 
-        // Eğer role değeri hala boşsa, bir yükleme göstergesi göster
-        if (currentRole.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        }
+          if (currentRole.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        // Role eşleme tablosu
-        final Map<String, String> roleMapping = {
-          "admin": "Dokuma",
-          "Dokuma": "Boyama",
-          "Boyama": "Kesim",
-          "Kesim": "Dikim",
-          "Dikim": "Dolum",
-          "Dolum": "Paketleme",
-          "Paketleme": "Transfer",
-        };
+          final Map<String, String> roleMapping = {
+            "admin": "Dokuma",
+            "Dokuma": "Boyama",
+            "Boyama": "Kesim",
+            "Kesim": "Dikim",
+            "Dikim": "Dolum",
+            "Dolum": "Paketleme",
+            "Paketleme": "Transfer",
+          };
 
-        // Hedef role belirleme
-        final targetRole = roleMapping[currentRole];
+          final targetRole = roleMapping[currentRole];
 
-        // Eğer roleMapping'de eşleşme bulunamazsa bir hata mesajı gösterebilirsiniz
-        if (targetRole == null) {
-          return const Center(child: Text("Geçersiz role."));
-        }
+          if (targetRole == null) {
+            return const Center(child: Text("Geçersiz role."));
+          }
 
-        // Firestore'dan uygun verileri getir
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('orders')
-              .where('role', isEqualTo: targetRole)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('orders')
+                .where('role', isEqualTo: targetRole)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text("Gelen sipariş yok."));
-            }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text("Gelen sipariş yok."));
+              }
 
-            final orders = snapshot.data!.docs;
+              final orders = snapshot.data!.docs;
 
-            return ListView.builder(
-              itemCount: orders.length, // Gelen Firestore belgelerinin sayısı
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                final orderData = order.data() as Map<String, dynamic>;
+              return ListView.builder(
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  final orderData = order.data() as Map<String, dynamic>;
 
-                final status = orderData['status'] ?? 'Bekliyor';
-                final isWaiting =
-                    status == 'Bekliyor'; // Bekleyen durum kontrolü
-                if (status == 'Bekliyor' || status == "Hazırlanıyor") {
-                  return Card(
-                    color: Colors.white,
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    elevation: 3,
-                    child: ListTile(
-                      title: const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          "Bekleyen Siparişler",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                  final status = orderData['status'] ?? 'Bekliyor';
+                  final isWaiting = status == 'Bekliyor';
+                  if (status == 'Bekliyor' || status == "Hazırlanıyor") {
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      elevation: 3,
+                      child: ListTile(
+                        title: const Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            "Bekleyen Siparişler",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...orderData.entries
+                                .where((entry) =>
+                                    entry.value != null &&
+                                    entry.value.toString().isNotEmpty &&
+                                    entry.key != 'timestamp' &&
+                                    entry.key != 'id' &&
+                                    entry.key != 'status')
+                                .map((entry) {
+                              return Text("${entry.key}: ${entry.value}");
+                            }).toList(),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Durum: $status",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isWaiting ? Colors.orange : Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (status != 'Hazırlanıyor' &&
+                                status != 'Tamamlandı')
+                              IconButton(
+                                icon: const Icon(Icons.check_circle,
+                                    color: Colors.green),
+                                onPressed: () {
+                                  approveOrder(order.id);
+                                },
+                              ),
+                          ],
                         ),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...orderData.entries
-                              .where((entry) =>
-                                  entry.value != null &&
-                                  entry.value.toString().isNotEmpty &&
-                                  entry.key != 'timestamp' &&
-                                  entry.key != 'id' &&
-                                  entry.key != 'status')
-                              .map((entry) {
-                            return Text("${entry.key}: ${entry.value}");
-                          }).toList(),
-                          const SizedBox(height: 8),
-                          // Durum bilgisi
-                          Text(
-                            "Durum: $status",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: isWaiting ? Colors.orange : Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (status != 'Hazırlanıyor' &&
-                              status != 'Tamamlandı')
-                            IconButton(
-                              icon: const Icon(Icons.check_circle,
-                                  color: Colors.green),
-                              onPressed: () {
-                                approveOrder(order.id);
-                              },
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return null;
-              },
-            );
-          },
-        );
-      }),
+                    );
+                  }
+                  return null;
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

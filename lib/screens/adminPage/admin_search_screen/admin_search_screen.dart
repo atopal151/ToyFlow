@@ -13,46 +13,45 @@ class AdminSearchScreen extends StatefulWidget {
 }
 
 class _AdminSearchScreenState extends State<AdminSearchScreen> {
-  List<Map<String, dynamic>> allItems = []; // Firestore'dan alınan tüm veriler
-  List<Map<String, dynamic>> filteredItems = []; // Filtrelenmiş veriler
+  List<Map<String, dynamic>> allItems = [];
+  List<Map<String, dynamic>> filteredItems = [];
   TextEditingController searchController = TextEditingController();
   String? _depoSelected;
 
-  List<String> _depolar = []; // Depo isimleri listesi
-  List<String> _depoCollection = []; // Depo collection isimleri listesi
+  List<String> _depolar = [];
+  List<String> _depoCollection = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchDepoData(); // Depo isimlerini ve collection verilerini çekiyoruz
+    _fetchDepoData();
   }
-Future<void> _fetchDepoData() async {
-  try {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('depolar')
-        .get(); // Depolar koleksiyonundan verileri çek
-    List<String> depoNames = [];
-    List<String> depoCollections = [];
 
-    for (var doc in querySnapshot.docs) {
-      depoNames.add(doc['title']);
-      depoCollections.add(doc['collection']);
-    }
+  Future<void> _fetchDepoData() async {
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('depolar').get();
+      List<String> depoNames = [];
+      List<String> depoCollections = [];
 
-    setState(() {
-      _depolar = depoNames;
-      _depoCollection = depoCollections;
-      if (_depolar.isNotEmpty) {
-        _depoSelected = _depolar.last; // İlk elemanı seç
-        fetchData(_depoCollection.first); // İlk depo verisini yükle
+      for (var doc in querySnapshot.docs) {
+        depoNames.add(doc['title']);
+        depoCollections.add(doc['collection']);
       }
-    });
-  } catch (e) {
-    print("Depo verileri alınırken hata oluştu: $e");
-  }
-}
 
-  // Firestore'dan verileri çekme
+      setState(() {
+        _depolar = depoNames;
+        _depoCollection = depoCollections;
+        if (_depolar.isNotEmpty) {
+          _depoSelected = _depolar.last;
+          fetchData(_depoCollection.first);
+        }
+      });
+    } catch (e) {
+      print("Depo verileri alınırken hata oluştu: $e");
+    }
+  }
+
   Future<void> fetchData(String? collectionName) async {
     if (collectionName == null) return;
     try {
@@ -72,7 +71,6 @@ Future<void> _fetchDepoData() async {
     }
   }
 
-  // Arama fonksiyonu
   void searchItems(String query) {
     final results = allItems.where((item) {
       final itemName = item['urun'].toString().toLowerCase();
@@ -108,18 +106,15 @@ Future<void> _fetchDepoData() async {
                   onChanged: (String? newValue) {
                     setState(() {
                       _depoSelected = newValue;
-                      final collectionIndex =
-                          _depolar.indexOf(newValue!); // Seçilen depo indexi
+                      final collectionIndex = _depolar.indexOf(newValue!);
                       final collectionName = _depoCollection[collectionIndex];
-                      fetchData(
-                          collectionName); // Seçilen collection ile veri çekme
+                      fetchData(collectionName);
                     });
                   },
                   icon: Icons.arrow_drop_down,
                 ),
               ),
               const SizedBox(height: 10),
-              // Arama TextField'i
               Expanded(
                 flex: 1,
                 child: Padding(
@@ -144,7 +139,6 @@ Future<void> _fetchDepoData() async {
                   ),
                 ),
               ),
-              // Ürün Listesi
               const SizedBox(height: 10),
               Expanded(
                 flex: 10,
@@ -153,8 +147,7 @@ Future<void> _fetchDepoData() async {
                     : ListView.builder(
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
-                          final item =
-                              filteredItems[index]; // Her bir öğeyi alıyoruz
+                          final item = filteredItems[index];
                           return InkWell(
                             onTap: () {
                               print("object");

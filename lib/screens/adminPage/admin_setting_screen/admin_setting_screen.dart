@@ -39,7 +39,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
         children: [
           const CircleAvatar(
             radius: 40,
-            backgroundImage: AssetImage('images/erkek.webp'), // Profil resmi
+            backgroundImage: AssetImage('images/erkek.webp'),
           ),
           const SizedBox(height: 10),
           Text(
@@ -63,7 +63,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
             child: const Text('Profili Düzenle'),
           ),
           const SizedBox(height: 20),
-          // Menü Seçenekleri
           Expanded(
             child: ListView(
               children: [
@@ -88,7 +87,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                       MaterialPageRoute(
                           builder: (context) => const ComingOrders()),
                     );
-                    // Bildirimler ekranına yönlendirme
                   },
                 ),
                 
@@ -166,7 +164,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const NewToyDetail());
-                    // Ayarları güncelleme ekranına yönlendirme
                   },
                 ),
                 ListTile(

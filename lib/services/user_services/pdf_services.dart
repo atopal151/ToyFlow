@@ -6,14 +6,13 @@ import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart' show rootBundle; // Yazı tipi dosyasını yüklemek için
+import 'package:flutter/services.dart' show rootBundle;  
 
 class PdfService {
   static Future<void> generatePdf(BuildContext context, String workshopName, List<Map<String, dynamic>> data) async {
     final pdf = pw.Document();
     final now = DateTime.now();
-
-    // Yazı tipini yükle
+ 
     final fontData = await rootBundle.load("assets/fonts/Roboto-Regular.ttf");
     final ttf = pw.Font.ttf(fontData.buffer.asByteData());
 

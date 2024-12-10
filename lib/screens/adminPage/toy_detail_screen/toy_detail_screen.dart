@@ -27,8 +27,7 @@ class ToyDetailScreen extends StatefulWidget {
 class _ToyDetailScreenState extends State<ToyDetailScreen> {
   bool isLoading = false;
   final DataTableService _dataTableService = DataTableService();
-  final ToyDetailServices _toyDetailServices =
-      ToyDetailServices(); // ToyDetailServices örneği
+  final ToyDetailServices _toyDetailServices = ToyDetailServices();
   String title = "";
   String renkler = "";
   String boyutlar = "";
@@ -44,7 +43,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   List<String> _renk = [];
   List<String> _aksesuar = [];
 
-  List<Map<String, dynamic>> _depoDetails = []; // Depo detaylarını tutan liste
+  List<Map<String, dynamic>> _depoDetails = [];
 
   @override
   void initState() {
@@ -106,11 +105,10 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
   Future<void> _getDepoDetails() async {
     setState(() {
-      isLoading = true; // Yüklenme durumunu başlat
+      isLoading = true;
     });
 
     try {
-      // Firebase veya başka bir kaynaktan veri çekme işlemi
       List<Map<String, dynamic>> fetchedDetails =
           await _toyDetailServices.listToys(
         malzeme: _selectedMalzeme ?? widget.urun,
@@ -121,7 +119,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
       if (mounted) {
         setState(() {
-          _depoDetails = fetchedDetails; // Verileri güncelle
+          _depoDetails = fetchedDetails;
         });
       }
     } catch (e) {
@@ -131,7 +129,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
     } finally {
       if (mounted) {
         setState(() {
-          isLoading = false; // Yüklenme durumunu sonlandır
+          isLoading = false;
         });
       }
     }
@@ -139,7 +137,6 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
   @override
   void dispose() {
-    // Asenkron işlemleri iptal etmeniz gerekirse burada yapabilirsiniz.
     super.dispose();
   }
 
@@ -158,9 +155,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
               children: [
                 DropdownSelector(
                   hintText: 'Ürün',
-                  items: _urun
-                      .toSet()
-                      .toList(), // Benzersiz elemanlar için Set kullanımı
+                  items: _urun.toSet().toList(),
                   selectedValue: _selectedMalzeme,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -172,9 +167,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                 ),
                 DropdownSelector(
                   hintText: 'Renk',
-                  items: _renk
-                      .toSet()
-                      .toList(), // Benzersiz elemanlar için Set kullanımı
+                  items: _renk.toSet().toList(),
                   selectedValue: _selectedRenk,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -185,9 +178,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                 ),
                 DropdownSelector(
                   hintText: 'Boyut',
-                  items: _boyut
-                      .toSet()
-                      .toList(), // Benzersiz elemanlar için Set kullanımı
+                  items: _boyut.toSet().toList(),
                   selectedValue: _selectedBoyut,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -198,9 +189,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                 ),
                 DropdownSelector(
                   hintText: 'Aksesuar',
-                  items: _aksesuar
-                      .toSet()
-                      .toList(), // Benzersiz elemanlar için Set kullanımı
+                  items: _aksesuar.toSet().toList(),
                   selectedValue: _selectedAksesuar,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -213,16 +202,16 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   padding: const EdgeInsets.only(left: 16.0, bottom: 16),
                   child: CustomLoadingButton(
                     onPressed: () async {
-                      await _getDepoDetails(); // Yükleme işlemi burada yapılır
+                      await _getDepoDetails();
                     },
                     text: "Bul",
                   ),
                 ),
                 SizedBox(
-                  height: 500, // ListView'in yüksekliğini sınırlayın
+                  height: 500,
                   child: isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(), // Yüklenme ikonu
+                          child: CircularProgressIndicator(),
                         )
                       : _depoDetails.isEmpty
                           ? const Center(
@@ -265,7 +254,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                                                 children: [
                                                   const Text(
                                                     'Ürünün Depo Miktarı: ',
-                                                    style:  TextStyle(
+                                                    style: TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.grey,
                                                     ),
@@ -274,7 +263,8 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                                                     depo['miktar'].toString(),
                                                     style: const TextStyle(
                                                         fontWeight:
-                                                            FontWeight.bold,color:Colors.green),
+                                                            FontWeight.bold,
+                                                        color: Colors.green),
                                                   )
                                                 ],
                                               ),

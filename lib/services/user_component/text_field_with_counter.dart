@@ -29,14 +29,14 @@ class _TextFieldWithCounterState extends State<TextFieldWithCounter> {
             padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 8),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Arka plan rengi beyaz
+                color: Colors.white,  
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 8,
-                    offset: const Offset(0, 4), // Gölgenin pozisyonu
+                    offset: const Offset(0, 4), 
                   ),
                 ],
               ),

@@ -18,48 +18,41 @@ class StokTransfer extends StatefulWidget {
 class _StokTransferState extends State<StokTransfer> {
   final TransferServices _transferServices = TransferServices();
   final DataTableService _dataTableService =
-      DataTableService(); // DataTableService örneği
-
-  // Aktarılacak stok
+      DataTableService();  
+ 
   final TextEditingController _miktarController = TextEditingController();
-  String? _selectedMalzeme; // Seçilen ürün
-  String? _selectedRenk; // Seçilen renk
-  String? _selectedBoyut; // Seçilen boyut
-  String? _selectedAksesuar; // Seçilen aksesuar
+  String? _selectedMalzeme;  
+  String? _selectedRenk;  
+  String? _selectedBoyut;  
+  String? _selectedAksesuar;  
 
-  List<String> _urunler = []; // Ürün listesi
-  List<String> _renkler = []; // Renk listesi
-  List<String> _boyutlar = []; // Boyut listesi
-  List<String> _aksesuarlar = []; // Aksesuar listesi
+  List<String> _urunler = [];  
+  List<String> _renkler = [];  
+  List<String> _boyutlar = [];  
+  List<String> _aksesuarlar = [];  
 
-  String? _selectedDepo; // Seçilen renk
+  String? _selectedDepo;  
+  String? _selectedGetDepo; 
+  List<String> _depolar = [];
 
-  String? _selectedGetDepo; // Seçilen renk
-
-  List<String> _depolar = []; // Ürün listesi
-
-  int miktar = 0; // Stok miktarı
+  int miktar = 0; 
 
   @override
   void initState() {
     super.initState();
-    _fetchData(); // Verileri Firebase'den çek
+    _fetchData();  
     _fetchDepolar();
-  }
-
-// Dinamik olarak depoları Firestore'dan çeken fonksiyon
+  } 
   Future<void> _fetchDepolar() async {
     final List<String> depolar =
         await _dataTableService.getCollectionData('depolar', 'title');
     setState(() {
-      _depolar = depolar; // Çekilen depolar listesi
+      _depolar = depolar;  
     });
   }
-
-  // Firebase'den ürün listesini çekme
+ 
   Future<void> _fetchData() async {
-    try {
-      // _getDepoCollection ile dinamik olarak depo koleksiyonunu alıyoruz
+    try { 
       String collectionPath =
           await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot =
@@ -76,8 +69,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Veriler alınırken hata oluştu: $e");
     }
   }
-
-// Firebase'den renk listesini çekme
+ 
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
       String collectionPath =
@@ -98,8 +90,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Renk verileri alınırken hata oluştu: $e");
     }
   }
-
-// Firebase'den boyut listesini çekme
+ 
   Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
     try {
       String collectionPath =
@@ -121,8 +112,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Boyut verileri alınırken hata oluştu: $e");
     }
   }
-
-// Firebase'den aksesuar listesini çekme
+ 
   Future<void> _fetchAksesuar(
       String selectedMalzeme, String selectedRenk, String selectedBoyut) async {
     try {
@@ -146,8 +136,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Aksesuar verileri alınırken hata oluştu: $e");
     }
   }
-
-// Firebase'den miktar bilgisini çekme
+ 
   Future<void> _fetchMiktar(String selectedIplik, String selectedRenk,
       String selectedBoyut, String selectedAksesuar) async {
     try {
@@ -195,7 +184,7 @@ class _StokTransferState extends State<StokTransfer> {
                   _boyutlar.clear();
                   _aksesuarlar.clear();
                   _selectedDepo = newValue;
-                  _fetchData(); // Seçilen depoya göre verileri Firebase'den çek
+                  _fetchData();  
                 });
               },
               icon: Icons.fire_truck,

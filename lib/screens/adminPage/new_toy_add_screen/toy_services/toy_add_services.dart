@@ -4,16 +4,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ToyAddServices {
-  // Firestore instance'ını al
+class ToyAddServices { 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 
 Future<void> addNewDenye({
     required String denye,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -24,24 +22,18 @@ Future<void> addNewDenye({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('denye').add({
         'denye': denye,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Denye başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -49,8 +41,7 @@ Future<void> addNewDenye({
 Future<void> addNewFine({
     required String fine,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -61,24 +52,18 @@ Future<void> addNewFine({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('fine').add({
         'fine': fine,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Fine başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -87,8 +72,7 @@ Future<void> addNewFine({
 Future<void> addNewGramaj({
     required String gramaj,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -99,24 +83,18 @@ Future<void> addNewGramaj({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('gramaj').add({
         'gramaj': gramaj,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gramaj başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -124,8 +102,7 @@ Future<void> addNewGramaj({
 Future<void> addNewKumas({
     required String kumas,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -136,24 +113,18 @@ Future<void> addNewKumas({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('kumas').add({
         'kumas': kumas,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kumaş başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -161,8 +132,7 @@ Future<void> addNewKumas({
 Future<void> addNewIp({
     required String iplik,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -173,24 +143,18 @@ Future<void> addNewIp({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('iplik').add({
         'iplik': iplik,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('İplik başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
@@ -198,8 +162,7 @@ Future<void> addNewIp({
   Future<void> addNewToy({
     required String urun,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -210,32 +173,25 @@ Future<void> addNewIp({
       },
     );
 
-    try {
-      // Firestore'da "toy_name" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('toy_name').add({
         'name': urun,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Oyuncak başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
 
 Future<void> addNewAksesuar({
     required String aksesuar,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -246,24 +202,19 @@ Future<void> addNewAksesuar({
       },
     );
 
-    try {
-      // Firestore'da "toy_aksesuar" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('toy_aksesuar').add({
         'aksesuar': aksesuar,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Aksesuar başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
     }
-
-    // Yükleme animasyonunu kapat
+ 
     Navigator.pop(context);
   }
 
@@ -272,8 +223,7 @@ Future<void> addNewAksesuar({
  Future<void> addNewColor({
     required String renk,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -284,24 +234,20 @@ Future<void> addNewAksesuar({
       },
     );
 
-    try {
-      // Firestore'da "toy_renk" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('toy_renk').add({
         'renk': renk,
       });
-
-      // Başarılı bir işlem mesajı göster
+ 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Renk başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
     }
-
-    // Yükleme animasyonunu kapat
+  
     Navigator.pop(context);
   }
 
@@ -310,8 +256,7 @@ Future<void> addNewAksesuar({
  Future<void> addNewHeight({
     required String boyut,
     required BuildContext context,
-  }) async {
-    // Yükleme animasyonunu göster
+  }) async { 
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -322,28 +267,21 @@ Future<void> addNewAksesuar({
       },
     );
 
-    try {
-      // Firestore'da "toy_height" koleksiyonuna veri ekle
+    try { 
       await _firestore.collection('toy_height').add({
         'boyut': boyut,
-      });
-
-      // Başarılı bir işlem mesajı göster
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Boyut başarıyla kaydedildi!')),
       );
-    } catch (e) {
-      // Hata mesajı göster
+    } catch (e) { 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Stok kaydı sırasında hata oluştu: $e')),
       );
-    }
-
-    // Yükleme animasyonunu kapat
+    } 
     Navigator.pop(context);
   }
-
-  // Uyarı gösterme fonksiyonu
+ 
   void _showAlert(BuildContext context, String message) {
     showDialog(
       context: context,

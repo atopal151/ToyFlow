@@ -11,7 +11,6 @@ import 'adminhome_services/admin_home_services.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
-
   @override
   _AdminHomeScreenState createState() => _AdminHomeScreenState();
 }
@@ -21,13 +20,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final AdminHomeService adminHomeService = AdminHomeService();
   final DataTableService _dataTableService = DataTableService();
 
-  List<Map<String, dynamic>> _atolyeList = []; // Atölye bilgileri için liste
-  List<int> _atolyeDailyCounts = []; // Günlük işlemler için liste
-  List<String> _depoName = []; // Depo isimlerini saklar
-  List<String> _depoCollection = []; // Depo koleksiyon isimlerini saklar
-  bool _isAtolyeLoaded =
-      false; // Atölyelerin yüklenip yüklenmediğini kontrol eder
-  bool _isDepoLoaded = false; // Depoların yüklenip yüklenmediğini kontrol eder
+  List<Map<String, dynamic>> _atolyeList = [];
+  List<int> _atolyeDailyCounts = [];
+  List<String> _depoName = [];
+  List<String> _depoCollection = [];
+  bool _isAtolyeLoaded = false;
+  bool _isDepoLoaded = false;
 
   @override
   void initState() {
@@ -35,7 +33,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     print(_isDepoLoaded);
     print(_isAtolyeLoaded);
     if (!_isAtolyeLoaded) {
-      _fetchAtolyeList(); // Yalnızca bir kez yüklenir
+      _fetchAtolyeList();
     }
     if (!_isDepoLoaded) {
       _fetchDepoTitleList();
@@ -44,14 +42,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _fetchAtolyeList() async {
-    if (_isAtolyeLoaded) return; // Zaten yüklüyse işlemi durdur
+    if (_isAtolyeLoaded) return;
     try {
-      // Atölyeleri Firestore'dan getir
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('atolyeler')
           .orderBy("nitelik")
           .get();
-
       List<Map<String, dynamic>> fetchedAtolyeler =
           querySnapshot.docs.map((doc) {
         return {
@@ -71,7 +67,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       setState(() {
         _atolyeList = fetchedAtolyeler;
         _atolyeDailyCounts = fetchedDailyCounts;
-        _isAtolyeLoaded = true; // Artık yüklendi
+        _isAtolyeLoaded = true;
       });
     } catch (e) {
       print("Atölyeler alınırken hata oluştu: $e");
@@ -79,7 +75,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _fetchDepoTitleList() async {
-    if (_isDepoLoaded) return; // Zaten yüklüyse işlemi durdur
+    if (_isDepoLoaded) return;
     try {
       List<String> fetchedDepoTitles =
           await _dataTableService.getCollectionData('depolar', 'title');
@@ -93,7 +89,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Future<void> _fetchDepoCollectionList() async {
-    if (_isDepoLoaded) return; // Zaten yüklüyse işlemi durdur
+    if (_isDepoLoaded) return;
     try {
       List<String> fetchedDepoCollections =
           await _dataTableService.getCollectionData('depolar', 'collection');
@@ -102,7 +98,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       });
       print("Depo Koleksiyonları: $_depoCollection");
 
-      // Başlıklar tamamlandıktan sonra işaretle
       if (_depoName.isNotEmpty && _depoCollection.isNotEmpty) {
         setState(() {
           _isDepoLoaded = true;
@@ -222,7 +217,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 itemBuilder: (context, index) {
                   return _buildDepoRow(
                     _depoName[index],
-                    "------", // Placeholder sıcaklık bilgisi
+                    "------",
                     _depoCollection[index],
                   );
                 },
@@ -241,8 +236,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   final atolye = _atolyeList[index];
                   final dailyCount = _atolyeDailyCounts[index];
                   return _buildAtolyeRow(
-                    atolye['name'], // Atölye ismi
-                    dailyCount, // Günlük işlem
+                    atolye['name'],
+                    dailyCount,
                   );
                 },
               ),
@@ -347,13 +342,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: const DecorationImage(
-            image: AssetImage('images/depo.webp'), // Depo görseli
+            image: AssetImage('images/depo.webp'),
             fit: BoxFit.cover,
           ),
         ),
         child: Stack(
           children: [
-            // Görsel üzerine opaklık eklemek için bir katman
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -365,7 +359,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Depo adı
                   Text(
                     roomName,
                     style: const TextStyle(
@@ -378,7 +371,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Güncellenme zamanı bilgisi (placeholder)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8.0,

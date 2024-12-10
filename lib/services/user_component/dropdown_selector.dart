@@ -66,9 +66,8 @@ class DropdownSelector extends StatelessWidget {
             ),
           ),
           icon: const SizedBox.shrink(),
-          dropdownColor: Colors.white,
-          // Dropdown listeyi kısıtlamak için "menuMaxHeight" özelliği
-          menuMaxHeight: 200.0, // Yüksekliği maksimum 10 öğeyi gösterecek şekilde ayarlar
+          dropdownColor: Colors.white, 
+          menuMaxHeight: 200.0, 
         ),
       ),
     );

@@ -21,40 +21,33 @@ class TransferServices {
   TransferServices() {
     _initializeUserRole();
   }
-
-  // Kullanıcı rolünü bir defa al ve userRole değişkenine ata
+ 
   Future<void> _initializeUserRole() async {
     if (user != null) {
       userRole = await _authService.getUserRole(user!.uid);
     }
   }
-
-// Depo koleksiyonunu Firestore'dan çekerek seçen yardımcı fonksiyon
+ 
   Future<String> getDepoCollection(String depoTitle) async {
-    try {
-      // Firestore'dan "depolar" koleksiyonunda "title" alanına göre arama yapıyoruz.
+    try { 
       QuerySnapshot querySnapshot = await _firestore
           .collection('depolar')
           .where('title', isEqualTo: depoTitle)
           .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        // İlk kaydı alıyoruz (title benzersiz olduğu varsayılarak)
+      if (querySnapshot.docs.isNotEmpty) { 
         DocumentSnapshot doc = querySnapshot.docs.first;
         String collectionName = doc['collection'];
         return collectionName;
-      } else {
-        // Depo bulunamazsa varsayılan bir koleksiyon ismi döndür
+      } else { 
         return 'varsayilan_koleksiyon';
       }
     } catch (e) {
-      print("Depo koleksiyonunu alırken hata oluştu: $e");
-      // Hata durumunda varsayılan koleksiyon döndür
+      print("Depo koleksiyonunu alırken hata oluştu: $e"); 
       return 'varsayilan_koleksiyon';
     }
   }
-
-  // Hareket kaydı yapma
+ 
   Future<void> _recordMovement({
     required String malzeme,
     required String renk,
@@ -79,8 +72,7 @@ class TransferServices {
       print("Kullanıcı oturumu açık değil veya rol alınamadı.");
     }
   }
-
-  // Stok ekleme veya güncelleme
+ 
   Future<void> addOrUpdateUrunStock({
     required BuildContext context,
     required String addDepo,
@@ -104,8 +96,7 @@ class TransferServices {
 
     
 
-    try {
-      // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz
+    try { 
       String collectionPath = await getDepoCollection(addDepo);
       QuerySnapshot querySnapshot = await _firestore
           .collection(collectionPath)
@@ -230,8 +221,7 @@ Future<void> sellMiktar(
   } finally {
     }
 }
-
-// Stok düşümü yapma
+ 
   Future<void> decreaseStock({
     required BuildContext context,
     required String downDepo,
@@ -254,8 +244,7 @@ Future<void> sellMiktar(
     }
    
 
-    try {
-      // await ekleyerek asenkron işlemi tamamlanmasını bekliyoruz
+    try { 
       String collectionPath = await getDepoCollection(downDepo);
       QuerySnapshot existingRecord = await _firestore
           .collection(collectionPath)

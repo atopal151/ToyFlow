@@ -14,12 +14,11 @@ class WorkShopNewAdd extends StatefulWidget {
 class _WorkShopNewAddState extends State<WorkShopNewAdd> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _collection = TextEditingController();
-  String? _nitelik; // Seçilen rol
-  String? _oncekiBirim; // Seçilen rol
-  String? _sonrakiBirim; // Seçilen rol
+  String? _nitelik;  
+  String? _oncekiBirim;    
+  String? _sonrakiBirim;  
   final WorkShopServices _workShopServices = WorkShopServices();
-
-  // Rol ve atölye listeleri
+ 
   final List<String> roles = [
     'admin',
     'Dokuma',
@@ -169,7 +168,7 @@ class _WorkShopNewAddState extends State<WorkShopNewAdd> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () {
-                  _addWorkShop(); // Kaydetme işlemi başlatılıyor
+                  _addWorkShop();  
                   _connected();
                 },
                 style: ElevatedButton.styleFrom(

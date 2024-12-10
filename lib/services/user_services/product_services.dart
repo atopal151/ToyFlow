@@ -2,54 +2,46 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProductServices extends GetxController {
-  // Kullanıcı bilgilerini saklamak için değişkenler
+class ProductServices extends GetxController { 
   var userEmail = ''.obs;
-  var firstName = ''.obs; // Ad
-  var lastName = ''.obs; // Soyad
-  var role = ''.obs; // Rol
-  var workshopName = ''.obs; //atolye ismi
-  var atolyeCollection = ''.obs; //atolye ismi
+  var firstName = ''.obs; 
+  var lastName = ''.obs;  
+  var role = ''.obs;  
+  var workshopName = ''.obs;  
+  var atolyeCollection = ''.obs;  
 
   @override
   void onInit() {
     super.onInit();
-    _listenToAuthChanges(); // Kullanıcı giriş-çıkış durumlarını dinlemek için
+    _listenToAuthChanges();  
   }
-
-  // Oturum durumlarını dinleme
+ 
   void _listenToAuthChanges() {
     FirebaseAuth.instance.authStateChanges().listen((user) async {
-      if (user != null) {
-        // Kullanıcı giriş yaptı, bilgileri al
+      if (user != null) { 
         await _getUserDetails(user.uid);
-      } else {
-        // Kullanıcı çıkış yaptı, bilgileri sıfırla
+      } else { 
         _resetUserDetails();
       }
     });
   }
 
   Future<void> getAtolyeCollectionDetails() async {
-    try {
-      // Firestore sorgusu: workshopName ile name alanı eşleşen belgeyi bul
+    try { 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('atolyeler')
           .where('name',
-              isEqualTo: workshopName.value) // Değişken değerini kullanıyoruz
+              isEqualTo: workshopName.value)  
           .get();
 
       if (querySnapshot.docs.isEmpty) {
         print("Atölye bulunamadı: ${workshopName.value}");
         return;
-      }
-
-      // İlk belgeden "collection" alanını al
+      } 
       String? fetchedCollection = querySnapshot.docs.first['collection'];
 
       print("Eşleşen Atölye Collection: $fetchedCollection");
-
-      // Atölye koleksiyonunu ProductServices değişkenine ata
+ 
       atolyeCollection.value =
           fetchedCollection ?? "Koleksiyon bilgisi bulunamadı";
       print("Atölye Collection Değeri: ${atolyeCollection.value}");
@@ -57,8 +49,7 @@ class ProductServices extends GetxController {
       print("Atölye koleksiyon bilgisi alınırken hata oluştu: $e");
     }
   }
-
-  // Kullanıcı bilgilerini Firestore'dan al
+ 
   Future<void> _getUserDetails(String userId) async {
     try {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -76,15 +67,14 @@ class ProductServices extends GetxController {
         role.value = data['role'] ?? 'Rol bulunamadı';
         workshopName.value = data['workshop'] ?? "Atölye ismi bulunamadı.";
       } else {
-        _resetUserDetails(); // Kullanıcı belgesi bulunamadıysa bilgileri sıfırla
+        _resetUserDetails();  
       }
     } catch (e) {
       print("Firestore'dan veri alınırken hata: $e");
       _resetUserDetails();
     }
   }
-
-  // Kullanıcı bilgilerini sıfırlama
+ 
   void _resetUserDetails() {
     userEmail.value = 'Oturum açmamış';
     firstName.value = 'Ad bulunamadı';

@@ -20,20 +20,16 @@ class TransferDetailScreen extends StatefulWidget {
 class _TransferDetailScreenState extends State<TransferDetailScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _generatePdf() async {
-    // Firestore'dan ürün verilerini al
+  Future<void> _generatePdf() async { 
     final snapshot = await _firestore
         .collection(widget.collection)
         .where("miktar", isNotEqualTo: 0)
         .get();
-
-    // Veriyi Map olarak bir listeye dönüştür
+ 
     final data = snapshot.docs
         .map((doc) => doc.data())
         .toList();
-
-    // PDF dosyasını oluştur ve kaydet
-    // ignore: use_build_context_synchronously
+ 
     await PdfService.generatePdf(context, widget.title, data);
   }
 
@@ -46,7 +42,7 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: InkWell(
-              onTap: _generatePdf, // PDF oluşturma fonksiyonunu çağırıyoruz
+              onTap: _generatePdf,  
               child: const Icon(Icons.picture_as_pdf),
             ),
           )
@@ -74,8 +70,7 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
 
                 return ListView.builder(
                   itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    // Her bir ürün belgesini WorkshopListItem içine gönderiyoruz
+                  itemBuilder: (context, index) { 
                     final work = products[index].data() as Map<String, dynamic>;
                     return WorkshopListItem(work: work,atolye: widget.title,);
                   },

@@ -15,17 +15,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  // Cinsiyet bilgisine göre avatar belirle
+ 
   Future<String> _getCinsiyetImagePath(String uid) async {
     final authService = Get.find<AuthService>();
     String cinsiyet = await authService.getUserCins(uid);
     if (cinsiyet == 'Erkek') {
-      return 'images/erkek.webp'; // Erkekse erkek resmi
+      return 'images/erkek.webp';  
     } else if (cinsiyet == 'Kadın') {
-      return 'images/kadin.webp'; // Kadınsa kadın resmi
+      return 'images/kadin.webp';  
     } else {
-      return ''; // Cinsiyet yoksa varsayılan boş
+      return '';  
     }
     
   }
@@ -34,12 +33,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final authService = Get.find<AuthService>();
     final uid =
-        authService.currentUser?.uid ?? ''; // Mevcut kullanıcının uid'si
+        authService.currentUser?.uid ?? '';  
 
     return AppBar(
       title: FutureBuilder<String>(
         future: _getCinsiyetImagePath(
-            uid), // Cinsiyet bilgisine göre resim belirleniyor
+            uid),  
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -68,12 +67,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         radius: 25,
                         backgroundImage: imagePath.isNotEmpty
                             ? AssetImage(imagePath)
-                            : null, // Belirlenen resim varsa, yoksa null
+                            : null,  
                         backgroundColor:
-                            Colors.grey.shade200, // Varsayılan arka plan rengi
+                            Colors.grey.shade200,  
                         child: imagePath.isEmpty
                             ? Icon(
-                                Icons.person, // Resim yoksa varsayılan ikon
+                                Icons.person,  
                                 size: 35,
                                 color: Colors.grey.shade900,
                               )
@@ -131,8 +130,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-
-        // Eğer workshopName "Paketleme Atölyesi" ise bu ikonu ekle
+ 
         if (workshopName == "Transfer Birimi")
           Padding(
             padding: const EdgeInsets.only(right: 20),
@@ -151,16 +149,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: const Icon(
-                  Icons.local_shipping, // Ekstra ikon olarak "add" ikonu
+                  Icons.local_shipping,  
                   size: 15,
                   color: Colors.white,
                 ),
               ),
             ),
           ),
-
-
-           // Eğer workshopName "Paketleme Atölyesi" ise bu ikonu ekle
+ 
         if (workshopName == "Transfer Birimi")
           Padding(
             padding: const EdgeInsets.only(right: 20),
@@ -179,7 +175,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: const Icon(
-                  Icons.sell, // Ekstra ikon olarak "sell" ikonu
+                  Icons.sell,  
                   size: 15,
                   color: Colors.white,
                 ),

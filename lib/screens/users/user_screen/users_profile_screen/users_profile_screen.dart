@@ -32,13 +32,13 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserRole(); // Rol bilgisini almak için asenkron fonksiyon çağrısı
+    _fetchUserRole();  
   }
 
   Future<void> _fetchUserRole() async {
     if (user != null) {
       _userRole = await authService.getUserRole(user!.uid);
-      setState(() {}); // UI güncellemesi için setState çağrısı
+      setState(() {});  
     }
   }
 
@@ -56,12 +56,11 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 20),
-          // Profil Resmi ve Kullanıcı Bilgisi
+          const SizedBox(height: 20), 
           CircleAvatar(
             radius: 40,
             backgroundImage:
-                AssetImage(widget.profileImagePath), // Profil resmi
+                AssetImage(widget.profileImagePath),  
           ),
           const SizedBox(height: 10),
           Text(
@@ -84,8 +83,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
             ),
             child: const Text('Profili Düzenle'),
           ),
-          const SizedBox(height: 30),
-          // Ayarlar Listesi
+          const SizedBox(height: 30), 
           Expanded(
             child: ListView(
               children: [
@@ -110,8 +108,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const ComingOrders()),
-                    );
-                    // Bildirimler ekranına yönlendirme
+                    ); 
                   },
                 ),
                 ListTile(
@@ -134,8 +131,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const MyOrders()),
-                    );
-                    // Bildirimler ekranına yönlendirme
+                    ); 
                   },
                 ),
                 ListTile(
@@ -161,8 +157,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       MaterialPageRoute(
                         builder: (context) => const UsersWorkScreen(),
                       ),
-                    );
-                    // Bekleyen işler ekranına yönlendirme
+                    ); 
                   },
                 ),
                 ListTile(
@@ -185,8 +180,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const ChatScreen()),
-                    );
-                    // Bildirimler ekranına yönlendirme
+                    ); 
                   },
                 ),
                 ListTile(
@@ -210,8 +204,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       MaterialPageRoute(
                           builder: (context) =>
                               const UsersNotificationScreen()),
-                    );
-                    // Bildirimler ekranına yönlendirme
+                    ); 
                   },
                 ),
                 if (_userRole != null && _userRole != "Transfer")
@@ -235,8 +228,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const FireTakip()),
-                      );
-                      // Üretim raporları ekranına yönlendirme
+                      ); 
                     },
                   ),
                 ListTile(

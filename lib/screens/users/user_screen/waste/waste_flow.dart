@@ -16,8 +16,7 @@ class _FireTakipState extends State<FireTakip> {
 
   @override
   void initState() {
-    super.initState();
-    // Türkçe dil desteğini ekleyin
+    super.initState(); 
     timeago.setLocaleMessages('tr', timeago.TrShortMessages());
   }
 

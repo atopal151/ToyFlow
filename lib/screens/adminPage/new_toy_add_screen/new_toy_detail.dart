@@ -35,7 +35,7 @@ class _NewToyDetailState extends State<NewToyDetail> {
       final List<Map<String, dynamic>> fetchedData =
           querySnapshot.docs.map((doc) {
         final data = doc.data();
-        data['id'] = doc.id; // Her belgenin ID'sini ekle
+        data['id'] = doc.id;
         return data;
       }).toList();
 
@@ -139,7 +139,7 @@ class _NewToyDetailState extends State<NewToyDetail> {
                             ),
                           ),
                           const Padding(
-                            padding: EdgeInsets.only(left:16.0,right: 16),
+                            padding: EdgeInsets.only(left: 16.0, right: 16),
                             child: Divider(),
                           )
                         ],

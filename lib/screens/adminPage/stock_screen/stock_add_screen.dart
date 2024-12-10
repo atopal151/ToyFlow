@@ -31,8 +31,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
     _fetchDenyeList();
   }
 
-  Future<void> _fetchIplikList() async {
-    // 'iplik' koleksiyonundan verileri çekiyoruz
+  Future<void> _fetchIplikList() async { 
     List<String> fetchedUrun =
         await _dataService.getCollectionData('iplik', 'iplik');
     setState(() {
@@ -40,8 +39,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
     });
   }
 
-  Future<void> _fetchDenyeList() async {
-    // 'iplik' koleksiyonundan verileri çekiyoruz
+  Future<void> _fetchDenyeList() async { 
     List<String> fetchedDenye =
         await _dataService.getCollectionData('denye', 'denye');
     setState(() {
@@ -141,10 +139,9 @@ class _StockAddScreenState extends State<StockAddScreen> {
                     isLoading = true;
                   });
                   try {
-                    _saveStock();
-                    // Burada işlemlerini gerçekleştirebilirsin
+                    _saveStock(); 
                     await Future.delayed(
-                        const Duration(seconds: 1)); // Örnek bir gecikme
+                        const Duration(seconds: 1));  
                   } finally {
                     setState(() {
                       isLoading = false;

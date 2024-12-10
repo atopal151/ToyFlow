@@ -21,7 +21,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
   final TextEditingController _gramaj = TextEditingController();
   final TextEditingController _fine = TextEditingController();
   final ToyAddServices _toyAddServices =
-      ToyAddServices(); // ToyAddServices örneği
+      ToyAddServices();  
 
   void _addFine() {
     String fine= _fine.text;
@@ -180,7 +180,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addName(); // Kaydetme işlemi başlatılıyor
+                      _addName();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -216,7 +216,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addRenk(); // Kaydetme işlemi başlatılıyor
+                      _addRenk();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -252,7 +252,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addBoyut(); // Kaydetme işlemi başlatılıyor
+                      _addBoyut();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -288,7 +288,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addAksesuar(); // Kaydetme işlemi başlatılıyor
+                      _addAksesuar();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -328,7 +328,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addIp(); // Kaydetme işlemi başlatılıyor
+                      _addIp();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -364,7 +364,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addDenye(); // Kaydetme işlemi başlatılıyor
+                      _addDenye(); 
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -404,7 +404,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addKumas(); // Kaydetme işlemi başlatılıyor
+                      _addKumas();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -440,7 +440,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addGramaj(); // Kaydetme işlemi başlatılıyor
+                      _addGramaj();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -476,7 +476,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   padding: const EdgeInsets.only(right: 20, top: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      _addFine(); // Kaydetme işlemi başlatılıyor
+                      _addFine();  
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,

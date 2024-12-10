@@ -31,9 +31,9 @@ class _StockSellScreenState extends State<StockSellScreen> {
   List<String> _boyut = [];
   List<String> _aksesuar = [];
 
-  int miktar = 0; // Güncel stok miktarı
+  int miktar = 0;  
 
-  String? _currentDepoCollection; // Depo collection için bir değişken
+  String? _currentDepoCollection;  
   @override
   void initState() {
     super.initState();
@@ -41,7 +41,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
   }
 
   Map<String, String> _depoCollectionMap =
-      {}; // Depo adı ile koleksiyon ismini eşleştirmek için
+      {};  
 
   Future<void> _fetchDepolar() async {
     final depolarSnapshot =
@@ -62,10 +62,10 @@ class _StockSellScreenState extends State<StockSellScreen> {
     final urunSnapshot =
         await FirebaseFirestore.instance.collection(depoCollection).get();
     setState(() {
-      // Tekrar eden ürünleri önlemek için bir Set kullanıyoruz.
+       
       final urunSet =
           urunSnapshot.docs.map((doc) => doc['urun'] as String).toSet();
-      _donusumUrun = urunSet.toList(); // Set'i listeye dönüştürüyoruz.
+      _donusumUrun = urunSet.toList();  
     });
   }
 
@@ -109,8 +109,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
           .where('urun', isEqualTo: urun)
           .where('renk', isEqualTo: renk)
           .get();
-      setState(() {
-        // Tekrar eden boyutları önlemek için Set kullanıyoruz.
+      setState(() { 
         final boyutSet =
             boyutSnapshot.docs.map((doc) => doc['boyut'] as String).toSet();
         _boyut = boyutSet.toList();
@@ -129,8 +128,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
           .where('renk', isEqualTo: renk)
           .where('boyut', isEqualTo: boyut)
           .get();
-      setState(() {
-        // Tekrar eden aksesuarları önlemek için Set kullanıyoruz.
+      setState(() { 
         final aksesuarSet = aksesuarSnapshot.docs
             .map((doc) => doc['aksesuar'] as String)
             .toSet();
@@ -157,13 +155,13 @@ class _StockSellScreenState extends State<StockSellScreen> {
         });
       } else {
         setState(() {
-          miktar = 0; // Eğer veri bulunamazsa stok 0 olarak ayarlanır.
+          miktar = 0; 
         });
       }
     } catch (e) {
       debugPrint("Error fetching miktar: $e");
       setState(() {
-        miktar = 0; // Hata durumunda stok 0 olarak ayarlanır.
+        miktar = 0;  
       });
     }
   }
@@ -188,10 +186,9 @@ class _StockSellScreenState extends State<StockSellScreen> {
               setState(() {
                 _selectedDepo = newValue;
                 _currentDepoCollection = _depoCollectionMap[
-                    newValue!]; // Depo collection kaydediliyor
+                    newValue!];  
                 if (_currentDepoCollection != null) {
-                  _fetchUrunler(_currentDepoCollection!);
-                  // Alt alanları sıfırla
+                  _fetchUrunler(_currentDepoCollection!); 
                   _selectedMalzeme = null;
                   _selectedRenk = null;
                   _selectedBoyut = null;
@@ -214,8 +211,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
                 _selectedMalzeme = newValue;
                 if (newValue != null && _currentDepoCollection != null) {
                   _fetchRenkler(_currentDepoCollection!,
-                      _selectedMalzeme!); // _currentDepoCollection kullanılıyor
-                  // Alt alanları sıfırla
+                      _selectedMalzeme!);  
                   _selectedRenk = null;
                   _selectedBoyut = null;
                   _selectedAksesuar = null;
@@ -236,8 +232,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
                 _selectedRenk = newValue;
                 if (newValue != null && _currentDepoCollection != null) {
                   _fetchBoyutlar(_currentDepoCollection!, _selectedMalzeme!,
-                      newValue); // _currentDepoCollection kullanılıyor
-                  // Alt alanları sıfırla
+                      newValue);  
                   _selectedBoyut = null;
                   _selectedAksesuar = null;
                   _aksesuar = [];
@@ -260,8 +255,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
                     _selectedMalzeme!,
                     _selectedRenk!,
                     newValue,
-                  );
-                  // Aksesuarları sıfırla
+                  ); 
                   _selectedAksesuar = null;
                   miktar = 0;
                 }
@@ -333,10 +327,9 @@ class _StockSellScreenState extends State<StockSellScreen> {
                         _selectedRenk!,
                         _selectedBoyut!,
                         _selectedAksesuar!,
-                        miktarGirdi);
-                    // Burada işlemlerini gerçekleştirebilirsin
+                        miktarGirdi); 
                     await Future.delayed(
-                        const Duration(seconds: 1)); // Örnek bir gecikme
+                        const Duration(seconds: 1));  
                   } finally {
                     setState(() {
                       isLoading = false;

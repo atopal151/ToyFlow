@@ -13,7 +13,7 @@ class BottomNavBarWithPages extends StatefulWidget {
 }
 
 class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
-  int _selectedIndex = 0; // Aktif sayfa indeksi
+  int _selectedIndex = 0; 
 
   final List<Widget> _pages = [
     const AdminHomeScreen(),
@@ -24,7 +24,7 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Seçilen indeksi güncelle
+      _selectedIndex = index;  
     });
   }
 
@@ -67,23 +67,22 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
       body: _pages[_selectedIndex],
     );
   }
-
-  // Daha ince ve küçük boyutlarda animasyonlu ikon metodu
+ 
   Widget _buildAnimatedIcon(IconData icon, int index) {
     bool isSelected = _selectedIndex == index;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOutCubic,
-      margin: EdgeInsets.only(bottom: isSelected ? 6 : 0), // Daha küçük zıplama etkisi
+      margin: EdgeInsets.only(bottom: isSelected ? 6 : 0),  
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isSelected ? Colors.black87 : Colors.transparent,
       ),
-      padding: EdgeInsets.all(isSelected ? 8.0 : 4.0), // Daha ince padding
+      padding: EdgeInsets.all(isSelected ? 8.0 : 4.0),  
       child: Icon(
         icon,
         color: isSelected ? Colors.white : Colors.black,
-        size: isSelected ? 20 : 16, // Daha küçük ikon boyutu
+        size: isSelected ? 20 : 16,  
       ),
     );
   }

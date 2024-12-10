@@ -27,7 +27,7 @@ class RecordServices {
         'aciklama': aciklama,
         'atelye': atelye,
         'tarih': FieldValue.serverTimestamp(),
-        'okundu': false, // Bu alanın eklendiğinden emin olun
+        'okundu': false,  
       });
       print('Hareket kaydı başarıyla eklendi.');
     } catch (e, stackTrace) {

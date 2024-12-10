@@ -19,18 +19,18 @@ class _TransferScreenState extends State<TransferScreen> {
   @override
   void initState() {
     super.initState();
-    _getDepolar(); // Dinamik olarak depoları al
+    _getDepolar();
   }
 
-  // Dinamik olarak depoları Firestore'dan çeken fonksiyon
   Future<void> _getDepolar() async {
     try {
-      final QuerySnapshot snapshot = await _firestore.collection('depolar').get();
+      final QuerySnapshot snapshot =
+          await _firestore.collection('depolar').get();
       setState(() {
         workshops = snapshot.docs.map((doc) {
           return {
             'title': doc['title'],
-            'image': doc['image'] ?? 'images/depo.webp', // Eğer image alanı yoksa varsayılan bir görsel ekleyin
+            'image': doc['image'] ?? 'images/depo.webp',
             'collection': doc['collection'],
           };
         }).toList();
@@ -42,7 +42,8 @@ class _TransferScreenState extends State<TransferScreen> {
 
   Future<int> fetchStockFromCollection(String collectionName) async {
     try {
-      QuerySnapshot snapshot = await _firestore.collection(collectionName).get();
+      QuerySnapshot snapshot =
+          await _firestore.collection(collectionName).get();
 
       int totalStock = snapshot.docs.fold<int>(0, (previousValue, doc) {
         final num miktar = doc['miktar'] ?? 0;
@@ -52,12 +53,12 @@ class _TransferScreenState extends State<TransferScreen> {
       return totalStock;
     } catch (e) {
       print("Error fetching data from $collectionName: $e");
-      return 0; // Eğer hata oluşursa varsayılan değer döndür
+      return 0;  
     }
   }
 
   Future<void> _refreshList() async {
-    await _getDepolar(); // Listeyi yenilediğimizde depoları tekrar çek
+    await _getDepolar();  
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
@@ -89,8 +90,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   }
 
                   return GestureDetector(
-                    onTap: () {
-                      // Detay sayfasına yönlendirme
+                    onTap: () { 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -104,7 +104,8 @@ class _TransferScreenState extends State<TransferScreen> {
                     child: _buildStockCardButton(
                       roomName: workshop['title'],
                       occupancy: occupancyText,
-                      imagePath: workshop['image'], // Görsel yolunu dinamik olarak gönderiyoruz
+                      imagePath: workshop[
+                          'image'], 
                     ),
                   );
                 },
@@ -119,7 +120,7 @@ class _TransferScreenState extends State<TransferScreen> {
   Widget _buildStockCardButton({
     required String roomName,
     required String occupancy,
-    required String imagePath, // Dinamik olarak görsel yolu
+    required String imagePath,  
   }) {
     return Container(
       height: 100,

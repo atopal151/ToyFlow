@@ -8,8 +8,8 @@ import 'services/user_services/auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Firebase başlat
-  Get.put(AuthService()); // Veya Get.lazyPut(() => AuthService());
+  await Firebase.initializeApp();  
+  Get.put(AuthService());  
   Get.put(ProductServices());
   Get.put(RecordServices());
   runApp(const MyApp());

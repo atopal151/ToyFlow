@@ -28,8 +28,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     _fetchWorkshops();
     _fetchCollectionName();
   }
-
-  /// Firestore'dan tüm atölye isimlerini alır ve dropdown için doldurur
+ 
   Future<void> _fetchWorkshops() async {
     try {
       QuerySnapshot snapshot =
@@ -37,14 +36,13 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
       setState(() {
         _workshops = snapshot.docs
             .map((doc) => doc['name'] as String)
-            .toList(); // Atölye isimlerini doldur
+            .toList();  
       });
     } catch (e) {
       print("Atölye listesi alınırken hata oluştu: $e");
     }
   }
-
-  /// Seçilen atölyeye göre ilgili koleksiyon adını alır
+ 
   Future<void> _fetchCollectionName() async {
     try {
       if (_selectedWorkshop != null) {
@@ -64,8 +62,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
       print("Koleksiyon adı alınırken hata oluştu: $e");
     }
   }
-
-  /// Seçili koleksiyon adından verileri getirir
+ 
   Stream<List<Map<String, dynamic>>> _getWorkshopData() async* {
     if (_collectionName != null) {
       yield* FirebaseFirestore.instance
@@ -75,9 +72,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     } else {
       yield [];
     }
-  }
-
-  /// Verileri yenilemek için kullanılır
+  } 
   Future<void> _refreshData() async {
     await _fetchCollectionName();
     setState(() {});
@@ -93,7 +88,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               onTap: () {
-                // İleride PDF oluşturma gibi bir özellik eklenecekse buraya yazılabilir
+                //  PDF oluşturma 
               },
               child: const Icon(Icons.picture_as_pdf),
             ),
@@ -101,15 +96,14 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
         ],
       ),
       body: Column(
-        children: [
-          // Dropdown ile atölye seçimi
+        children: [ 
           Row(
             children: [
               Expanded(
                 flex: 1,
                 child: DropdownSelector(
                   hintText: "Atölye seç",
-                  items: _workshops, // Tüm name değerlerini içeren liste
+                  items: _workshops,  
                   selectedValue: _selectedWorkshop,
                   icon: Icons.arrow_drop_down,
                   onChanged: (String? newValue) {
@@ -121,8 +115,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 ),
               ),
             ],
-          ),
-          // Arama kutusu
+          ), 
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -175,13 +168,13 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                20), // Card'ın kenar köşeleri
+                                20),  
                           ),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white, // Arka plan rengi
+                              color: Colors.white,  
                               borderRadius: BorderRadius.circular(
-                                  20), // Container'ın kenar köşeleri
+                                  20),  
                             ),
                             padding: const EdgeInsets.only(left:16,right: 16,top: 16,bottom: 16),
                             child: Row(

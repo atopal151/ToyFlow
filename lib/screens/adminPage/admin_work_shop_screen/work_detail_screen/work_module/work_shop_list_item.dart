@@ -5,7 +5,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class WorkshopListItem extends StatefulWidget {
   final Map<String, dynamic> work;
   final String? atolye;
-  final VoidCallback? onTap; // onTap fonksiyonunu opsiyonel olarak ekledik
+  final VoidCallback? onTap;  
 
   const WorkshopListItem(
       {super.key, required this.work, this.atolye, this.onTap});
@@ -25,14 +25,12 @@ class _WorkshopListItemState extends State<WorkshopListItem> {
   Widget build(BuildContext context) {
     String eklemeTarihi = 'Bilinmiyor';
     String miktarTarihi = 'Bilinmiyor';
-
-    // 'tarih' alanını göreceli formatta dönüştürme
+ 
     if (widget.work['tarih'] is Timestamp) {
       DateTime dateTime = (widget.work['tarih'] as Timestamp).toDate();
-      eklemeTarihi = timeago.format(dateTime, locale: 'tr'); // Göreceli tarih
+      eklemeTarihi = timeago.format(dateTime, locale: 'tr');  
     }
-
-    // 'miktar' alanını String formatına dönüştürme
+ 
     if (widget.work['miktar'] is Timestamp) {
       DateTime miktarDateTime = (widget.work['miktar'] as Timestamp).toDate();
       miktarTarihi = DateFormat('dd.MM.yyyy').format(miktarDateTime);

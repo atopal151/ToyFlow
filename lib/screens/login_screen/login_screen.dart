@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authServices = AuthService(); // AuthServices örneği
+  final AuthService _authServices = AuthService();  
   String email = '';
   String password = '';
   bool isLoading = false;
@@ -34,16 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Koyu yeşil arka plan
+    return Scaffold( 
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 1),
-              // Logo ve başlık
+              const Spacer(flex: 1), 
               Column(
                 children: [
                   Image.asset(
@@ -69,18 +67,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                 ],
               ),
-              const Spacer(flex: 1),
-              // Giriş alanları
+              const Spacer(flex: 1), 
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white, // Arka plan rengini beyaz yapıyoruz
+                  color: Colors.white,  
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.3),
                       spreadRadius: 2,
                       blurRadius: 8,
-                      offset: const Offset(0, 8), // Gölgenin pozisyonu
+                      offset: const Offset(0, 8),  
                     ),
                   ],
                 ),
@@ -165,8 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const Spacer(flex: 2),
-              // Alt kısımda marka ismi
+              const Spacer(flex: 2), 
               const Text(
                 "Özgüner Oyuncak",
                 style: TextStyle(

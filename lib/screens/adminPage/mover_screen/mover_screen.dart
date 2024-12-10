@@ -16,15 +16,14 @@ class _MoverScreenState extends State<MoverScreen> {
   final AuthService _authService = Get.find();
   User? user = FirebaseAuth.instance.currentUser;
   String? userRole;
-  int unreadCount = 0; // Okunmamış bildirim sayısı
+  int unreadCount = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchUserRole();
-    _fetchUnreadNotifications(); // Okunmamış bildirimleri al
+    _fetchUnreadNotifications();
 
-    // Türkçe dil desteğini ekleyin
     timeago.setLocaleMessages('tr', timeago.TrShortMessages());
   }
 
@@ -38,26 +37,26 @@ class _MoverScreenState extends State<MoverScreen> {
   Future<void> _fetchUnreadNotifications() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('movers')
-        .where('okundu', isEqualTo: false) // Okunmamış olanları filtrele
+        .where('okundu', isEqualTo: false)
         .get();
 
     setState(() {
-      unreadCount = snapshot.size; // Okunmamış bildirim sayısını güncelle
+      unreadCount = snapshot.size;
     });
   }
 
   Icon _getIcon(String islemTuru) {
     switch (islemTuru) {
       case "Stok Ekleme":
-        return const Icon(Icons.add_circle, color: Colors.green,size: 18);
+        return const Icon(Icons.add_circle, color: Colors.green, size: 18);
       case "Stok Güncelleme":
-        return const Icon(Icons.update, color: Colors.blue,size: 18);
+        return const Icon(Icons.update, color: Colors.blue, size: 18);
       case "Fire Kaydı":
-        return const Icon(Icons.delete_rounded, color: Colors.red,size: 18);
+        return const Icon(Icons.delete_rounded, color: Colors.red, size: 18);
       case "Stok Düşümü":
-        return const Icon(Icons.download, color: Colors.orange,size: 18);
+        return const Icon(Icons.download, color: Colors.orange, size: 18);
       default:
-        return const Icon(Icons.info, color: Colors.grey,size: 18);
+        return const Icon(Icons.info, color: Colors.grey, size: 18);
     }
   }
 
@@ -67,7 +66,7 @@ class _MoverScreenState extends State<MoverScreen> {
         .doc(docId)
         .update({'okundu': true});
 
-    _fetchUnreadNotifications(); // Okunmamış bildirim sayısını güncelle
+    _fetchUnreadNotifications();
   }
 
   Future<void> _markAllAsRead() async {
@@ -80,7 +79,7 @@ class _MoverScreenState extends State<MoverScreen> {
       await doc.reference.update({'okundu': true});
     }
 
-    _fetchUnreadNotifications(); // Okunmamış bildirim sayısını güncelle
+    _fetchUnreadNotifications();
   }
 
   @override
@@ -156,8 +155,7 @@ class _MoverScreenState extends State<MoverScreen> {
                           decoration: BoxDecoration(
                             color: okunmadi
                                 ? const Color.fromARGB(255, 213, 210, 210)
-                                : Colors
-                                    .transparent, // Okunmamışlar koyu renkte
+                                : Colors.transparent,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -197,12 +195,15 @@ class _MoverScreenState extends State<MoverScreen> {
                                     decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(Icons.notifications_active,color: Colors.grey,size:20),
+                                    child: const Icon(
+                                        Icons.notifications_active,
+                                        color: Colors.grey,
+                                        size: 20),
                                   ),
                                   Text(
-                                      formattedDate,
-                                      style: const TextStyle(fontSize: 11),
-                                    )
+                                    formattedDate,
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
                                 ],
                               ),
                             ],
