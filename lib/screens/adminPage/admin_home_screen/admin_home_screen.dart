@@ -1,5 +1,3 @@
-// ignore_for_file: unrelated_type_equality_checks
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,85 +21,95 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final AdminHomeService adminHomeService = AdminHomeService();
   final DataTableService _dataTableService = DataTableService();
 
-  int dokumaAllStock = 0;
-  int boyamaAllStock = 0;
-  int kesimAllStock = 0;
-  int dikimAllStock = 0;
-  int dolumAllStock = 0;
-  int paketlemeAllStock = 0;
+  List<Map<String, dynamic>> _atolyeList = []; // Atölye bilgileri için liste
+  List<int> _atolyeDailyCounts = []; // Günlük işlemler için liste
+  List<String> _depoName = []; // Depo isimlerini saklar
+  List<String> _depoCollection = []; // Depo koleksiyon isimlerini saklar
+  bool _isAtolyeLoaded =
+      false; // Atölyelerin yüklenip yüklenmediğini kontrol eder
+  bool _isDepoLoaded = false; // Depoların yüklenip yüklenmediğini kontrol eder
 
-  int dokumaAtolyesiStock = 0;
-  int boyamaAtolyesiStock = 0;
-  int kesimAtolyesiStock = 0;
-  int dikimAtolyesiStock = 0;
-  int dolumAtolyesiStock = 0;
-  int paketlemeAtolyesiStock = 0;
-
-  List<String> _depoName = []; // İplik listesi
-
-  List<String> _depoCollection = []; // İplik listesi
   @override
   void initState() {
     super.initState();
-    _loadStockData();
-    _fetchDepoTitleList();
-    _fetchDepoCollectionList();
+    print(_isDepoLoaded);
+    print(_isAtolyeLoaded);
+    if (!_isAtolyeLoaded) {
+      _fetchAtolyeList(); // Yalnızca bir kez yüklenir
+    }
+    if (!_isDepoLoaded) {
+      _fetchDepoTitleList();
+      _fetchDepoCollectionList();
+    }
+  }
+
+  Future<void> _fetchAtolyeList() async {
+    if (_isAtolyeLoaded) return; // Zaten yüklüyse işlemi durdur
+    try {
+      // Atölyeleri Firestore'dan getir
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('atolyeler')
+          .orderBy("nitelik")
+          .get();
+
+      List<Map<String, dynamic>> fetchedAtolyeler =
+          querySnapshot.docs.map((doc) {
+        return {
+          'name': doc['name'],
+          'nitelik': doc['nitelik'],
+          'collection': doc['collection'],
+        };
+      }).toList();
+
+      List<int> fetchedDailyCounts = [];
+      for (var atolye in fetchedAtolyeler) {
+        int dailyCount =
+            await adminHomeService.fetchDailyStockOperations(atolye['nitelik']);
+        fetchedDailyCounts.add(dailyCount);
+      }
+
+      setState(() {
+        _atolyeList = fetchedAtolyeler;
+        _atolyeDailyCounts = fetchedDailyCounts;
+        _isAtolyeLoaded = true; // Artık yüklendi
+      });
+    } catch (e) {
+      print("Atölyeler alınırken hata oluştu: $e");
+    }
   }
 
   Future<void> _fetchDepoTitleList() async {
-    // 'iplik' koleksiyonundan verileri çekiyoruz
-    List<String> fetchedUrun =
-        await _dataTableService.getCollectionData('depolar', 'title');
-    setState(() {
-      _depoName = fetchedUrun;
-    });
+    if (_isDepoLoaded) return; // Zaten yüklüyse işlemi durdur
+    try {
+      List<String> fetchedDepoTitles =
+          await _dataTableService.getCollectionData('depolar', 'title');
+      setState(() {
+        _depoName = fetchedDepoTitles;
+      });
+      print("Depo Başlıkları: $_depoName");
+    } catch (e) {
+      print("Depo başlıkları alınırken hata oluştu: $e");
+    }
   }
 
   Future<void> _fetchDepoCollectionList() async {
-    // 'iplik' koleksiyonundan verileri çekiyoruz
-    List<String> fetchedUrun =
-        await _dataTableService.getCollectionData('depolar', 'collection');
-    setState(() {
-      _depoCollection = fetchedUrun;
-    });
-  }
-
-  Future<void> _loadStockData() async {
-    int dokumaStock =
-        await adminHomeService.fetchDailyStockOperations("Dokuma");
-
-    int boyamaStock =
-        await adminHomeService.fetchDailyStockOperations("Boyama");
-    int kesimStock = await adminHomeService.fetchDailyStockOperations("Kesim");
-    int dikimStock = await adminHomeService.fetchDailyStockOperations("Dikim");
-    int dolumStock = await adminHomeService.fetchDailyStockOperations("Dolum");
-    int paketlemeStock =
-        await adminHomeService.fetchDailyStockOperations("Paketleme");
-
-    int dokuma = await adminHomeService.fetchStockFromCollection("dokuma_stok");
-    int boyama = await adminHomeService.fetchStockFromCollection("boyama_stok");
-    int kesim = await adminHomeService.fetchStockFromCollection("kesim_stok");
-    int dikim = await adminHomeService.fetchStockFromCollection("dikim_stok");
-    int dolum = await adminHomeService.fetchStockFromCollection("dolum_stok");
-    int paketleme =
-        await adminHomeService.fetchStockFromCollection("paketleme_stok");
-
-    if (mounted) {
+    if (_isDepoLoaded) return; // Zaten yüklüyse işlemi durdur
+    try {
+      List<String> fetchedDepoCollections =
+          await _dataTableService.getCollectionData('depolar', 'collection');
       setState(() {
-        dokumaAtolyesiStock = dokumaStock;
-        boyamaAtolyesiStock = boyamaStock;
-        kesimAtolyesiStock = kesimStock;
-        dikimAtolyesiStock = dikimStock;
-        dolumAtolyesiStock = dolumStock;
-        paketlemeAtolyesiStock = paketlemeStock;
-
-        dokumaAllStock = dokuma;
-        boyamaAllStock = boyama;
-        kesimAllStock = kesim;
-        dikimAllStock = dikim;
-        dolumAllStock = dolum;
-        paketlemeAllStock = paketleme;
+        _depoCollection = fetchedDepoCollections;
       });
+      print("Depo Koleksiyonları: $_depoCollection");
+
+      // Başlıklar tamamlandıktan sonra işaretle
+      if (_depoName.isNotEmpty && _depoCollection.isNotEmpty) {
+        setState(() {
+          _isDepoLoaded = true;
+        });
+      }
+    } catch (e) {
+      print("Depo koleksiyonları alınırken hata oluştu: $e");
     }
   }
 
@@ -144,13 +152,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('movers')
-                .where('okundu', isEqualTo: false) // Sadece okunmamış olanlar
+                .where('okundu', isEqualTo: false)
                 .snapshots(),
             builder: (context, snapshot) {
-              int unreadCount = 0;
-              if (snapshot.hasData) {
-                unreadCount = snapshot.data!.docs.length;
-              }
+              int unreadCount =
+                  snapshot.hasData ? snapshot.data!.docs.length : 0;
 
               return Stack(
                 children: [
@@ -167,7 +173,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       },
                     ),
                   ),
-                  
                   if (unreadCount > 0)
                     Positioned(
                       right: 10,
@@ -205,63 +210,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text(
-                    "Günlük Aktivite",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 10),
-                  InkWell(
-                    onTap: () {
-                      _loadStockData();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(3.0),
-                      child: Icon(
-                        Icons.refresh,
-                        color: Color.fromARGB(255, 55, 55, 55),
-                        size: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              _buildAtolyeRow(
-                  "Dokuma Atölyesi", dokumaAllStock, dokumaAtolyesiStock),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildAtolyeRow(
-                  "Boyama Atölyesi", boyamaAllStock, boyamaAtolyesiStock),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildAtolyeRow(
-                  "Kesim Atölyesi", kesimAllStock, kesimAtolyesiStock),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildAtolyeRow(
-                  "Dikim Atölyesi", dikimAllStock, dikimAtolyesiStock),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildAtolyeRow(
-                  "Dolum Atölyesi", dolumAllStock, dolumAtolyesiStock),
-              const SizedBox(
-                height: 10,
-              ),
-              _buildAtolyeRow("Paketleme Atölyesi", paketlemeAllStock,
-                  paketlemeAtolyesiStock),
-              const SizedBox(height: 20),
               const Text(
                 "Depolar",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              // Dinamik olarak depo listeleme
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -269,8 +222,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 itemBuilder: (context, index) {
                   return _buildDepoRow(
                     _depoName[index],
-                    "------", // Sıcaklık gibi sabit bir değer için placeholder
+                    "------", // Placeholder sıcaklık bilgisi
                     _depoCollection[index],
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Atölyeler",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _atolyeList.length,
+                itemBuilder: (context, index) {
+                  final atolye = _atolyeList[index];
+                  final dailyCount = _atolyeDailyCounts[index];
+                  return _buildAtolyeRow(
+                    atolye['name'], // Atölye ismi
+                    dailyCount, // Günlük işlem
                   );
                 },
               ),
@@ -281,200 +253,159 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  Widget _buildAtolyeRow(String title, int totalStock, int dailyStock) {
+  Widget _buildAtolyeRow(String name, int dailyCount) {
     return Row(
       children: [
         Expanded(
-          child: _buildInfoCard(
-              title, " $totalStock Adet", "Günlük İşlem: +$dailyStock kg/adet"),
+          child: InkWell(
+            onTap: () {
+              print("11111 $name");
+              Get.to(() => WorkDetailScreen(selectedWorkshop: name));
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 2, 2, 2),
+                    Color.fromARGB(255, 75, 75, 75),
+                    Color.fromARGB(255, 205, 199, 199),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                image: DecorationImage(
+                  image: const AssetImage("images/backgorund.webp"),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.white.withOpacity(0.4),
+                    BlendMode.dstATop,
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.transfer_within_a_station, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          "+$dailyCount İşlem",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildDepoRow(String roomName, String temperature, String collection) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Expanded(
-          child: InkWell(
-            onTap: () => Get.to(() =>
-                TransferDetailScreen(title: roomName, collection: collection)),
-            child: _buildStockCardButton(
-              roomName: roomName,
-              temperature: temperature,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoCard(String title, String count, String percentage) {
     return InkWell(
-      onTap: () {
-        Get.to(() => WorkDetailScreen(selectedWorkshop: title));
-      },
+      onTap: () => Get.to(
+        TransferDetailScreen(title: roomName, collection: collection),
+      ),
       child: Container(
-        padding: const EdgeInsets.all(16.0),
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        height: 100,
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 2, 2, 2), // İlk ton
-              Color.fromARGB(255, 75, 75, 75), // İkinci ton
-              Color.fromARGB(255, 205, 199, 199), // Üçüncü ton
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          image: DecorationImage(
-            image: const AssetImage("images/backgorund.webp"), // Görselin yolu
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.white.withOpacity(0.4), // Görselin opacity değeri
-              BlendMode.dstATop, // Görselin arkadaki gradient ile karışma modu
-            ),
-          ),
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 3,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          image: const DecorationImage(
+            image: AssetImage('images/depo.webp'), // Depo görseli
+            fit: BoxFit.cover,
+          ),
         ),
-        child: Row(
+        child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+            // Görsel üzerine opaklık eklemek için bir katman
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Depo adı
+                  Text(
+                    roomName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      " Stok:",
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white),
-                    ),
-                    Text(
-                      count,
-                      style: const TextStyle(fontSize: 13, color: Colors.white),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.transfer_within_a_station,
-                          color: Colors.grey, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        percentage,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: percentage != 'Günlük İşlem: +0 kg/adet'
-                              ? const Color.fromARGB(255, 30, 60, 31)
-                              : const Color.fromARGB(255, 120, 73, 69),
+                      // Güncellenme zamanı bilgisi (placeholder)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.refresh, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Koleksiyon: $collection',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStockCardButton({
-    required String roomName,
-    required String temperature,
-  }) {
-    return Container(
-      height: 100,
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: const DecorationImage(
-          image: AssetImage('images/depo.webp'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.black.withOpacity(0.3),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  roomName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.refresh, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Son güncelleme: $temperature',
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
