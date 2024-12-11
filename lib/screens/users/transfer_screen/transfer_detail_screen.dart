@@ -19,17 +19,18 @@ class TransferDetailScreen extends StatefulWidget {
 
 class _TransferDetailScreenState extends State<TransferDetailScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
-  Future<void> _generatePdf() async { 
+  Future<void> _generatePdf() async {
     final snapshot = await _firestore
         .collection(widget.collection)
         .where("miktar", isNotEqualTo: 0)
         .get();
- 
-    final data = snapshot.docs
-        .map((doc) => doc.data())
-        .toList();
- 
+
+    final data = snapshot.docs.map((doc) => doc.data()).toList();
+
+    // ignore: use_build_context_synchronously
     await PdfService.generatePdf(context, widget.title, data);
   }
 
@@ -37,12 +38,15 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,style: const TextStyle(fontSize: 15),),
+        title: Text(
+          widget.title,
+          style: const TextStyle(fontSize: 15),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: InkWell(
-              onTap: _generatePdf,  
+              onTap: _generatePdf,
               child: const Icon(Icons.picture_as_pdf),
             ),
           )
@@ -50,6 +54,29 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
       ),
       body: Column(
         children: [
+          // Arama Kutusu
+          Padding(
+            padding: const EdgeInsets.only(left:16,right: 16),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.trim().toLowerCase();
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Ara...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
+              ),
+            ),
+          ),
+          // Ürün Listesi
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _firestore
@@ -66,13 +93,24 @@ class _TransferDetailScreenState extends State<TransferDetailScreen> {
                   );
                 }
 
-                final products = snapshot.data!.docs;
+                // Ürünleri filtreleme
+                final products = snapshot.data!.docs
+                    .where((doc) {
+                      final work = doc.data() as Map<String, dynamic>;
+                      final urunName =
+                          work['urun']?.toString().toLowerCase() ?? '';
+                      return urunName.contains(_searchQuery);
+                    })
+                    .toList();
 
                 return ListView.builder(
                   itemCount: products.length,
-                  itemBuilder: (context, index) { 
+                  itemBuilder: (context, index) {
                     final work = products[index].data() as Map<String, dynamic>;
-                    return WorkshopListItem(work: work,atolye: widget.title,);
+                    return WorkshopListItem(
+                      work: work,
+                      atolye: widget.title,
+                    );
                   },
                 );
               },

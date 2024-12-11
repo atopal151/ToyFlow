@@ -24,21 +24,25 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('atolyeler').get();
 
-      setState(() {
-        workshops = querySnapshot.docs.map((doc) {
-          return {
-            'title': doc['name'],
-            'icon': Icons.settings,
-            'image': 'images/backgorund.webp',
-          };
-        }).toList();
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          workshops = querySnapshot.docs.map((doc) {
+            return {
+              'title': doc['name'],
+              'icon': Icons.settings,
+              'image': 'images/toy.webp',
+            };
+          }).toList();
+          isLoading = false;
+        });
+      }
     } catch (e) {
       print("Atölyeler alınırken hata oluştu: $e");
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -92,7 +96,7 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
                               image: AssetImage(workshop['image']),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.3),
+                                Colors.black.withOpacity(0.7),
                                 BlendMode.darken,
                               ),
                             ),

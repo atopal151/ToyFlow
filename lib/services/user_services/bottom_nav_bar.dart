@@ -81,7 +81,7 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
       padding: EdgeInsets.all(isSelected ? 8.0 : 4.0),  
       child: Icon(
         icon,
-        color: isSelected ? Colors.white : Colors.black,
+        color: isSelected ? Colors.white : Colors.grey,
         size: isSelected ? 20 : 16,  
       ),
     );

@@ -14,18 +14,19 @@ class NewToyDetail extends StatefulWidget {
 }
 
 class _NewToyDetailState extends State<NewToyDetail> {
-  final List<String> tableNames = [
-    'toy_aksesuar',
-    'toy_height',
-    'toy_renk',
-    'fine',
-    'iplik',
-    'gramaj',
-    'denye',
-    'kumas',
-  ];
+  // Map olarak tablo isimleri
+  final Map<String, String> tableNames = {
+    'toy_aksesuar': "Aksesuarlar",
+    'toy_height': "Boyutlar",
+    'toy_renk': "Renkler",
+    'fine': "Fine",
+    'iplik': "İpler",
+    'gramaj': "Gramaj",
+    'denye': "Denye",
+    'kumas': "Kumaşlar",
+  };
 
-  String? selectedTable;
+  String? selectedTableKey; // Seçilen tablonun anahtarı (koleksiyon ismi)
   List<Map<String, dynamic>> currentData = [];
 
   Future<void> fetchTableData(String tableName) async {
@@ -87,15 +88,24 @@ class _NewToyDetailState extends State<NewToyDetail> {
         children: [
           DropdownSelector(
             hintText: 'Bir tablo seçin',
-            items: tableNames,
-            selectedValue: selectedTable,
+            items: tableNames.values.toList(), // Görüntülenecek isimler
+            selectedValue: selectedTableKey != null
+                ? tableNames[selectedTableKey!] // Seçilen tablo adı
+                : null,
             onChanged: (value) {
               if (value != null) {
+                // Seçilen tablo anahtarını bul
+                final selectedKey = tableNames.entries
+                    .firstWhere((entry) => entry.value == value)
+                    .key;
+
                 setState(() {
-                  selectedTable = value;
+                  selectedTableKey = selectedKey;
                   currentData = [];
                 });
-                fetchTableData(value);
+
+                // Verileri getir
+                fetchTableData(selectedKey);
               }
             },
             icon: Icons.table_chart,
@@ -104,7 +114,7 @@ class _NewToyDetailState extends State<NewToyDetail> {
           Expanded(
             child: currentData.isEmpty
                 ? const Center(
-                    child: Text('Veri bulunamadı veya tablo seçilmedi'))
+                    child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: currentData.length,
                     itemBuilder: (context, index) {
@@ -125,9 +135,9 @@ class _NewToyDetailState extends State<NewToyDetail> {
                               icon:
                                   const Icon(Icons.delete, color: Colors.black),
                               onPressed: () {
-                                if (selectedTable != null &&
+                                if (selectedTableKey != null &&
                                     item['id'] != null) {
-                                  deleteItem(selectedTable!, item['id']);
+                                  deleteItem(selectedTableKey!, item['id']);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(

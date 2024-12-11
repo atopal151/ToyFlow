@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../services/user_component/dropdown_selector.dart';
+import '../../../../services/user_services/pdf_services.dart';
 
 class WorkDetailScreen extends StatefulWidget {
   final String selectedWorkshop;
@@ -14,12 +15,13 @@ class WorkDetailScreen extends StatefulWidget {
 }
 
 class _WorkDetailScreenState extends State<WorkDetailScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? _selectedWorkshop;
   String? _collectionName;
   List<String> _workshops = [];
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
-
+  String? role;
 
   @override
   void initState() {
@@ -28,21 +30,31 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     _fetchWorkshops();
     _fetchCollectionName();
   }
- 
+
+  Future<void> _generatePdf() async {
+    final snapshot = await _firestore
+        .collection(_collectionName!)
+        .where("miktar", isNotEqualTo: 0)
+        .get();
+
+    final data = snapshot.docs.map((doc) => doc.data()).toList();
+
+    // ignore: use_build_context_synchronously
+    await PdfService.generatePdf(context, _selectedWorkshop!, data);
+  }
+
   Future<void> _fetchWorkshops() async {
     try {
       QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('atolyeler').get();
       setState(() {
-        _workshops = snapshot.docs
-            .map((doc) => doc['name'] as String)
-            .toList();  
+        _workshops = snapshot.docs.map((doc) => doc['name'] as String).toList();
       });
     } catch (e) {
       print("Atölye listesi alınırken hata oluştu: $e");
     }
   }
- 
+
   Future<void> _fetchCollectionName() async {
     try {
       if (_selectedWorkshop != null) {
@@ -53,6 +65,8 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
           if (doc['name'] == _selectedWorkshop) {
             setState(() {
               _collectionName = doc['collection'];
+              role = doc["nitelik"];
+              print(role);
             });
             break;
           }
@@ -62,7 +76,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
       print("Koleksiyon adı alınırken hata oluştu: $e");
     }
   }
- 
+
   Stream<List<Map<String, dynamic>>> _getWorkshopData() async* {
     if (_collectionName != null) {
       yield* FirebaseFirestore.instance
@@ -72,7 +86,8 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     } else {
       yield [];
     }
-  } 
+  }
+
   Future<void> _refreshData() async {
     await _fetchCollectionName();
     setState(() {});
@@ -82,13 +97,13 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedWorkshop ?? 'Detaylar'),
+        title: Text(_selectedWorkshop ?? 'Detaylar',style: const TextStyle(fontSize: 15),),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: InkWell(
               onTap: () {
-                //  PDF oluşturma 
+                _generatePdf();
               },
               child: const Icon(Icons.picture_as_pdf),
             ),
@@ -96,14 +111,14 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
         ],
       ),
       body: Column(
-        children: [ 
+        children: [
           Row(
             children: [
               Expanded(
                 flex: 1,
                 child: DropdownSelector(
                   hintText: "Atölye seç",
-                  items: _workshops,  
+                  items: _workshops,
                   selectedValue: _selectedWorkshop,
                   icon: Icons.arrow_drop_down,
                   onChanged: (String? newValue) {
@@ -115,13 +130,15 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                 ),
               ),
             ],
-          ), 
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: searchController,
               onChanged: (value) {
-                searchQuery.value = value;
+                setState(() {
+                  searchQuery.value = value;
+                });
               },
               decoration: InputDecoration(
                 hintText: 'Ara',
@@ -133,7 +150,6 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               ),
             ),
           ),
-          // Verilerin listelendiği alan
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshData,
@@ -151,7 +167,7 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                   }
 
                   final filteredData = snapshot.data!
-                      .where((work) => work['name']
+                      .where((work) => work['urun']
                           .toString()
                           .toLowerCase()
                           .contains(searchQuery.value.toLowerCase()))
@@ -167,16 +183,15 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                         child: Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                20),  
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,  
-                              borderRadius: BorderRadius.circular(
-                                  20),  
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            padding: const EdgeInsets.only(left:16,right: 16,top: 16,bottom: 16),
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, top: 16, bottom: 16),
                             child: Row(
                               children: [
                                 Column(
@@ -199,14 +214,33 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${data['urun']}",
+                                      role == "Dokuma"
+                                          ? "Dokunmuş ${data['urun']}"
+                                          : role == "Boyama"
+                                              ? "Boyanmış ${data['urun']}"
+                                              : role == "Kesim"
+                                                  ? "Kesilmiş ${data['urun']}"
+                                                  : role == "Dikim"
+                                                      ? "Dikilmiş ${data['urun']}"
+                                                      : role == "Dolum"
+                                                          ? "Doldurulmuş ${data['urun']}"
+                                                          : role == "Paketleme"
+                                                              ? "${data['urun']}"
+                                                              : "${data['urun']}",
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black87,
                                       ),
                                     ),
-
+                                    if (data['denye'] != null)
+                                      Text(
+                                        "Denye: ${data['denye']}",
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
                                     const SizedBox(height: 5),
                                     if (data['gramaj'] != null)
                                       Text(
@@ -242,13 +276,12 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                                       ),
                                     if (data['aksesuar'] != null)
                                       Text(
-                                         "Aksesuar: ${data['aksesuar']}",
+                                        "Aksesuar: ${data['aksesuar']}",
                                         style: const TextStyle(
                                           fontSize: 13,
                                           color: Colors.black87,
                                         ),
                                       ),
-
                                     const SizedBox(height: 5),
                                     Text(
                                       'Miktar: ${data['miktar']?.toString() ?? '--'}',

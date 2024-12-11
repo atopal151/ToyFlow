@@ -12,17 +12,26 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
-  final searchQuery = ''.obs; 
+  final searchQuery = ''.obs;
+
   Stream<List<Map<String, dynamic>>> getDokumaStokData() {
     return FirebaseFirestore.instance.collection('dokuma_work').snapshots().map(
         (snapshot) => snapshot.docs
             .where((doc) => doc['miktar'] != 0)
-            .map((doc) => doc.data())
+            .map((doc) => {...doc.data(), 'id': doc.id})
             .toList());
   }
 
   Future<void> _refreshData() async {
     // Veri yenileme işlemleri burada yapılabilir
+  }
+
+  Future<void> _deleteStock(String docId) async {
+    try {
+      await FirebaseFirestore.instance.collection('dokuma_work').doc(docId).delete();
+    } catch (e) {
+      print("Stok silinirken hata oluştu: $e");
+    }
   }
 
   @override
@@ -166,6 +175,15 @@ class _StockScreenState extends State<StockScreen> {
                                 ),
                               ],
                             ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.blueGrey,
+                            ),
+                            onPressed: () {
+                              _deleteStock(work['id']);
+                            },
                           ),
                         ],
                       ),

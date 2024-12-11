@@ -151,7 +151,7 @@ class _MoverScreenState extends State<MoverScreen> {
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.only(left:20,right: 20,top:25),
                           decoration: BoxDecoration(
                             color: okunmadi
                                 ? const Color.fromARGB(255, 213, 210, 210)
@@ -161,7 +161,7 @@ class _MoverScreenState extends State<MoverScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(13),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
                                   shape: BoxShape.circle,
@@ -197,7 +197,7 @@ class _MoverScreenState extends State<MoverScreen> {
                                     ),
                                     child: const Icon(
                                         Icons.notifications_active,
-                                        color: Colors.grey,
+                                        color: Color.fromARGB(255, 198, 198, 198),
                                         size: 20),
                                   ),
                                   Text(

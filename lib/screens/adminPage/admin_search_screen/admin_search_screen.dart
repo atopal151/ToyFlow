@@ -97,22 +97,19 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Expanded(
-                flex: 1,
-                child: DropdownSelector(
-                  hintText: 'Depo seç',
-                  items: _depolar,
-                  selectedValue: _depoSelected,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _depoSelected = newValue;
-                      final collectionIndex = _depolar.indexOf(newValue!);
-                      final collectionName = _depoCollection[collectionIndex];
-                      fetchData(collectionName);
-                    });
-                  },
-                  icon: Icons.arrow_drop_down,
-                ),
+              DropdownSelector(
+                hintText: 'Depo seç',
+                items: _depolar,
+                selectedValue: _depoSelected,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _depoSelected = newValue;
+                    final collectionIndex = _depolar.indexOf(newValue!);
+                    final collectionName = _depoCollection[collectionIndex];
+                    fetchData(collectionName);
+                  });
+                },
+                icon: Icons.arrow_drop_down,
               ),
               const SizedBox(height: 10),
               Expanded(

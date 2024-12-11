@@ -621,6 +621,7 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
+
           // Ürün seçme dropdown
           if (productServices.role.value == "Dikim" ||
               productServices.role.value == "Kesim" ||
@@ -642,6 +643,7 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
           if (productServices.role.value == "Boyama" ||
               productServices.role.value == "Dokuma")
             DropdownSelector(
+              
               hintText: 'Kumaş',
               items: _stokKumaslar,
               selectedValue: _selectedStokKumaslar,

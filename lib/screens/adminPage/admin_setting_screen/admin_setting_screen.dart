@@ -6,9 +6,9 @@ import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
 import '../../../services/user_services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
-import '../new_storage_add/new_storage_add.dart';
+import '../new_storage_add/storage.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';
-import '../new_work_shop/work_shop_add.dart';
+import '../new_work_shop/work_shop.dart';
 import '../register_screen/register_screen.dart';
 import '../stock_screen/stok_screen.dart';
 
@@ -182,7 +182,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   title: const Text('Depo Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    Get.to(() => const StorageNewAdd());
+                    Get.to(() => const Storage());
                   },
                 ),
                ListTile(
@@ -201,7 +201,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   title: const Text('Atölye Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    Get.to(() => const WorkShopNewAdd());
+                    Get.to(() => const WorkShop());
                   },
                 ),
                

@@ -133,7 +133,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               children: [
                 Text(
                   "${productServices.firstName.value} ${productServices.lastName.value}",
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
                 ),
                 const Text(
                   "Yönetici",
@@ -156,12 +156,19 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               return Stack(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: InkWell(
-                      child: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
-                        size: 25,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.black87,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.notifications,
+                          color: Colors.white,
+                          size: 23,
+                        ),
                       ),
                       onTap: () {
                         Get.to(() => const MoverScreen());
@@ -170,8 +177,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   ),
                   if (unreadCount > 0)
                     Positioned(
-                      right: 10,
-                      top: 5,
+                      right: 8,
+                      top: 0,
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -207,25 +214,30 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 10),
               const Text(
                 "Depolar",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
               const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _depoName.length,
-                itemBuilder: (context, index) {
-                  return _buildDepoRow(
-                    _depoName[index],
-                    "------",
-                    _depoCollection[index],
-                  );
-                },
+              SizedBox(
+                height: 150, 
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _depoName.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildDepoRow(
+                        _depoName[index],
+                        "------",
+                        _depoCollection[index],
+                      ),
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 10),
               const Text(
                 "Atölyeler",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
               ),
               const SizedBox(height: 10),
               ListView.builder(
@@ -258,7 +270,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               Get.to(() => WorkDetailScreen(selectedWorkshop: name));
             },
             child: Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(15.0),
               margin:
                   const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
               decoration: BoxDecoration(
@@ -275,11 +287,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   image: const AssetImage("images/backgorund.webp"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                    Colors.white.withOpacity(0.4),
+                    Colors.white.withOpacity(0.2),
                     BlendMode.dstATop,
                   ),
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.2),
@@ -296,8 +308,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   Text(
                     name,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
                       color: Colors.white,
                     ),
                   ),
@@ -313,7 +325,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.transfer_within_a_station, size: 16),
+                        const Icon(Icons.transfer_within_a_station, size: 15),
                         const SizedBox(width: 4),
                         Text(
                           "+$dailyCount İşlem",
@@ -332,73 +344,76 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Widget _buildDepoRow(String roomName, String temperature, String collection) {
-    return InkWell(
-      onTap: () => Get.to(
-        TransferDetailScreen(title: roomName, collection: collection),
-      ),
-      child: Container(
-        height: 100,
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          image: const DecorationImage(
-            image: AssetImage('images/depo.webp'),
-            fit: BoxFit.cover,
+  return InkWell(
+    onTap: () => Get.to(
+      TransferDetailScreen(title: roomName, collection: collection),
+    ),
+    child: Container(
+      height: 100,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        image: const DecorationImage(
+          image: AssetImage('images/depo.webp'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black54,  
+            BlendMode.darken, 
           ),
         ),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.black.withOpacity(0.3),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    roomName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.refresh, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Koleksiyon: $collection',
-                              style: const TextStyle(fontSize: 10),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
-    );
-  }
-}
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.black.withOpacity(0.7),  
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  roomName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 4.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.refresh, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Koleksiyon: $collection',
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}}

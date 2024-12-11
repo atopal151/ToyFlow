@@ -23,7 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onTap: () {},
               child: Container(
                 decoration: const BoxDecoration(
-                      color: Colors.black,
+                      color: Colors.grey,
                   shape: BoxShape.circle,
                   
                 ),
@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       body: const Center(
-        child: Text("Chat Screen"),
+        child: Text(""),
       ),
     );
   }
