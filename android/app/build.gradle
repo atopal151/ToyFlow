@@ -64,6 +64,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+        implementation 'com.google.firebase:firebase-messaging:23.0.0' // En son sürüm
+}
 
 apply plugin: 'com.google.gms.google-services'
