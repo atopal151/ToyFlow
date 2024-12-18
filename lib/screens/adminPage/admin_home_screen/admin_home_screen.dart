@@ -156,7 +156,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               return Stack(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(13.0),
                     child: InkWell(
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -167,7 +167,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         child: const Icon(
                           Icons.notifications,
                           color: Colors.white,
-                          size: 23,
+                          size: 18,
                         ),
                       ),
                       onTap: () {

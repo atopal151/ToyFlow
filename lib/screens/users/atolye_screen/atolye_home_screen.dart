@@ -321,7 +321,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                       Row(
                                         children: [
                                           const Icon(
-                                            Icons.layers_sharp,
+                                            Icons.shopping_cart,
                                             color: Color.fromARGB(
                                                 255, 81, 124, 146),
                                             size: 16,
@@ -392,7 +392,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                               productServices.role.value ==
                                                   "Boyama") ...[
                                             const Icon(
-                                              Icons.grade,
+                                              Icons.scale,
                                               color: Color.fromARGB(
                                                   255, 225, 191, 66),
                                               size: 16,
@@ -405,14 +405,13 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                             ),
                                             const SizedBox(width: 4),
                                             const Icon(
-                                              Icons.fingerprint,
-                                              color: Color.fromARGB(
-                                                  255, 225, 191, 66),
+                                              Icons.linear_scale,
+                                              color: Color.fromARGB(255, 75, 172, 68),
                                               size: 16,
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
-                                              ' ${work['fine'] != null ? "${work['fine']}" : 'Bilinmiyor'}',
+                                              ' ${work['fine'] != null ? "${work['fine']} fine" : 'Bilinmiyor'}',
                                               style:
                                                   const TextStyle(fontSize: 12),
                                             ),

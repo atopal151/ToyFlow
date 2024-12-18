@@ -29,7 +29,6 @@ class _MyOrdersState extends State<MyOrders> {
   void initState() {
     super.initState();
     print(productServices.role.value);
-    print("buradayız");
   }
 
   Future<void> transferOrder(String orderId) async {
@@ -137,7 +136,10 @@ class _MyOrdersState extends State<MyOrders> {
                     color: Colors.white,
                     margin:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    elevation: 3,
+                    elevation: 3, // Elevation dört taraf için çalışır
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // Köşe yumuşatma
+                    ),
                     child: ListTile(
                       title: const Padding(
                         padding: EdgeInsets.only(bottom: 8.0),

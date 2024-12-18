@@ -98,7 +98,7 @@ class _MoverScreenState extends State<MoverScreen> {
               stream: FirebaseFirestore.instance
                   .collection('movers')
                   .where('atelye',
-                      isEqualTo: userRole == 'admin' ? null : userRole)
+                      isEqualTo: userRole == 'admin' ? null : userRole).limit(200)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

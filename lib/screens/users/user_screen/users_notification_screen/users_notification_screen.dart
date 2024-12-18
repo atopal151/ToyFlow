@@ -14,9 +14,10 @@ class _UsersNotificationScreenState extends State<UsersNotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Bildirimler"),
       ),
       body: const Center(
-        child: Text("Users Notificcation"),
+        child: Text(""),
       ),
     );
   }

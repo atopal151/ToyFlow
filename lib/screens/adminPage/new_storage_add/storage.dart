@@ -115,7 +115,7 @@ class _StorageState extends State<Storage> {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: const Icon(
-                            Icons.work,
+                            Icons.store,
                             color: Colors.blueGrey,
                             size: 28,
                           ),
@@ -129,7 +129,7 @@ class _StorageState extends State<Storage> {
                         ),
                         
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.grey),
+                          icon: const Icon(Icons.delete, color: Color.fromARGB(255, 187, 81, 73)),
                           onPressed: () {
                             _deleteStorage(storage.id);
                           },

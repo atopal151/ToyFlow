@@ -504,7 +504,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                         const SizedBox(height: 5),
                                         Row(
                                           children: [
-                                            const Icon(Icons.layers,
+                                            const Icon(Icons.shopping_cart,
                                                 color: Colors.blueGrey,
                                                 size: 16),
                                             const SizedBox(width: 4),

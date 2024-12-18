@@ -131,7 +131,7 @@ class _WorkShopState extends State<WorkShop> {
                         ),
                         
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.grey),
+                          icon: const Icon(Icons.delete, color: Color.fromARGB(255, 201, 74, 74)),
                           onPressed: () {
                             _deleteWorkshop(workshop.id);
                           },

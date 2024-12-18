@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyflow/screens/chat_screen/chat_screen.dart';
+//import 'package:toyflow/screens/chat_screen/chat_screen.dart';
 import 'package:toyflow/screens/users/user_screen/orders/coming_orders/coming_orders.dart';
 import 'package:toyflow/screens/users/user_screen/orders/my_orders/my_orders.dart';
 import 'package:toyflow/screens/users/user_screen/users_notification_screen/users_notification_screen.dart';
@@ -115,7 +115,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 119, 119, 118),
+                      color: Colors.blueGrey,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -138,7 +138,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 119, 119, 118),
+                      color: Colors.blueGrey,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -160,11 +160,11 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     ); 
                   },
                 ),
-                ListTile(
+               /* ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 119, 119, 118),
+                      color: Colors.blueGrey,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -182,12 +182,12 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                           builder: (context) => const ChatScreen()),
                     ); 
                   },
-                ),
+                ),*/
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 119, 119, 118),
+                      color: Colors.blueGrey,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -212,7 +212,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     leading: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 119, 119, 118),
+                      color: Colors.blueGrey,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(

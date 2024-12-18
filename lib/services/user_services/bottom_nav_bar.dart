@@ -1,7 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, file_names
 
 import 'package:flutter/material.dart';
-import 'package:toyflow/screens/chat_screen/chat_screen.dart';
+//import 'package:toyflow/screens/chat_screen/chat_screen.dart';
 
 import '../../screens/adminPage/admin_home_screen/admin_home_screen.dart';
 import '../../screens/adminPage/admin_search_screen/admin_search_screen.dart';
@@ -18,7 +18,7 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
   final List<Widget> _pages = [
     const AdminHomeScreen(),
     const AdminWorkShopScreen(),
-    const ChatScreen(),
+    //const ChatScreen(),
     const AdminSearchScreen(),
   ];
 
@@ -46,12 +46,12 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
               icon: _buildAnimatedIcon(Icons.cut_outlined, 1),
               label: '',
             ),
-            BottomNavigationBarItem(
+            /*BottomNavigationBarItem(
               icon: _buildAnimatedIcon(Icons.chat_bubble_outline, 2),
               label: '',
-            ),
+            ),*/
             BottomNavigationBarItem(
-              icon: _buildAnimatedIcon(Icons.search_outlined, 3),
+              icon: _buildAnimatedIcon(Icons.search_outlined, 2),//chats eklerken 3 yap
               label: '',
             ),
           ],

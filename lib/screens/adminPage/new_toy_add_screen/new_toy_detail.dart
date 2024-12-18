@@ -25,6 +25,14 @@ class _NewToyDetailState extends State<NewToyDetail> {
     'denye': "Denye",
     'kumas': "Kumaşlar",
   };
+@override
+void initState() {
+  super.initState();
+  // İlk tabloyu varsayılan olarak ata
+  selectedTableKey = tableNames.keys.first;
+  // Varsayılan tabloya ait verileri getir
+  fetchTableData(selectedTableKey!);
+}
 
   String? selectedTableKey; // Seçilen tablonun anahtarı (koleksiyon ismi)
   List<Map<String, dynamic>> currentData = [];

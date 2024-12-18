@@ -70,7 +70,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 185, 147, 123),
+                      color: Colors.blueGrey,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -94,7 +94,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 111, 178, 131),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -113,7 +113,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 79, 130, 218),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -132,7 +132,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 196, 137, 107),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -151,7 +151,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 178, 165, 82),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -170,7 +170,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 131, 156, 180),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -189,7 +189,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 117, 175, 203),
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
