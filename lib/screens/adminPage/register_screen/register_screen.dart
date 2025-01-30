@@ -32,7 +32,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'Dolum',
     'Paketleme',
     'Transfer',
-    'Depo'
+    'Depo',
+    'admin'
   ];
   final List<String> cins = ['Erkek', 'Kadın'];
 

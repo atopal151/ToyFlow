@@ -11,6 +11,7 @@ Future<void> addNewWorkShop({
     required String nitelik,
     required String name,
     required String collectionName,
+    required String collectionWait,
     required BuildContext context,
   }) async { 
     showDialog(
@@ -28,6 +29,7 @@ Future<void> addNewWorkShop({
         'nitelik': nitelik,
         'name':name,
         'collection':collectionName,
+        'collectionWait':collectionWait,
       });
  
       ScaffoldMessenger.of(context).showSnackBar(

@@ -8,6 +8,8 @@ import '../../../services/user_services/custom_app_bar.dart';
 import 'atolye_edit_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import 'atolye_services/atolye_services.dart';
+
 class AtolyeHomeScreen extends StatefulWidget {
   const AtolyeHomeScreen({super.key});
 
@@ -18,6 +20,8 @@ class AtolyeHomeScreen extends StatefulWidget {
 class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
   final ProductServices productServices = Get.find();
   final TextEditingController searchController = TextEditingController();
+
+  final AtolyeServices atolyeServices = AtolyeServices();
   RxString searchQuery = ''.obs;
 
   @override
@@ -406,7 +410,8 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                             const SizedBox(width: 4),
                                             const Icon(
                                               Icons.linear_scale,
-                                              color: Color.fromARGB(255, 75, 172, 68),
+                                              color: Color.fromARGB(
+                                                  255, 75, 172, 68),
                                               size: 16,
                                             ),
                                             const SizedBox(width: 4),
@@ -419,7 +424,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                         ],
                                       ),
                                       if (productServices.role.value ==
-                                              "Paketleme"||
+                                              "Paketleme" ||
                                           productServices.role.value ==
                                               "Transfer") ...[
                                         Row(
@@ -448,6 +453,54 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                     ],
                                   ),
                                 ),
+                                InkWell(
+                                  onTap: () async {
+                                    try {
+                                      // Firestore'dan ilgili koleksiyonu al
+                                      final collectionRef =
+                                          FirebaseFirestore.instance.collection(
+                                              atolyeServices.collectionName);
+
+                                      // Belgeyi belirlemek için bir query yaz
+                                      final querySnapshot = await collectionRef
+                                          .where('urun',
+                                              isEqualTo: work['urun'])
+                                          .where('tarih',
+                                              isEqualTo: work[
+                                                  'tarih']) // Belgeyi daha kesin belirlemek için ek kriter
+                                          .get();
+
+                                      if (querySnapshot.docs.isNotEmpty) {
+                                        // İlk belgeyi al ve sil
+                                        await querySnapshot.docs.first.reference
+                                            .delete();
+
+                                        // Kullanıcıya başarı mesajı göster
+                                        Get.snackbar('Başarılı',
+                                            'Ürün başarıyla silindi',
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: const Color.fromARGB(255, 80, 153, 82),
+                                            colorText: Colors.white);
+                                      } else {
+                                        Get.snackbar(
+                                            'Hata', 'Silinecek ürün bulunamadı',
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: const Color.fromARGB(255, 190, 96, 89),
+                                            colorText: Colors.white);
+                                      }
+                                    } catch (e) {
+                                      Get.snackbar(
+                                          'Hata', 'Silme işlemi başarısız: $e',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: const Color.fromARGB(255, 190, 96, 89),
+                                          colorText: Colors.white);
+                                    }
+                                  },
+                                  child: const Icon(Icons.delete_rounded,
+                                      color: Color.fromARGB(255, 187, 104, 98),
+                                      size: 30,),
+                                      
+                                )
                               ],
                             ),
                           ),

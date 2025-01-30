@@ -31,6 +31,31 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     _fetchCollectionName();
   }
 
+  String selectedFilter = 'Hazır Ürünler';
+
+  Widget _buildFilterDropdown() {
+    return DropdownButton<String>(
+      value: selectedFilter,
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedFilter = newValue!;
+          if (selectedFilter == 'Hazır Ürünler') {
+            _fetchCollectionName();
+          } else {
+            _fetchCollectionWait();
+          }
+        });
+      },
+      items: <String>['Hazır Ürünler', 'Bekleyen Ürünler']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+
   Future<void> _generatePdf() async {
     final snapshot = await _firestore
         .collection(_collectionName!)
@@ -77,6 +102,28 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     }
   }
 
+  Future<void> _fetchCollectionWait() async {
+    try {
+      if (_selectedWorkshop != null) {
+        QuerySnapshot snapshot =
+            await FirebaseFirestore.instance.collection('atolyeler').get();
+
+        for (var doc in snapshot.docs) {
+          if (doc['name'] == _selectedWorkshop) {
+            setState(() {
+              _collectionName = doc['collectionWait'];
+              role = doc["nitelik"];
+              print(role);
+            });
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      print("Koleksiyon adı alınırken hata oluştu: $e");
+    }
+  }
+
   Stream<List<Map<String, dynamic>>> _getWorkshopData() async* {
     if (_collectionName != null) {
       yield* FirebaseFirestore.instance
@@ -97,7 +144,10 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedWorkshop ?? 'Detaylar',style: const TextStyle(fontSize: 15),),
+        title: Text(
+          _selectedWorkshop ?? 'Detaylar',
+          style: const TextStyle(fontSize: 15),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
@@ -124,7 +174,11 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedWorkshop = newValue;
-                      _fetchCollectionName();
+                      if (selectedFilter == 'Hazır Ürünler') {
+                        _fetchCollectionName();
+                      } else {
+                        _fetchCollectionWait();
+                      }
                     });
                   },
                 ),
@@ -132,22 +186,33 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: searchController,
-              onChanged: (value) {
-                setState(() {
-                  searchQuery.value = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Ara',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(50),
-                  borderSide: BorderSide.none,
+            padding: const EdgeInsets.only(right:16.0,left:16),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _buildFilterDropdown(),
                 ),
-              ),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery.value = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Ara',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(

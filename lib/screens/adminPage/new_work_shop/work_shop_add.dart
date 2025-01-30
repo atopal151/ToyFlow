@@ -14,6 +14,7 @@ class WorkShopNewAdd extends StatefulWidget {
 class _WorkShopNewAddState extends State<WorkShopNewAdd> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _collection = TextEditingController();
+  final TextEditingController _collectionWait = TextEditingController();
   String? _nitelik;  
   String? _oncekiBirim;    
   String? _sonrakiBirim;  
@@ -38,11 +39,14 @@ class _WorkShopNewAddState extends State<WorkShopNewAdd> {
     String sonrakiBirim = _sonrakiBirim!;
     String collection = _collection.text;
 
-    if (name.isNotEmpty && nitelik.isNotEmpty && collection.isNotEmpty) {
+    String collectionWait = _collectionWait.text;
+
+    if (name.isNotEmpty && nitelik.isNotEmpty && collection.isNotEmpty && collectionWait.isNotEmpty) {
       _workShopServices.addNewWorkShop(
         name: name,
         nitelik: nitelik,
         collectionName: collection,
+        collectionWait: collectionWait,
         context: context,
       );
     } else {
@@ -113,7 +117,7 @@ class _WorkShopNewAddState extends State<WorkShopNewAdd> {
                 Expanded(
                   child: TextFieldWithRegister(
                     controller: _collection,
-                    hintText: 'Veritabanı Tablo İsmi',
+                    hintText: 'Hazır Stok Veritabanı Tablo İsmi',
                     icon: Icons.style,
                   ),
                 ),
@@ -125,6 +129,28 @@ class _WorkShopNewAddState extends State<WorkShopNewAdd> {
                   padding: EdgeInsets.only(left: 30.0, top: 5),
                   child: Text(
                     "örn: fabrika_dikim_atolyesi",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              ],
+            ),
+             Row(
+              children: [
+                Expanded(
+                  child: TextFieldWithRegister(
+                    controller: _collectionWait,
+                    hintText: 'Gelen Ürün Veritabanı Tablo İsmi',
+                    icon: Icons.style,
+                  ),
+                ),
+              ],
+            ),
+            const Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 30.0, top: 5),
+                  child: Text(
+                    "örn: fabrika_dikim_atolyesi_bekleyen",
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
