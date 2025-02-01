@@ -200,94 +200,8 @@ class _MyOrdersState extends State<MyOrders> {
                               icon: const Icon(Icons.transfer_within_a_station,
                                   color: Color.fromARGB(255, 241, 126, 38)),
                               onPressed: () {
-                                print(orderData['iplik']);
-
-                                print(orderData['denye']);
-                                if (productServices.role.value == "Dokuma") {
-                                  stockService.saveStock(
-                                    context: context,
-                                    urun: orderData['iplik'],
-                                    denye: orderData['denye'],
-                                    miktar: int.tryParse(
-                                            orderData['miktar'].toString()) ??
-                                        0,
-                                  );
-                                }
-                                if (productServices.role.value == "Boyama") {
-                                  atolyeServices.addOrUpdateUrunStock(
-                                    collections: atolyeServices.collectionWait,
-                                    context: context,
-                                    urun: orderData['kumas'],
-                                    gramaj: orderData['gramaj'],
-                                    fine: orderData['fine'],
-                                    miktar: int.tryParse(
-                                            orderData['miktar'].toString()) ??
-                                        0,
-                                  );
-                                }
-
-                                if (productServices.role.value == "Kesim") {
-                                  atolyeServices.addOrUpdateUrunStock(
-
-                                    collections: atolyeServices.collectionWait,
-                                      context: context,
-                                      urun: orderData['kumas'],
-                                      gramaj: orderData['gramaj'],
-                                      fine: orderData['fine'],
-                                      miktar: int.tryParse(
-                                              orderData['miktar'].toString()) ??
-                                          0,
-                                      renk: orderData['renk']);
-                                }
-                                if (productServices.role.value == "Dikim") {
-                                  atolyeServices.addOrUpdateUrunStock(
-
-                                    collections: atolyeServices.collectionWait,
-                                      context: context,
-                                      urun: orderData['urun'],
-                                      miktar: int.tryParse(
-                                              orderData['miktar'].toString()) ??
-                                          0,
-                                      boyut: orderData['boyut'],
-                                      renk: orderData['renk']);
-                                }
-                                if (productServices.role.value == "Dolum") {
-                                  atolyeServices.addOrUpdateUrunStock(
-                                    collections: atolyeServices.collectionWait,
-                                      context: context,
-                                      urun: orderData['urun'],
-                                      miktar: int.tryParse(
-                                              orderData['miktar'].toString()) ??
-                                          0,
-                                      boyut: orderData['boyut'],
-                                      renk: orderData['renk']);
-                                }
-                                if (productServices.role.value == "Paketleme") {
-                                  atolyeServices.addOrUpdateUrunStock(
-                                    collections: atolyeServices.collectionWait,
-                                      context: context,
-                                      urun: orderData['urun'],
-                                      miktar: int.tryParse(
-                                              orderData['miktar'].toString()) ??
-                                          0,
-                                      boyut: orderData['boyut'],
-                                      renk: orderData['renk']);
-                                }
-                                if (productServices.role.value == "Transfer") {
-                                  atolyeServices.addOrUpdateUrunStock(
-                                    collections: atolyeServices.collectionWait,
-                                      context: context,
-                                      urun: orderData['urun'],
-                                      miktar: int.tryParse(
-                                              orderData['miktar'].toString()) ??
-                                          0,
-                                      boyut: orderData['boyut'],
-                                      aksesuar: orderData['aksesuar'],
-                                      renk: orderData['renk']);
-                                  showAlertDialog(context,
-                                      "Sipariş Onaylandı Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
-                                }
-                                transferOrder(order.id);
+                                showAmountInputDialog(
+                                    context, order.id, orderData);
                               },
                             ),
                         ],
@@ -301,5 +215,161 @@ class _MyOrdersState extends State<MyOrders> {
         },
       ),
     );
+  }
+Future<void> showAmountInputDialog(BuildContext context, String orderId, Map<String, dynamic> orderData) async {
+  TextEditingController amountController = TextEditingController();
+
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          "Miktar Girin",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: amountController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Miktar",
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.pie_chart, color: Colors.black),
+                    onPressed: () {
+                      // Burada ikonun ekstra bir işlevi olacaksa ekleyebilirsin.
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                int miktar = int.tryParse(amountController.text) ?? 0;
+                if (miktar > 0) {
+                  transferOrderWithAmount(orderId, orderData, miktar);
+                  Navigator.of(context).pop();
+                } else {
+                  showAlertDialog(context, "Lütfen geçerli bir miktar girin.");
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              child: const Text("Tamam", style: TextStyle(fontSize: 16)),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+  Future<void> transferOrderWithAmount(
+      String orderId, Map<String, dynamic> orderData, int miktar) async {
+    try {
+      if (productServices.role.value == "Dokuma") {
+        stockService.saveStock(
+          context: context,
+          urun: orderData['iplik'],
+          denye: orderData['denye'],
+          miktar: miktar,
+        );
+      }
+      if (productServices.role.value == "Boyama") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['kumas'],
+          gramaj: orderData['gramaj'],
+          fine: orderData['fine'],
+          miktar: miktar,
+        );
+      }
+      if (productServices.role.value == "Kesim") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['kumas'],
+          gramaj: orderData['gramaj'],
+          fine: orderData['fine'],
+          miktar: miktar,
+          renk: orderData['renk'],
+        );
+      }
+      if (productServices.role.value == "Dikim") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['urun'],
+          miktar: miktar,
+          boyut: orderData['boyut'],
+          renk: orderData['renk'],
+        );
+      }
+      if (productServices.role.value == "Dolum") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['urun'],
+          miktar: miktar,
+          boyut: orderData['boyut'],
+          renk: orderData['renk'],
+        );
+      }
+      if (productServices.role.value == "Paketleme") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['urun'],
+          miktar: miktar,
+          boyut: orderData['boyut'],
+          renk: orderData['renk'],
+        );
+      }
+      if (productServices.role.value == "Transfer") {
+        atolyeServices.addOrUpdateUrunStock(
+          collections: atolyeServices.collectionWait,
+          context: context,
+          urun: orderData['urun'],
+          miktar: miktar,
+          boyut: orderData['boyut'],
+          aksesuar: orderData['aksesuar'],
+          renk: orderData['renk'],
+        );
+        showAlertDialog(context,
+            "Sipariş Onaylandı. Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
+      }
+
+      // Siparişi Firestore'dan sil
+      await transferOrder(orderId);
+    } catch (e) {
+      showAlertDialog(context, "Hata: $e");
+    }
   }
 }

@@ -23,29 +23,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
     // 3 saniye bekledikten sonra yönlendirme işlemi
     Timer(const Duration(seconds: 1), () async {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         String role = await _authService.getUserRole(user.uid);
-        print(role);
-        if (role == 'admin') {
-          Get.offAll(() => BottomNavBarWithPages());
-        } else if (role == 'Dikim') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Dokuma') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Boyama') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Dolum') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Kesim') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Paketleme') {
-          Get.offAll(() => const AtolyeHomeScreen());
-        } else if (role == 'Transfer') {
-          Get.offAll(() => const TransferScreen());
+
+        print(_authService.getUserRole(user.uid));
+        if (role=="user") {
+          _authService.logout();
+            Get.offAll(() => const LoginScreen());
+        } else {
+          print(role);
+          if (role == 'admin') {
+            Get.offAll(() => BottomNavBarWithPages());
+          } else if (role == 'Dikim') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Dokuma') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Boyama') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Dolum') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Kesim') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Paketleme') {
+            Get.offAll(() => const AtolyeHomeScreen());
+          } else if (role == 'Transfer') {
+            Get.offAll(() => const TransferScreen());
+          }
         }
       } else {
         Get.offAll(() => const LoginScreen());

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
+import 'package:toyflow/screens/adminPage/register_screen/user_info.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
 import '../../../services/user_services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
@@ -106,7 +107,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   title: const Text('Kullanıcı Ekle'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    Get.to(() => const RegisterScreen());
+                    Get.to(() => const UserInfo());
                   },
                 ),
                 ListTile(

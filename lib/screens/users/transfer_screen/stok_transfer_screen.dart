@@ -17,42 +17,42 @@ class StokTransfer extends StatefulWidget {
 
 class _StokTransferState extends State<StokTransfer> {
   final TransferServices _transferServices = TransferServices();
-  final DataTableService _dataTableService =
-      DataTableService();  
- 
+  final DataTableService _dataTableService = DataTableService();
+
   final TextEditingController _miktarController = TextEditingController();
-  String? _selectedMalzeme;  
-  String? _selectedRenk;  
-  String? _selectedBoyut;  
-  String? _selectedAksesuar;  
+  String? _selectedMalzeme;
+  String? _selectedRenk;
+  String? _selectedBoyut;
+  String? _selectedAksesuar;
 
-  List<String> _urunler = [];  
-  List<String> _renkler = [];  
-  List<String> _boyutlar = [];  
-  List<String> _aksesuarlar = [];  
+  List<String> _urunler = [];
+  List<String> _renkler = [];
+  List<String> _boyutlar = [];
+  List<String> _aksesuarlar = [];
 
-  String? _selectedDepo;  
-  String? _selectedGetDepo; 
+  String? _selectedDepo;
+  String? _selectedGetDepo;
   List<String> _depolar = [];
 
-  int miktar = 0; 
+  int miktar = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();  
+    _fetchData();
     _fetchDepolar();
-  } 
+  }
+
   Future<void> _fetchDepolar() async {
     final List<String> depolar =
         await _dataTableService.getCollectionData('depolar', 'title');
     setState(() {
-      _depolar = depolar;  
+      _depolar = depolar;
     });
   }
- 
+
   Future<void> _fetchData() async {
-    try { 
+    try {
       String collectionPath =
           await _transferServices.getDepoCollection(_selectedDepo ?? '');
       QuerySnapshot snapshot =
@@ -69,7 +69,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Veriler alınırken hata oluştu: $e");
     }
   }
- 
+
   Future<void> _fetchColors(String selectedMalzeme) async {
     try {
       String collectionPath =
@@ -90,7 +90,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Renk verileri alınırken hata oluştu: $e");
     }
   }
- 
+
   Future<void> _fetchBoyut(String selectedMalzeme, String selectedRenk) async {
     try {
       String collectionPath =
@@ -112,7 +112,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Boyut verileri alınırken hata oluştu: $e");
     }
   }
- 
+
   Future<void> _fetchAksesuar(
       String selectedMalzeme, String selectedRenk, String selectedBoyut) async {
     try {
@@ -136,7 +136,7 @@ class _StokTransferState extends State<StokTransfer> {
       print("Aksesuar verileri alınırken hata oluştu: $e");
     }
   }
- 
+
   Future<void> _fetchMiktar(String selectedIplik, String selectedRenk,
       String selectedBoyut, String selectedAksesuar) async {
     try {
@@ -184,7 +184,7 @@ class _StokTransferState extends State<StokTransfer> {
                   _boyutlar.clear();
                   _aksesuarlar.clear();
                   _selectedDepo = newValue;
-                  _fetchData();  
+                  _fetchData();
                 });
               },
               icon: Icons.fire_truck,

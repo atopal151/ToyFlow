@@ -93,8 +93,7 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
           await fetchAtolyelerWithOncekiAndGetCollection(atolyeler.first) ?? "";
     }*/
 
-    collectionWait=_atolyeServices.collectionWait;
-    
+    collectionWait = _atolyeServices.collectionWait;
 
     await Future.wait([
       if (collectionWait!.isNotEmpty) _fetchUrun(collectionWait!),
@@ -620,7 +619,6 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-
           // Ürün seçme dropdown
           if (productServices.role.value == "Dikim" ||
               productServices.role.value == "Kesim" ||
@@ -642,7 +640,6 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
           if (productServices.role.value == "Boyama" ||
               productServices.role.value == "Dokuma")
             DropdownSelector(
-              
               hintText: 'Kumaş',
               items: _stokKumaslar,
               selectedValue: _selectedStokKumaslar,
@@ -860,7 +857,6 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
       child: Column(
         children: [
           // atolye seçme dropdown
-         
 
           // Ürün seçme dropdown
           DropdownSelector(
@@ -908,8 +904,8 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
                   _selectedDusumDenye = newValue;
                   // Seçilen renge göre boyutları getir
                   if (_selectedDusumDenye != null) {
-                    _fetchDenyeWithMiktar(collectionWait!, _selectedDusumMalzeme!,
-                        _selectedDusumDenye!);
+                    _fetchDenyeWithMiktar(collectionWait!,
+                        _selectedDusumMalzeme!, _selectedDusumDenye!);
                   }
                 });
               },
@@ -956,8 +952,11 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
 
                   if (_selectedDusumFine != null) {
                     if (productServices.role.value == "Boyama") {
-                      _fetchFineWithMiktar(collectionWait!, _selectedDusumMalzeme!,
-                          _selectedDusumGramaj!, _selectedDusumFine!);
+                      _fetchFineWithMiktar(
+                          collectionWait!,
+                          _selectedDusumMalzeme!,
+                          _selectedDusumGramaj!,
+                          _selectedDusumFine!);
                     }
                     if (productServices.role.value == "Kesim") {
                       _fetchKesimRenk(collectionWait!, _selectedDusumMalzeme!,
@@ -1021,8 +1020,11 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
                   if (_selectedDusumMalzeme != null &&
                       _selectedDusumRenk != null &&
                       _selectedDusumBoyut != null) {
-                    _fetchBoyutWithMiktar(collectionWait!, _selectedDusumMalzeme!,
-                        _selectedDusumRenk!, _selectedDusumBoyut!);
+                    _fetchBoyutWithMiktar(
+                        collectionWait!,
+                        _selectedDusumMalzeme!,
+                        _selectedDusumRenk!,
+                        _selectedDusumBoyut!);
                   }
                 });
               },
@@ -1165,8 +1167,6 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          
-
           // Ürün seçme dropdown
           DropdownSelector(
             hintText: 'Fire Ürün',
@@ -1174,7 +1174,7 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
             selectedValue: _selectedDusumFireMalzeme,
             onChanged: (String? newValue) {
               setState(() {
-                _selectedDusumFireMalzeme = newValue; 
+                _selectedDusumFireMalzeme = newValue;
                 _selectedDusumFireDenye = null;
                 _selectedDusumFireGramaj = null;
                 _selectedDusumFireFine = null;
@@ -1268,8 +1268,11 @@ class _AtolyeEditScreenState extends State<AtolyeEditScreen> {
                           _selectedDusumFireFine!);
                     }
                     if (productServices.role.value == "Kesim") {
-                      _fetchKesimRenk(collectionWait!, _selectedDusumFireMalzeme!,
-                          _selectedDusumFireGramaj!, _selectedDusumFireFine!);
+                      _fetchKesimRenk(
+                          collectionWait!,
+                          _selectedDusumFireMalzeme!,
+                          _selectedDusumFireGramaj!,
+                          _selectedDusumFireFine!);
                     }
                   }
                 });

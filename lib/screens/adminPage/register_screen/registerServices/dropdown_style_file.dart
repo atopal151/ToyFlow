@@ -36,7 +36,7 @@ class DropdownRegisterSelector extends StatelessWidget {
         ),
         child: DropdownButtonFormField<String>(
           value: selectedValue,
-          hint: Text(hintText, style: TextStyle(color: Colors.grey[700])),
+          hint: Text(hintText, style: TextStyle(color: Colors.grey[700],fontSize: 12)),
           items: items.map((String item) {
             return DropdownMenuItem<String>(
               value: item,

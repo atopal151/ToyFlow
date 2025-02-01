@@ -1,4 +1,3 @@
-
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,7 +15,7 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   User? get currentUser => _auth.currentUser;
- Future<void> login({
+  Future<void> login({
     required String email,
     required String password,
     required BuildContext context,
@@ -27,7 +26,7 @@ class AuthService {
         password: password,
       );
 
-      final ProductServices productServices = Get.find(); 
+      final ProductServices productServices = Get.find();
       productServices.userEmail.value =
           userCredential.user?.email ?? 'Email bulunamadı';
 
@@ -72,12 +71,16 @@ class AuthService {
               destination = const TransferScreen();
               break;
             default:
+              logout();
               destination = const LoginScreen();
               break;
           }
 
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => destination));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Bu kullanıcı bulunamadı")));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +91,6 @@ class AuthService {
           content: Text("Giriş Yapılamadı kullanıcı adı veya şifre hatalı!")));
     }
   }
-
 
   Future<User?> createUser(String email, String password, String firstName,
       String lastName, String role, String workshop, String gender) async {
@@ -121,12 +123,12 @@ class AuthService {
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
         Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-        return data?['role'] ?? 'user';  
+        return data?['role'] ?? 'user';
       }
-      return 'user';  
+      return 'user';
     } catch (e) {
       print("Rol alınırken hata: $e");
-      return 'user';  
+      return 'user';
     }
   }
 
@@ -147,10 +149,9 @@ class AuthService {
 
   Future<void> logout() async {
     try {
-      await _auth.signOut();  
-      print("Oturum kapatıldı."); 
-      Get.offAll(() =>
-          const LoginScreen());  
+      await _auth.signOut();
+      print("Oturum kapatıldı.");
+      Get.offAll(() => const LoginScreen());
     } catch (e) {
       print("Oturum kapatma hatası: $e");
     }
