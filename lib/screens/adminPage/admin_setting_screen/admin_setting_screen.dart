@@ -5,12 +5,12 @@ import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/screens/adminPage/register_screen/user_info.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../services/user_services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
 import '../new_storage_add/storage.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';
 import '../new_work_shop/work_shop.dart';
-import '../register_screen/register_screen.dart';
 import '../stock_screen/stok_screen.dart';
 
 class AdminSettingScreen extends StatefulWidget {
@@ -23,6 +23,20 @@ class AdminSettingScreen extends StatefulWidget {
 class _AdminSettingScreenState extends State<AdminSettingScreen> {
   final ProductServices _productServices = Get.find();
   final AuthService _authService = Get.find();
+
+  final String privacyPolicyUrl =
+      "https://alaettintopal.godaddysites.com/gizlilik-politikasi"; // Buraya kendi gizlilik politikası URL'ni koy
+
+  void _launchURL(String url) async {
+  Uri uri = Uri.parse(url); // URL'yi doğru formatta parse et
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    debugPrint('Bağlantı açılamıyor: $url');
+    throw 'Bağlantı açılamıyor: $url';
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +67,9 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _launchURL(privacyPolicyUrl);
+            },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Colors.black,
@@ -61,7 +77,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Profili Düzenle'),
+            child: const Text('Gizlilik Politikası'),
           ),
           const SizedBox(height: 20),
           Expanded(
@@ -90,7 +106,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                     );
                   },
                 ),
-                
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(10),
@@ -186,7 +201,7 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                     Get.to(() => const Storage());
                   },
                 ),
-               ListTile(
+                ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
@@ -205,7 +220,6 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                     Get.to(() => const WorkShop());
                   },
                 ),
-               
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(10),

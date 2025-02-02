@@ -1,14 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-//import 'package:toyflow/screens/chat_screen/chat_screen.dart';
 import 'package:toyflow/screens/users/user_screen/orders/coming_orders/coming_orders.dart';
 import 'package:toyflow/screens/users/user_screen/orders/my_orders/my_orders.dart';
 import 'package:toyflow/screens/users/user_screen/users_notification_screen/users_notification_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../services/user_services/auth_service.dart';
 import '../../../../services/user_services/product_services.dart';
 import '../users_work_screen/users_work_screen.dart';
 import '../waste/waste_flow.dart';
+
 
 class UsersProfileScreen extends StatefulWidget {
   final String profileImagePath;
@@ -24,6 +25,9 @@ class UsersProfileScreen extends StatefulWidget {
 class _UsersProfileScreenState extends State<UsersProfileScreen> {
   final ProductServices _productService = Get.find();
 
+  final String privacyPolicyUrl =
+      "https://alaettintopal.godaddysites.com/gizlilik-politikasi"; // Buraya kendi gizlilik politikası URL'ni koy
+
   final AuthService authService = Get.find<AuthService>();
 
   String? _userRole;
@@ -32,13 +36,25 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUserRole();  
+    _fetchUserRole();
   }
+
+void _launchURL(String url) async {
+  Uri uri = Uri.parse(url); // URL'yi doğru formatta parse et
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    debugPrint('Bağlantı açılamıyor: $url');
+    throw 'Bağlantı açılamıyor: $url';
+  }
+}
+
 
   Future<void> _fetchUserRole() async {
     if (user != null) {
       _userRole = await authService.getUserRole(user!.uid);
-      setState(() {});  
+      setState(() {});
     }
   }
 
@@ -53,14 +69,13 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
           style: TextStyle(color: Colors.black, fontSize: 20),
         ),
         centerTitle: true,
-      ),
+      ), 
       body: Column(
         children: [
-          const SizedBox(height: 20), 
+          const SizedBox(height: 20),
           CircleAvatar(
             radius: 40,
-            backgroundImage:
-                AssetImage(widget.profileImagePath),  
+            backgroundImage: AssetImage(widget.profileImagePath),
           ),
           const SizedBox(height: 10),
           Text(
@@ -73,7 +88,9 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _launchURL(privacyPolicyUrl);
+            },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Colors.black,
@@ -81,36 +98,36 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Profili Düzenle'),
+            child: const Text('Gizlik Politikası'),
           ),
-          const SizedBox(height: 30), 
+          const SizedBox(height: 30),
           Expanded(
             child: ListView(
               children: [
-                if(_productService.role.value!="Transfer")
-                ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 185, 147, 123),
-                      shape: BoxShape.circle,
+                if (_productService.role.value != "Transfer")
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 185, 147, 123),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.hourglass_bottom,
+                        color: Colors.white,
+                        size: 16,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.hourglass_bottom,
-                      color: Colors.white,
-                      size: 16,
-                    ),
+                    title: const Text('Gelen Siparişler'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ComingOrders()),
+                      );
+                    },
                   ),
-                  title: const Text('Gelen Siparişler'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ComingOrders()),
-                    ); 
-                  },
-                ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
@@ -129,9 +146,8 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const MyOrders()),
-                    ); 
+                      MaterialPageRoute(builder: (context) => const MyOrders()),
+                    );
                   },
                 ),
                 ListTile(
@@ -157,32 +173,9 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       MaterialPageRoute(
                         builder: (context) => const UsersWorkScreen(),
                       ),
-                    ); 
+                    );
                   },
                 ),
-               /* ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Colors.blueGrey,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.chat_bubble,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                  title: const Text('Sohbetler'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ChatScreen()),
-                    ); 
-                  },
-                ),*/
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
@@ -204,7 +197,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                       MaterialPageRoute(
                           builder: (context) =>
                               const UsersNotificationScreen()),
-                    ); 
+                    );
                   },
                 ),
                 if (_userRole != null && _userRole != "Transfer")
@@ -212,7 +205,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                     leading: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                      color: Colors.blueGrey,
+                        color: Colors.blueGrey,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -228,7 +221,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const FireTakip()),
-                      ); 
+                      );
                     },
                   ),
                 ListTile(

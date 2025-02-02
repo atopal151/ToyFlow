@@ -41,27 +41,29 @@ dependencies:
   #firebase
   firebase_auth: ^5.3.1
   firebase_analytics: ^11.3.3
-  firebase_storage: ^12.3.4
+  firebase_storage: ^12.4.1
   #UI/UX
   flutter_spinkit: ^5.2.1
   lottie: ^3.1.3
-  flutter_slidable: ^3.1.1
+  flutter_slidable: ^4.0.0
   #Form VAlidasyonu için
   form_field_validator: ^1.1.0
   #Bildirimler
   firebase_messaging: ^15.1.6
-  flutter_local_notifications: ^17.2.3
+  flutter_local_notifications: ^18.0.1
   #Görsel
   cached_network_image: ^3.4.1
   firebase_core: ^3.6.0
   get: ^4.6.6
   intl: ^0.19.0
-  fl_chart: ^0.69.0
+  fl_chart: ^0.70.2
   pdf: ^3.11.1
   printing: ^5.13.4
   permission_handler: ^11.3.1
   timeago: ^3.7.0
   flutter_launcher_icons: ^0.14.2
+  flutter_native_splash: ^2.4.4
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +73,18 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
+
+
+flutter_native_splash:
+  color: "#ffffff"  # Açılış ekranı arka plan rengi
+  image: assets/app_icon.png  # Kullanılacak logo
+  android: true
+  ios: true
+  fullscreen: true
+  android_gravity: center  # Android için ortalama
+  ios_content_mode: center  # iOS için küçültme ayarı
+
 
 flutter_icons:
   android: true

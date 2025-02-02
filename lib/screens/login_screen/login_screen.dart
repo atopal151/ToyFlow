@@ -11,10 +11,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authServices = AuthService();  
+  final AuthService _authServices = AuthService();
   String email = '';
   String password = '';
   bool isLoading = false;
+  bool isPasswordVisible = false;
 
   Future<void> _login() async {
     setState(() {
@@ -34,14 +35,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( 
+    return Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 1), 
+              const Spacer(flex: 1),
               Column(
                 children: [
                   Image.asset(
@@ -60,24 +61,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Hoşgeldin',
                     style: TextStyle(
                       fontSize: 28,
-                     color: Colors.black,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
                 ],
               ),
-              const Spacer(flex: 1), 
+              const Spacer(flex: 1),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,  
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.3),
                       spreadRadius: 2,
                       blurRadius: 8,
-                      offset: const Offset(0, 8),  
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 ),
@@ -111,15 +111,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(
                           left: 10, right: 10, bottom: 20),
                       child: TextField(
-                        obscureText: true,
+                        obscureText: !isPasswordVisible,
                         decoration: InputDecoration(
                           hintText: 'Şifre',
                           filled: true,
                           fillColor: Colors.grey[100],
                           prefixIcon:
                               const Icon(Icons.lock, color: Colors.grey),
-                          suffixIcon:
-                              const Icon(Icons.visibility, color: Colors.grey),
+                          suffixIcon: InkWell(
+                            onTap: (){
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              isPasswordVisible
+                                  ? Icons.visibility // Açık ise göz simgesi
+                                  : Icons
+                                      .visibility_off, // Kapalı ise göz kapalı simgesi
+                              color: Colors.grey,
+                            ),
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
                             borderSide: BorderSide.none,
@@ -138,8 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: isLoading ? null : _login,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                               Colors.black,
+                          backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -158,11 +169,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                       ),
                     ),
-                    
                   ],
                 ),
               ),
-              const Spacer(flex: 2), 
+              const Spacer(flex: 2),
               const Text(
                 "Özgüner Oyuncak",
                 style: TextStyle(

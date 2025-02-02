@@ -5,7 +5,6 @@ import 'package:toyflow/screens/adminPage/register_screen/register_screen.dart';
 
 import '../../../services/user_component/cutom_loading_button.dart';
 import 'registerServices/dropdown_style_file.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 
 
@@ -18,7 +17,6 @@ class UserInfo extends StatefulWidget {
 
 class _UserInfoState extends State<UserInfo> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   String? _selectedRole;
   String? _selectedWorkshop;
   bool _isActive = true;
@@ -114,7 +112,7 @@ Future<bool?> _showConfirmDialog(BuildContext context) async {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
