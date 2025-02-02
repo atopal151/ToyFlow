@@ -215,11 +215,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 10),
               const Text(
                 "Depolar",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               SizedBox(
-                height: 150, 
+                height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _depoName.length,
@@ -238,13 +238,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 10),
               const Text(
                 "Atölyeler",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+              GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // 2 sütunlu grid
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 1, // Kartın en-boy oranını ayarla
+                ),
                 itemCount: _atolyeList.length,
+                shrinkWrap: true, // Scroll içinde kullanım için
+                physics:
+                    const NeverScrollableScrollPhysics(), // Parent scroll kontrolü sağlar
                 itemBuilder: (context, index) {
                   final atolye = _atolyeList[index];
                   final dailyCount = _atolyeDailyCounts[index];
@@ -277,18 +284,18 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    Color.fromARGB(255, 2, 2, 2),
-                    Color.fromARGB(255, 75, 75, 75),
-                    Color.fromARGB(255, 205, 199, 199),
+                    Color.fromARGB(255, 0, 0, 0),
+                    Color.fromARGB(255, 0, 0, 0),
+                    Color.fromARGB(255, 74, 74, 74),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 image: DecorationImage(
-                  image: const AssetImage("images/backgorund.webp"),
+                  image: const AssetImage("images/atolyearkaplan.webp"),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                    Colors.white.withOpacity(0.2),
+                    Colors.white.withOpacity(0.5),
                     BlendMode.dstATop,
                   ),
                 ),
@@ -303,14 +310,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ],
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     name,
                     style: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
@@ -329,7 +336,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                         const Icon(Icons.transfer_within_a_station, size: 15),
                         const SizedBox(width: 4),
                         Text(
-                          "+$dailyCount İşlem",
+                          "+$dailyCount adet",
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],
@@ -345,76 +352,78 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   }
 
   Widget _buildDepoRow(String roomName, String temperature, String collection) {
-  return InkWell(
-    onTap: () => Get.to(
-      TransferDetailScreen(title: roomName, collection: collection),
-    ),
-    child: Container(
-      height: 100,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: const DecorationImage(
-          image: AssetImage('images/depo.webp'),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black54,  
-            BlendMode.darken, 
+    return InkWell(
+      onTap: () => Get.to(
+        TransferDetailScreen(title: roomName, collection: collection),
+      ),
+      child: Container(
+        height: 200,
+        width: 300,
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          image: const DecorationImage(
+            image: AssetImage('images/depo.webp'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black54,
+              BlendMode.darken,
+            ),
           ),
         ),
-      ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.black.withOpacity(0.7),  
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.black.withOpacity(0.1),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  roomName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.refresh, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Koleksiyon: $collection',
-                            style: const TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    roomName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.refresh, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Koleksiyon: $collection',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}}
+    );
+  }
+}

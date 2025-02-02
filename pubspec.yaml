@@ -126,6 +126,8 @@ flutter:
    - images/peluskumas.webp
    - images/toy.webp
    - images/backgorund.webp
+   - images/atolyearkaplan.webp
+
    - assets/app_icon.png
    - assets/app_icon_foreground.png
    - assets/fonts/Roboto-Regular.ttf
