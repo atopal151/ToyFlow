@@ -5,6 +5,7 @@ import 'package:toyflow/screens/adminPage/admin_setting_screen/admin_setting_scr
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/screens/users/transfer_screen/transfer_detail_screen.dart';
 import 'package:toyflow/services/user_services/get_data_table.dart';
+import '../../../services/user_services/firestore_service.dart';
 import '../../../services/user_services/product_services.dart';
 import '../admin_work_shop_screen/work_detail_screen/work_detail_screen.dart';
 import 'adminhome_services/admin_home_services.dart';
@@ -19,7 +20,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
   final AdminHomeService adminHomeService = AdminHomeService();
   final DataTableService _dataTableService = DataTableService();
-
+  
   List<Map<String, dynamic>> _atolyeList = [];
   List<int> _atolyeDailyCounts = [];
   List<String> _depoName = [];
@@ -46,7 +47,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('atolyeler')
-          .orderBy("nitelik")
+          .orderBy("name")
           .get();
       List<Map<String, dynamic>> fetchedAtolyeler =
           querySnapshot.docs.map((doc) {
@@ -212,6 +213,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              
+              
+              const SizedBox(height: 10),
+              GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 1, //  sütunlu grid
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 1.6, // Kartın en-boy oranını ayarla
+                ),
+                itemCount: _atolyeList.length,
+                shrinkWrap: true, // Scroll içinde kullanım için
+                physics:
+                    const NeverScrollableScrollPhysics(), // Parent scroll kontrolü sağlar
+                itemBuilder: (context, index) {
+                  final atolye = _atolyeList[index];
+                  final dailyCount = _atolyeDailyCounts[index];
+                  return _buildAtolyeRow(
+                      atolye['name'], dailyCount,atolye['collection']); // Burada kullanıyoruz
+                },
+              ),
               const SizedBox(height: 10),
               const Text(
                 "Depolar",
@@ -235,32 +257,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
-                "Atölyeler",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // 2 sütunlu grid
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  childAspectRatio: 1, // Kartın en-boy oranını ayarla
-                ),
-                itemCount: _atolyeList.length,
-                shrinkWrap: true, // Scroll içinde kullanım için
-                physics:
-                    const NeverScrollableScrollPhysics(), // Parent scroll kontrolü sağlar
-                itemBuilder: (context, index) {
-                  final atolye = _atolyeList[index];
-                  final dailyCount = _atolyeDailyCounts[index];
-                  return _buildAtolyeRow(
-                    atolye['name'],
-                    dailyCount,
-                  );
-                },
-              ),
             ],
           ),
         ),
@@ -268,86 +264,177 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  Widget _buildAtolyeRow(String name, int dailyCount) {
-    return Row(
-      children: [
-        Expanded(
-          child: InkWell(
-            onTap: () {
-              print("11111 $name");
-              Get.to(() => WorkDetailScreen(selectedWorkshop: name));
-            },
-            child: Container(
-              padding: const EdgeInsets.all(15.0),
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 0, 0, 0),
-                    Color.fromARGB(255, 0, 0, 0),
-                    Color.fromARGB(255, 74, 74, 74),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                image: DecorationImage(
-                  image: const AssetImage("images/atolyearkaplan.webp"),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.white.withOpacity(0.5),
-                    BlendMode.dstATop,
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.transfer_within_a_station, size: 15),
-                        const SizedBox(width: 4),
-                        Text(
-                          "+$dailyCount adet",
-                          style: const TextStyle(fontSize: 12),
-                        ),
+  Widget _buildAtolyeRow(String name, int dailyCount,String collection) {
+    // Maksimum kapasite ve günlük hedef
+    const int maxCapacity = 10000;
+    const int dailyGoal = 1000;
+    // Günlük üretim oranı
+    double dailyProductionRate = (dailyCount / dailyGoal) * 100;
+    return FutureBuilder<int>(
+      future:
+          FirestoreService().getTotalMiktar(collection), // Servisi çağır
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Hata oluştu: ${snapshot.error}"),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return Center(
+            child: Text("Veri bulunamadı."),
+          );
+        }
+
+        // Toplam miktar ve doluluk oranı
+        int totalMiktar = snapshot.data!;
+        double totalCapacityRate = (totalMiktar / maxCapacity) * 100;
+
+        return Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  print("11111 $name");
+                  Get.to(() => WorkDetailScreen(selectedWorkshop: name));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(15.0),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 4.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 0, 0, 0),
+                        Color.fromARGB(255, 0, 0, 0),
+                        Color.fromARGB(255, 74, 74, 74),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    image: DecorationImage(
+                      image: const AssetImage("images/atolyearkaplan.webp"),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.white.withOpacity(0.5),
+                        BlendMode.dstATop,
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Günlük üretim miktarı barı
+                            const Text("Günlük Üretim"),
+                            const SizedBox(height: 4),
+                            Stack(
+                              children: [
+                                Container(
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                Container(
+                                  height: 10,
+                                  width: (dailyProductionRate > 100
+                                              ? 100
+                                              : dailyProductionRate)
+                                          .clamp(0, 100) *
+                                      MediaQuery.of(context).size.width /
+                                      100,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "${dailyProductionRate.toStringAsFixed(1)}% tamamlandı",
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            const SizedBox(height: 8),
+                            // Toplam üretim miktarı barı
+                            const Text("Toplam Üretim"),
+                            const SizedBox(height: 4),
+                            Stack(
+                              children: [
+                                Container(
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                Container(
+                                  height: 10,
+                                  width: (totalCapacityRate > 100
+                                              ? 100
+                                              : totalCapacityRate)
+                                          .clamp(0, 100) *
+                                      MediaQuery.of(context).size.width /
+                                      100,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "${totalCapacityRate.toStringAsFixed(1)}% kapasite dolu",
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 

@@ -35,6 +35,10 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   Widget _buildFilterDropdown() {
     return DropdownButton<String>(
       value: selectedFilter,
+      borderRadius: BorderRadius.circular(20),
+      iconEnabledColor: Colors.white,
+      dropdownColor: Colors.black,
+      style: TextStyle(color: Colors.white),
       onChanged: (String? newValue) {
         setState(() {
           selectedFilter = newValue!;
@@ -128,7 +132,12 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
       yield* FirebaseFirestore.instance
           .collection(_collectionName!)
           .snapshots()
-          .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+          .map((snapshot) => snapshot.docs
+              .map((doc) => doc.data())
+              .where((data) =>
+                  (data['miktar'] ?? 0) >
+                  0) // Miktarı 0'dan büyük olanları filtrele
+              .toList());
     } else {
       yield [];
     }
@@ -184,36 +193,51 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               ),
             ],
           ),
+          SizedBox(
+            height: 16,
+          ),
           Padding(
-            padding: const EdgeInsets.only(right:16.0,left:16),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: _buildFilterDropdown(),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery.value = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Ara',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50),
-                        borderSide: BorderSide.none,
+            padding: const EdgeInsets.only(right: 16.0, left: 16),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.black, borderRadius: BorderRadius.circular(50)),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: _buildFilterDropdown(),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery.value = value;
+                          });
+                        },
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'Ara',
+                          hintStyle: TextStyle(color: Colors.white),
+                          fillColor: Colors.white,
+                          prefixIconColor: Colors.white,
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
+          SizedBox(height: 10,),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshData,
