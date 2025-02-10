@@ -7,6 +7,7 @@ import 'package:toyflow/screens/users/user_screen/users_notification_screen/user
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../services/user_services/auth_service.dart';
 import '../../../../services/user_services/product_services.dart';
+import '../../../adminPage/new_toy_add_screen/new_toy_detail.dart';
 import '../users_work_screen/users_work_screen.dart';
 import '../waste/waste_flow.dart';
 
@@ -116,7 +117,7 @@ void _launchURL(String url) async {
                         color: Colors.white,
                         size: 16,
                       ),
-                    ),
+                    ), 
                     title: const Text('Gelen Siparişler'),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
@@ -127,11 +128,12 @@ void _launchURL(String url) async {
                       );
                     },
                   ),
+                 
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Colors.blueGrey,
+                   decoration: const BoxDecoration(
+                      color: Colors.black87,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -148,12 +150,30 @@ void _launchURL(String url) async {
                       MaterialPageRoute(builder: (context) => const MyOrders()),
                     );
                   },
+                ), ListTile( 
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.playlist_add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Ürün Kalemi'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Get.to(() => const NewToyDetail());
+                  },
                 ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: Colors.black54,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -179,7 +199,7 @@ void _launchURL(String url) async {
                   leading: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: const BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: Colors.black54,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -204,9 +224,9 @@ void _launchURL(String url) async {
                     leading: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: const BoxDecoration(
-                        color: Colors.blueGrey,
-                        shape: BoxShape.circle,
-                      ),
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
                       child: const Icon(
                         Icons.delete,
                         color: Colors.white,

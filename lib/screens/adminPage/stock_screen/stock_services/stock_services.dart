@@ -8,8 +8,9 @@ import '../../../../services/user_services/record_services.dart';
 
 class StockService {
   final RecordServices _recordServices = RecordServices();
-
+ 
   Future<void> saveStock({
+    required String collections,
     required String urun,
     required String denye,
     required int miktar,
@@ -22,7 +23,7 @@ class StockService {
 
     try { 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('dokuma_work')
+          .collection(collections)
           .where('urun', isEqualTo: urun)
           .where('denye', isEqualTo: denye)
           .get();
@@ -33,7 +34,7 @@ class StockService {
 
         int yeniMiktar = existingMiktar + miktar;
         await FirebaseFirestore.instance
-            .collection('dokuma_work')
+            .collection(collections)
             .doc(existingDoc.id)
             .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
 
@@ -48,7 +49,7 @@ class StockService {
           aciklama: 'Mevcut stoğa $miktar kilo $urun $denye eklendi!',
         );
       } else { 
-        await FirebaseFirestore.instance.collection('dokuma_work').add({
+        await FirebaseFirestore.instance.collection(collections).add({
           'urun': urun,
           'denye': denye,
           'miktar': miktar,

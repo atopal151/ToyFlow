@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/user_services/get_data_table.dart';
 import '../../../services/user_component/cutom_loading_button.dart';
+import '../../users/atolye_screen/atolye_services/atolye_services.dart';
 import '../register_screen/registerServices/dropdown_style_file.dart';
 import '../register_screen/registerServices/textbox_style_file.dart';
 import 'stock_services/stock_services.dart';
@@ -17,6 +18,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
   final TextEditingController _miktarController = TextEditingController();
   final StockService _stockService = StockService();
   final DataTableService _dataService = DataTableService();
+  final AtolyeServices atolyeServices = AtolyeServices();
 
   String? _selectedUrun;
   List<String> urun = [];
@@ -55,6 +57,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
 
     if (urun != null && miktar != null && denye != null && miktar > 0) {
       _stockService.saveStock(
+        collections: atolyeServices.collectionName,
         urun: urun,
         denye: denye,
         miktar: miktar,

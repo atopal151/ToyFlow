@@ -31,6 +31,163 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
     timeago.setLocaleMessages('tr', timeago.TrMessages());
   }
 
+// Düşüm modal ekranı
+  Future<void> showDecreaseModal(
+      BuildContext context, Map<String, dynamic> work) async {
+    final TextEditingController miktarController = TextEditingController();
+    print(work);
+    print(work['urun']);
+    print(work['miktar']);
+
+    print(work['id']);
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Miktar Girin",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ürün: ${work['urun']}',
+                    style: const TextStyle(fontWeight: FontWeight.w400),
+                  ),
+                  Text(
+                    'Mevcut miktar: ${work['miktar']}',
+                    style: const TextStyle(fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: miktarController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Düşülecek miktar",
+                            labelStyle: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.pie_chart, color: Colors.black),
+                      onPressed: () {
+                        // Burada ikonun ekstra bir işlevi olacaksa ekleyebilirsin.
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+               style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black12,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('İptal'),
+            ),
+            ElevatedButton(
+               style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+              onPressed: () async {
+                try {
+                  final girilenMiktar =
+                      int.tryParse(miktarController.text) ?? 0;
+
+                  if (girilenMiktar <= 0) {
+                    Get.snackbar('Hata', 'Geçerli bir miktar giriniz.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white);
+                    return;
+                  }
+
+                  final mevcutMiktar = work['miktar'];
+                  if (girilenMiktar > mevcutMiktar) {
+                    Get.snackbar(
+                        'Hata', 'Girilen miktar mevcut miktardan fazla.',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white);
+                    return;
+                  }
+
+                  // Miktarı düşür
+                  final yeniMiktar = mevcutMiktar - girilenMiktar;
+
+                  // Firestore'daki belgeyi güncelle
+                  await FirebaseFirestore.instance
+                      .collection(atolyeServices.collectionName)
+                      .doc(work['id'])
+                      .update({'miktar': yeniMiktar});
+
+                  Get.snackbar('Başarılı', 'Miktar başarıyla güncellendi.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white);
+
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  print(e);
+                  Get.snackbar('Hata', 'Güncelleme işlemi başarısız: $e',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white);
+                }
+              },
+              child: const Text('Onayla'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Stream<List<Map<String, dynamic>>> getStokData() async* {
     // Kullanıcının atölye ismine göre 'collection' alanını getir
     final workshopName = productServices.workshopName.value;
@@ -51,6 +208,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
 
       // Dinamik olarak koleksiyondan veri çek
       if (productServices.role.value == "Dokuma") {
+        print(collectionName + "  dadsdas");
         yield* FirebaseFirestore.instance
             .collection(collectionName)
             .orderBy('tarih', descending: true)
@@ -63,6 +221,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
               'fine': doc['fine'],
               'miktar': doc['miktar'],
               'tarih': doc['tarih'],
+              "id": doc.id,
             };
           }).toList();
         });
@@ -81,6 +240,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
               'fine': doc['fine'],
               'miktar': doc['miktar'],
               'tarih': doc['tarih'],
+              "id": doc.id,
             };
           }).toList();
         });
@@ -100,6 +260,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
               'boyut': doc['boyut'],
               'miktar': doc['miktar'],
               'tarih': doc['tarih'],
+              "id": doc.id,
             };
           }).toList();
         });
@@ -118,6 +279,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
               'aksesuar': doc['aksesuar'],
               'miktar': doc['miktar'],
               'tarih': doc['tarih'],
+              "id": doc.id,
             };
           }).toList();
         });
@@ -304,7 +466,6 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
-                                  // Expanded kullanarak metnin alanı aşmamasını sağlıyoruz
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -455,51 +616,13 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                                 ),
                                 InkWell(
                                   onTap: () async {
-                                    try {
-                                      // Firestore'dan ilgili koleksiyonu al
-                                      final collectionRef =
-                                          FirebaseFirestore.instance.collection(
-                                              atolyeServices.collectionName);
-
-                                      // Belgeyi belirlemek için bir query yaz
-                                      final querySnapshot = await collectionRef
-                                          .where('urun',
-                                              isEqualTo: work['urun'])
-                                          .where('tarih',
-                                              isEqualTo: work[
-                                                  'tarih']) // Belgeyi daha kesin belirlemek için ek kriter
-                                          .get();
-
-                                      if (querySnapshot.docs.isNotEmpty) {
-                                        // İlk belgeyi al ve sil
-                                        await querySnapshot.docs.first.reference
-                                            .delete();
-
-                                        // Kullanıcıya başarı mesajı göster
-                                        Get.snackbar('Başarılı',
-                                            'Ürün başarıyla silindi',
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: const Color.fromARGB(255, 80, 153, 82),
-                                            colorText: Colors.white);
-                                      } else {
-                                        Get.snackbar(
-                                            'Hata', 'Silinecek ürün bulunamadı',
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: const Color.fromARGB(255, 190, 96, 89),
-                                            colorText: Colors.white);
-                                      }
-                                    } catch (e) {
-                                      Get.snackbar(
-                                          'Hata', 'Silme işlemi başarısız: $e',
-                                          snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: const Color.fromARGB(255, 190, 96, 89),
-                                          colorText: Colors.white);
-                                    }
+                                    showDecreaseModal(context, work);
                                   },
-                                  child: const Icon(Icons.delete_rounded,
-                                      color: Color.fromARGB(255, 187, 104, 98),
-                                      size: 30,),
-                                      
+                                  child: const Icon(
+                                    Icons.remove_shopping_cart,
+                                    color: Color.fromARGB(255, 187, 104, 98),
+                                    size: 30,
+                                  ),
                                 )
                               ],
                             ),

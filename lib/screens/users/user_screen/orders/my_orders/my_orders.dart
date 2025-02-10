@@ -216,85 +216,89 @@ class _MyOrdersState extends State<MyOrders> {
       ),
     );
   }
-Future<void> showAmountInputDialog(BuildContext context, String orderId, Map<String, dynamic> orderData) async {
-  TextEditingController amountController = TextEditingController();
 
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          "Miktar Girin",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: amountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Miktar",
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.pie_chart, color: Colors.black),
-                    onPressed: () {
-                      // Burada ikonun ekstra bir işlevi olacaksa ekleyebilirsin.
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                int miktar = int.tryParse(amountController.text) ?? 0;
-                if (miktar > 0) {
-                  transferOrderWithAmount(orderId, orderData, miktar);
-                  Navigator.of(context).pop();
-                } else {
-                  showAlertDialog(context, "Lütfen geçerli bir miktar girin.");
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                shape: RoundedRectangleBorder(
+  Future<void> showAmountInputDialog(BuildContext context, String orderId,
+      Map<String, dynamic> orderData) async {
+    TextEditingController amountController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Miktar Girin",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(25),
                 ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Miktar",
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.pie_chart, color: Colors.black),
+                      onPressed: () {
+                        // Burada ikonun ekstra bir işlevi olacaksa ekleyebilirsin.
+                      },
+                    ),
+                  ],
+                ),
               ),
-              child: const Text("Tamam", style: TextStyle(fontSize: 16)),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  int miktar = int.tryParse(amountController.text) ?? 0;
+                  if (miktar > 0) {
+                    transferOrderWithAmount(orderId, orderData, miktar);
+                    Navigator.of(context).pop();
+                  } else {
+                    showAlertDialog(
+                        context, "Lütfen geçerli bir miktar girin.");
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text("Tamam", style: TextStyle(fontSize: 16)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> transferOrderWithAmount(
       String orderId, Map<String, dynamic> orderData, int miktar) async {
     try {
       if (productServices.role.value == "Dokuma") {
         stockService.saveStock(
+          collections: atolyeServices.collectionWait,
           context: context,
           urun: orderData['iplik'],
           denye: orderData['denye'],
