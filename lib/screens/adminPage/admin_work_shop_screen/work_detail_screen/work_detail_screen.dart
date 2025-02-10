@@ -7,8 +7,7 @@ import '../../../../services/user_services/pdf_services.dart';
 class WorkDetailScreen extends StatefulWidget {
   final String selectedWorkshop;
 
-  const WorkDetailScreen({Key? key, required this.selectedWorkshop})
-      : super(key: key);
+  const WorkDetailScreen({super.key, required this.selectedWorkshop});
 
   @override
   State<WorkDetailScreen> createState() => _WorkDetailScreenState();

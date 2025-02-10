@@ -7,11 +7,11 @@ class TextFieldWithRegister extends StatefulWidget {
   final IconData icon;
 
   const TextFieldWithRegister({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   _TextFieldWithRegisterState createState() => _TextFieldWithRegisterState();

@@ -8,13 +8,13 @@ class CustomLoadingButton extends StatelessWidget {
   final double borderRadius;
 
   const CustomLoadingButton({
-    Key? key,
+    super.key,
     this.isLoading,
     required this.onPressed,
     required this.text,
     this.backgroundColor = Colors.black,
     this.borderRadius = 50,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

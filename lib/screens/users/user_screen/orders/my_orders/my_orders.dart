@@ -160,7 +160,7 @@ class _MyOrdersState extends State<MyOrders> {
                                   entry.key != 'status')
                               .map((entry) {
                             return Text("${entry.key}: ${entry.value}");
-                          }).toList(),
+                          }),
                           const SizedBox(height: 8),
                           Text(
                             "Durum: $status",

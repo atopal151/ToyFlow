@@ -93,21 +93,23 @@ class AuthService {
   }
 
   Future<User?> createUser(String email, String password, String firstName,
-      String lastName, String role, String workshop, String gender) async {
+      String lastName, String role, String workshop, String gender,) async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
+bool isActive=true;
       // Kullanıcıyı Firestore'a ekle
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'firstName': firstName,
         'lastName': lastName,
         'role': role,
         'workshop': workshop,
-        'cins': gender
+        'cins': gender,
+        "isActive": isActive
+
       });
 
       return userCredential.user;

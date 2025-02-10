@@ -8,10 +8,10 @@ class TransferDetailScreen extends StatefulWidget {
   final String collection;
 
   const TransferDetailScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.collection,
-  }) : super(key: key);
+  });
 
   @override
   State<TransferDetailScreen> createState() => _TransferDetailScreenState();

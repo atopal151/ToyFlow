@@ -8,13 +8,13 @@ class DropdownSelector extends StatefulWidget {
   final IconData icon;
 
   const DropdownSelector({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.items,
     required this.selectedValue,
     required this.onChanged,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   _DropdownSelectorState createState() => _DropdownSelectorState();

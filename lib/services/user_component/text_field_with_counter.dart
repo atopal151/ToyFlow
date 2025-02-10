@@ -7,11 +7,11 @@ class TextFieldWithCounter extends StatefulWidget {
   final IconData icon;
 
   const TextFieldWithCounter({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   _TextFieldWithCounterState createState() => _TextFieldWithCounterState();

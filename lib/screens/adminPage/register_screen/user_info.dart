@@ -206,6 +206,7 @@ Future<bool?> _showConfirmDialog(BuildContext context) async {
                           bool? confirmDelete = await _showConfirmDialog(context);
                           if (confirmDelete == true) {
                             await _deleteUser(userDoc.id);
+                            // ignore: use_build_context_synchronously
                             Navigator.pop(context);
                           }
                         },

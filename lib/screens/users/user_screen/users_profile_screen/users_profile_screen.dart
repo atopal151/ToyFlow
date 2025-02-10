@@ -15,8 +15,7 @@ class UsersProfileScreen extends StatefulWidget {
   final String profileImagePath;
 
   // ignore: prefer_const_constructors_in_immutables
-  UsersProfileScreen({Key? key, required this.profileImagePath})
-      : super(key: key);
+  UsersProfileScreen({super.key, required this.profileImagePath});
 
   @override
   State<UsersProfileScreen> createState() => _UsersProfileScreenState();

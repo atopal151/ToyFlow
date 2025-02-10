@@ -163,6 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _selectedRole ?? '',  
                           _selectedWorkshop ?? '',
                           _selectedCins ?? '', 
+                          
                         );
  
                         Navigator.of(context).pop();
