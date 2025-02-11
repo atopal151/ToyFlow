@@ -7,7 +7,7 @@ import '../../../services/user_component/cutom_loading_button.dart';
 import '../../../services/user_component/dropdown_selector.dart';
 import '../../../services/user_component/text_field_with_counter.dart';
 
-class StockSellScreen extends StatefulWidget {
+class StockSellScreen extends StatefulWidget { 
   const StockSellScreen({super.key});
 
   @override

@@ -57,7 +57,7 @@ class _StockAddScreenState extends State<StockAddScreen> {
 
     if (urun != null && miktar != null && denye != null && miktar > 0) {
       _stockService.saveStock(
-        collections: atolyeServices.collectionName,
+        collections: "dokuma_work",
         urun: urun,
         denye: denye,
         miktar: miktar,

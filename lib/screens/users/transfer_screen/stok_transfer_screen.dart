@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 
+import '../../../services/user_component/cutom_loading_button.dart';
 import '../../../services/user_services/get_data_table.dart';
 import '../../../services/user_component/dropdown_selector.dart';
 import '../../../services/user_component/text_field_with_counter.dart';
@@ -19,6 +21,7 @@ class _StokTransferState extends State<StokTransfer> {
   final TransferServices _transferServices = TransferServices();
   final DataTableService _dataTableService = DataTableService();
 
+  bool isLoading = false;
   final TextEditingController _miktarController = TextEditingController();
   String? _selectedMalzeme;
   String? _selectedRenk;
@@ -162,7 +165,9 @@ class _StokTransferState extends State<StokTransfer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Tranfer Ekranı"),
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -300,64 +305,78 @@ class _StokTransferState extends State<StokTransfer> {
               },
               icon: Icons.add_box,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_miktarController.text.isEmpty ||
-                      _selectedAksesuar!.isEmpty ||
-                      _selectedBoyut!.isEmpty ||
-                      _selectedDepo!.isEmpty ||
-                      _selectedGetDepo!.isEmpty ||
-                      _selectedMalzeme!.isEmpty ||
-                      _selectedRenk!.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Lütfen tüm alanları doldurun.")),
-                    );
-                  } else {
-                    print(
-                        "$_selectedDepo $_selectedGetDepo $_selectedMalzeme  $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
-                    _transferServices.addOrUpdateUrunStock(
-                      context: context,
-                      addDepo: _selectedGetDepo!,
-                      urun: _selectedMalzeme!,
-                      boyut: _selectedBoyut!,
-                      urunRenk: _selectedRenk!,
-                      aksesuar: _selectedAksesuar!,
-                      miktar: int.parse(_miktarController.text),
-                    );
-                    _transferServices.decreaseStock(
-                      context: context,
-                      downDepo: _selectedDepo!,
-                      malzeme: _selectedMalzeme!,
-                      boyut: _selectedBoyut!,
-                      renk: _selectedRenk!,
-                      aksesuar: _selectedAksesuar!,
-                      miktar: int.parse(_miktarController.text),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 49, 51, 52),
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 16.0,
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      'Aktar',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                child: CustomLoadingButton(
+                  isLoading: isLoading,
+                  onPressed: () async {
+                    if (_miktarController.text.isEmpty ||
+                        _selectedAksesuar!.isEmpty ||
+                        _selectedBoyut!.isEmpty ||
+                        _selectedDepo!.isEmpty ||
+                        _selectedGetDepo!.isEmpty ||
+                        _selectedMalzeme!.isEmpty ||
+                        _selectedRenk!.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Lütfen tüm alanları doldurun.")),
+                      );
+                    } else {
+                      print(
+                          "$_selectedDepo $_selectedGetDepo $_selectedMalzeme $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
+
+                      // Ürün ekleme işlemini başlatıyoruz
+                      Future.wait([
+                        _transferServices.addOrUpdateUrunStock(
+                          context: context,
+                          addDepo: _selectedGetDepo!,
+                          urun: _selectedMalzeme!,
+                          boyut: _selectedBoyut!,
+                          urunRenk: _selectedRenk!,
+                          aksesuar: _selectedAksesuar!,
+                          miktar: int.parse(_miktarController.text),
+                        ),
+                        _transferServices.decreaseStock(
+                          context: context,
+                          downDepo: _selectedDepo!,
+                          malzeme: _selectedMalzeme!,
+                          boyut: _selectedBoyut!,
+                          renk: _selectedRenk!,
+                          aksesuar: _selectedAksesuar!,
+                          miktar: int.parse(_miktarController.text),
+                        ),
+                      ]).then((results) {
+
+                        // Eğer tüm işlemler başarılıysa kullanıcıya mesaj göster
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("İşlem başarıyla tamamlandı!")),
+                        );
+                        // Gerekirse formu sıfırla
+                        _miktarController.clear();
+                        _selectedAksesuar = null;
+                        _selectedBoyut = null;
+                        _selectedDepo = null;
+                        _selectedGetDepo = null;
+                        _selectedMalzeme = null;
+                        _selectedRenk = null;
+                        setState(() {
+
+                          isLoading = true;
+                          Get.back();
+                        });
+                      }).catchError((error) {
+                        // Eğer bir hata oluşursa kullanıcıya mesaj göster
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Hata oluştu: $error")),
+                        );
+                      });
+                    }
+                  },
+                  text: "Aktar",
                 ),
               ),
             ),

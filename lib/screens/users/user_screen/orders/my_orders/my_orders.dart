@@ -306,18 +306,19 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Boyama") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['kumas'],
           gramaj: orderData['gramaj'],
           fine: orderData['fine'],
+          renk: orderData['renk'] ?? "Yok",
           miktar: miktar,
         );
       }
       if (productServices.role.value == "Kesim") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['kumas'],
           gramaj: orderData['gramaj'],
@@ -327,8 +328,8 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Dikim") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['urun'],
           miktar: miktar,
@@ -337,8 +338,8 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Dolum") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['urun'],
           miktar: miktar,
@@ -347,8 +348,8 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Paketleme") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['urun'],
           miktar: miktar,
@@ -357,8 +358,8 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Transfer") {
-        atolyeServices.addOrUpdateUrunStock(
-          collections: atolyeServices.collectionWait,
+        atolyeServices.addOrUpdateUrunWaitStock(
+          collectionsWait: atolyeServices.collectionWait,
           context: context,
           urun: orderData['urun'],
           miktar: miktar,

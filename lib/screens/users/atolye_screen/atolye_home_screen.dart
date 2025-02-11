@@ -180,7 +180,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                       colorText: Colors.white);
                 }
               },
-              child: const Text('Onayla'),
+              child: const Text('Düşüm Yap'),
             ),
           ],
         );

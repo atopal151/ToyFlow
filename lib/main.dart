@@ -9,6 +9,7 @@ import 'package:toyflow/screens/users/atolye_screen/atolye_home_screen.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
 import 'package:toyflow/services/user_services/product_services.dart';
 import 'package:toyflow/services/user_services/record_services.dart';
+import 'screens/adminPage/admin_home_screen/adminhome_services/work_shop_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,8 @@ Future<void> main() async {
   Get.put(AuthService());
   Get.put(ProductServices());
   Get.put(RecordServices());
-
+  Get.put(WorkshopService());
+  
   runApp(const MyApp());
 }
 

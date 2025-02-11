@@ -143,7 +143,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
           int yeniAdet = mevcutAdet + adet;
 
           await firestore
-              .collection(atolyeServices.collectionWait)
+              .collection(atolyeServices.collectionName)
               .doc(denizliDepoDoc.id)
               .update({
             'miktar': yeniAdet,
@@ -151,7 +151,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
           });
         } else {
           await firestore
-              .collection(atolyeServices.collectionWait)
+              .collection(atolyeServices.collectionName)
               .add({
             'urun': urunAdi,
             'renk': renk,
