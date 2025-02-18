@@ -6,8 +6,11 @@ import '../../../../services/user_services/pdf_services.dart';
 
 class WorkDetailScreen extends StatefulWidget {
   final String selectedWorkshop;
+  final DateTime? date;
+  final String? dataType;
 
-  const WorkDetailScreen({super.key, required this.selectedWorkshop});
+  const WorkDetailScreen(
+      {super.key, required this.selectedWorkshop, this.date, this.dataType});
 
   @override
   State<WorkDetailScreen> createState() => _WorkDetailScreenState();
@@ -25,6 +28,9 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
   @override
   void initState() {
     super.initState();
+    print(widget.dataType);
+
+    print(widget.date);
     _selectedWorkshop = widget.selectedWorkshop;
     _fetchWorkshops();
     _fetchCollectionName();
@@ -127,6 +133,25 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     }
   }
 
+Stream<List<Map<String, dynamic>>> _getWorkshopDateData({DateTime? startDate}) async* {
+  if (_collectionName == null || startDate == null) {
+    yield []; // Eğer koleksiyon adı veya tarih yoksa boş liste döndür
+    return;
+  }
+
+  // Firestore için tarih filtreleme aralığını belirleyelim
+  DateTime startOfDay = DateTime(startDate.year, startDate.month, startDate.day);
+  DateTime endOfDay = startOfDay.add(Duration(days: 1));
+
+  yield* FirebaseFirestore.instance
+      .collection(_collectionName!)
+      .where('tarih', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+      .where('tarih', isLessThan: Timestamp.fromDate(endOfDay))
+      .snapshots()
+      .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+}
+
+
   Stream<List<Map<String, dynamic>>> _getWorkshopData() async* {
     if (_collectionName != null) {
       yield* FirebaseFirestore.instance
@@ -153,7 +178,9 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _selectedWorkshop ?? 'Detaylar',
+          widget.dataType == "Tümü"
+              ? "$_selectedWorkshop"
+              : "$_selectedWorkshop ${widget.date?.day}.${widget.date?.month}.${widget.date?.year}",
           style: const TextStyle(fontSize: 15),
         ),
         actions: [
@@ -237,12 +264,16 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
               ),
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshData,
               child: StreamBuilder<List<Map<String, dynamic>>>(
-                stream: _getWorkshopData(),
+                stream: widget.dataType == "Tümü"
+                    ? _getWorkshopData()
+                    : _getWorkshopDateData(startDate: widget.date),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());

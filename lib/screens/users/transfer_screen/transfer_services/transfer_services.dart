@@ -21,33 +21,33 @@ class TransferServices {
   TransferServices() {
     _initializeUserRole();
   }
- 
+
   Future<void> _initializeUserRole() async {
     if (user != null) {
       userRole = await _authService.getUserRole(user!.uid);
     }
   }
- 
+
   Future<String> getDepoCollection(String depoTitle) async {
-    try { 
+    try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('depolar')
           .where('title', isEqualTo: depoTitle)
           .get();
 
-      if (querySnapshot.docs.isNotEmpty) { 
+      if (querySnapshot.docs.isNotEmpty) {
         DocumentSnapshot doc = querySnapshot.docs.first;
         String collectionName = doc['collection'];
         return collectionName;
-      } else { 
+      } else {
         return 'varsayilan_koleksiyon';
       }
     } catch (e) {
-      print("Depo koleksiyonunu alırken hata oluştu: $e"); 
+      print("Depo koleksiyonunu alırken hata oluştu: $e");
       return 'varsayilan_koleksiyon';
     }
   }
- 
+
   Future<void> _recordMovement({
     required String malzeme,
     required String renk,
@@ -65,14 +65,14 @@ class TransferServices {
         islemTuru: islemTuru,
         boyut: boyut,
         aksesuar: aksesuar,
-        atelye: userRole!,
+        atelye: _productServices.workshopName.value,
         aciklama: aciklama,
       );
     } else {
       print("Kullanıcı oturumu açık değil veya rol alınamadı.");
     }
   }
- 
+
   Future<void> addOrUpdateUrunStock({
     required BuildContext context,
     required String addDepo,
@@ -88,15 +88,12 @@ class TransferServices {
         boyut.isEmpty ||
         aksesuar.isEmpty ||
         miktar <= 0) {
-
       showAlertDialog(context, "Gerekli Alanları Doldur! ");
-      
+
       return;
     }
 
-    
-
-    try { 
+    try {
       String collectionPath = await getDepoCollection(addDepo);
       QuerySnapshot querySnapshot = await _firestore
           .collection(collectionPath)
@@ -110,14 +107,11 @@ class TransferServices {
         DocumentSnapshot existingDoc = querySnapshot.docs.first;
         int existingMiktar = existingDoc['miktar'];
         int yeniMiktar = existingMiktar + miktar;
-        await _firestore
-            .collection(collectionPath)
-            .doc(existingDoc.id)
-            .update({'miktar': yeniMiktar,'tarih':FieldValue.serverTimestamp()});
+        await _firestore.collection(collectionPath).doc(existingDoc.id).update(
+            {'miktar': yeniMiktar, 'tarih': FieldValue.serverTimestamp()});
 
-
-      showAlertDialog(context, "$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı! ");
-       
+        showAlertDialog(context,
+            "$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı! ");
 
         await _recordMovement(
           malzeme: urun,
@@ -125,7 +119,7 @@ class TransferServices {
           boyut: boyut,
           aksesuar: aksesuar,
           miktar: miktar,
-          islemTuru: 'Stok Güncelleme',
+          islemTuru: 'Stok Ekleme',
           aciklama:
               '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo mevcut stoğuna $miktar adet $urunRenk $boyut $urun aktarıldı!',
         );
@@ -139,8 +133,8 @@ class TransferServices {
           'tarih': FieldValue.serverTimestamp(),
         });
 
-      showAlertDialog(context, "Ha$addDepo stoğuna ürün başarıyla aktarıldı!ta ");
-        
+        showAlertDialog(
+            context, "Ha$addDepo stoğuna ürün başarıyla aktarıldı!ta ");
 
         await _recordMovement(
           malzeme: urun,
@@ -154,74 +148,75 @@ class TransferServices {
         );
       }
     } catch (e) {
-
       showAlertDialog(context, "Stok kaydı sırasında hata oluştu: $e ");
-      
-    } finally {
-     }
+    } finally {}
   }
-Future<void> sellMiktar(
-  BuildContext context,
-  String depoCollection,
-  String urun,
-  String renk,
-  String boyut,
-  String aksesuar,
-  int miktarGirdi,
-) async {
-  if (depoCollection.isEmpty ||
-      urun.isEmpty ||
-      renk.isEmpty ||
-      boyut.isEmpty ||
-      aksesuar.isEmpty ||
-      miktarGirdi <= 0) {
 
+  Future<void> sellMiktar(
+    BuildContext context,
+    String depoCollection,
+    String urun,
+    String renk,
+    String boyut,
+    String aksesuar,
+    int miktarGirdi,
+  ) async {
+    if (depoCollection.isEmpty ||
+        urun.isEmpty ||
+        renk.isEmpty ||
+        boyut.isEmpty ||
+        aksesuar.isEmpty ||
+        miktarGirdi <= 0) {
       showAlertDialog(context, "Lütfen tüm alanları doldurun. ");
-   
-    return;
-  }
 
-  
-  try {
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection(depoCollection)
-        .where('urun', isEqualTo: urun)
-        .where('renk', isEqualTo: renk)
-        .where('boyut', isEqualTo: boyut)
-        .where('aksesuar', isEqualTo: aksesuar)
-        .get();
-
-    if (docSnapshot.docs.isNotEmpty) {
-      final docId = docSnapshot.docs.first.id;
-      final mevcutMiktar = docSnapshot.docs.first['miktar'] as int;
-
-      if (mevcutMiktar >= miktarGirdi) {
-        await FirebaseFirestore.instance
-            .collection(depoCollection)
-            .doc(docId)
-            .update({'miktar': mevcutMiktar - miktarGirdi,'tarih':FieldValue.serverTimestamp()});
-
-      showAlertDialog(context, "Stok düşümü başarıyla gerçekleştirildi. ");
-       
-      } else {
-
-      showAlertDialog(context, "Yetersiz stok miktarı. ");
-       
-      }
-    } else {
-
-      showAlertDialog(context, "Belirtilen ürün bulunamadı. ");
-      
+      return;
     }
-  } catch (e) {
-    print("Hata: $e");
+
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection(depoCollection)
+          .where('urun', isEqualTo: urun)
+          .where('renk', isEqualTo: renk)
+          .where('boyut', isEqualTo: boyut)
+          .where('aksesuar', isEqualTo: aksesuar)
+          .get();
+
+      if (docSnapshot.docs.isNotEmpty) {
+        final docId = docSnapshot.docs.first.id;
+        final mevcutMiktar = docSnapshot.docs.first['miktar'] as int;
+
+        if (mevcutMiktar >= miktarGirdi) {
+          await FirebaseFirestore.instance
+              .collection(depoCollection)
+              .doc(docId)
+              .update({
+            'miktar': mevcutMiktar - miktarGirdi,
+            'tarih': FieldValue.serverTimestamp()
+          });
+         await _recordMovement(
+          malzeme: urun,
+          renk: renk,
+          boyut: boyut,
+          aksesuar: aksesuar,
+          miktar: mevcutMiktar-miktarGirdi,
+          islemTuru: 'Stok Satış',
+          aciklama:
+              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value}  ${mevcutMiktar-miktarGirdi} adet $renk $boyut $aksesuar cm $urun satış kaydı girildi.',
+        );
+          showAlertDialog(context, "Stok satış düşümü başarıyla gerçekleştirildi. ");
+        } else {
+          showAlertDialog(context, "Yetersiz stok miktarı. ");
+        }
+      } else {
+        showAlertDialog(context, "Belirtilen ürün bulunamadı. ");
+      }
+    } catch (e) {
+      print("Hata: $e");
 
       showAlertDialog(context, "İşlem sırasında bir hata oluştu: $e ");
-   
-  } finally {
-    }
-}
- 
+    } finally {}
+  }
+
   Future<void> decreaseStock({
     required BuildContext context,
     required String downDepo,
@@ -237,14 +232,12 @@ Future<void> sellMiktar(
         boyut.isEmpty ||
         aksesuar.isEmpty ||
         miktar <= 0) {
-
       showAlertDialog(context, "Lütfen tüm alanları doldurun. ");
-     
+
       return;
     }
-   
 
-    try { 
+    try {
       String collectionPath = await getDepoCollection(downDepo);
       QuerySnapshot existingRecord = await _firestore
           .collection(collectionPath)
@@ -263,8 +256,9 @@ Future<void> sellMiktar(
             'miktar': currentMiktar - miktar,
           });
 
-      showAlertDialog(context, "$downDepo stoğundan ürün düşümü başarıyla yapıldı. ");
-         
+          showAlertDialog(
+              context, "$downDepo stoğundan ürün düşümü başarıyla yapıldı. ");
+
           await _recordMovement(
             malzeme: malzeme,
             boyut: boyut,
@@ -276,21 +270,14 @@ Future<void> sellMiktar(
                 '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $downDepo $miktar adet $renk $boyut cm $malzeme düşüm yaptı.',
           );
         } else {
-
-      showAlertDialog(context, "Yetersiz stok miktarı. ");
-          
+          showAlertDialog(context, "Yetersiz stok miktarı. ");
         }
       } else {
-
-      showAlertDialog(context, "Böyle bir ürün bulunmamaktadır. ");
-        
+        showAlertDialog(context, "Böyle bir ürün bulunmamaktadır. ");
       }
     } catch (e) {
-
       showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
       print("Hata: $e");
-      
-    } finally {
-      }
+    } finally {}
   }
 }

@@ -108,7 +108,7 @@ late ScrollController scrollController;
                     child: IconButton(
                       iconSize: 25,
                       color: Colors.white,
-                      icon: const Icon(Icons.arrow_drop_down),
+                      icon: Icon(widget.icon),
                       onPressed: _toggleList,
                     ),
                   ),

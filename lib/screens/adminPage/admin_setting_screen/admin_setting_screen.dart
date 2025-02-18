@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyflow/screens/adminPage/admin_report_screen/admin_report_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
 import 'package:toyflow/screens/adminPage/register_screen/user_info.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
@@ -123,6 +124,25 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const UserInfo());
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.report,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Rapor Al'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Get.to(() => const ReportScreen());
                   },
                 ),
                 ListTile(

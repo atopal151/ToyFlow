@@ -19,6 +19,7 @@ class _NewToyDetailState extends State<NewToyDetail> {
     'toy_aksesuar': "Aksesuarlar",
     'toy_height': "Boyutlar",
     'toy_renk': "Renkler",
+    'toy_name': "Oyuncak İsmi",
     'fine': "Fine",
     'iplik': "İpler",
     'gramaj': "Gramaj",

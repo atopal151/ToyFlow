@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,16 +20,73 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ProductServices productServices = Get.find();
   final WorkshopService workshopService = Get.find();
+  bool isLoadingAll = false; // Yüklenme durumu
+  bool isLoadingDate = false; // Yüklenme durumu
+  String? selectedCheckDate = "Tümü";
+  DateTime? selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    workshopService.fetchWorkshopStocks(); // Atölye stoklarını çekiyoruz
+    workshopService.fetchWorkAllshopStocks(); // Atölye stoklarını çekiyoruz
   }
 
   Future<void> _refreshPage() async {
     // Sayfayı yenileme işlemi
-    await workshopService.fetchWorkshopStocks();
+    setState(() {
+      selectedCheckDate = "Tarih Seç"; // ✅ "Tarih Seç" seçili yap
+
+      isLoadingDate = true;
+      isLoadingAll = false;
+    });
+
+    await workshopService.fetchWorkshopStocks(selectedDate!);
+
+    setState(() {
+      isLoadingDate = false;
+    });
+  }
+
+  Future<void> _refreshAllDataPage() async {
+    setState(() {
+      selectedCheckDate = "Tümü"; // ✅ "Tümü" seçili yap
+
+      isLoadingAll = true;
+      isLoadingDate = false;
+    });
+
+    await workshopService.fetchWorkAllshopStocks();
+
+    setState(() {
+      isLoadingAll = false;
+    });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Varsayılan tarih olarak bugünü kullan
+      firstDate: DateTime(2000), // Seçilebilecek en erken tarih
+      lastDate: DateTime(2100), // Seçilebilecek en geç tarih
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.black,
+            hintColor: Colors.black,
+            colorScheme: const ColorScheme.light(primary: Colors.black),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      await _refreshPage(); // Tarihi seçtikten sonra `_refreshPage` fonksiyonunu çağır.
+    }
   }
 
   @override
@@ -129,148 +188,248 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshPage, // Scroll aşağı çekildiğinde yenileme
+        onRefresh: _refreshAllDataPage, // Scroll aşağı çekildiğinde yenileme
         child: SingleChildScrollView(
-          child: Obx(() {
-            if (workshopService.workshopStocks.isEmpty) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            // En yüksek stok miktarını bul
-            double maxStock = workshopService.workshopStocks.values.isNotEmpty
-                ? workshopService.workshopStocks.values
-                    .reduce((a, b) => a > b ? a : b)
-                : 0;
-
-            return Column(
-              children: [
-                // Pie Chart
-                SizedBox(
-                  height: 300, // Grafik boyutu
-                  child: PieChart(
-                    PieChartData(
-                      sections:
-                          workshopService.workshopStocks.entries.map((entry) {
-                        // Renk paletini ayarlıyoruz
-                        final List<Color> customColors = [
-                          const Color.fromARGB(255, 233, 120, 50),
-                          const Color.fromARGB(255, 170, 209, 239),
-                          const Color.fromARGB(255, 213, 159, 77),
-                          const Color.fromARGB(255, 211, 133, 225),
-                          const Color.fromARGB(255, 220, 129, 123),
-                          const Color.fromARGB(255, 105, 208, 109),
-                          const Color.fromARGB(255, 101, 166, 219),
-                          const Color.fromARGB(255, 231, 182, 109),
-                          const Color.fromARGB(255, 183, 95, 198),
-                          const Color.fromARGB(255, 139, 218, 142),
-                          const Color.fromARGB(255, 44, 71, 93),
-                          const Color.fromARGB(255, 87, 66, 34),
-                          const Color.fromARGB(255, 86, 42, 93),
-                        ];
-
-                        // Renk paletindeki rengi seçiyoruz
-                        final int index = workshopService.workshopStocks.keys
-                            .toList()
-                            .indexOf(entry.key);
-                        final Color color =
-                            customColors[index % customColors.length];
-
-                        return PieChartSectionData(
-                          value: entry.value,
-                          title: "${entry.key}\n${entry.value.toInt()}",
-                          color: color, // Belirlenen renk
-                          radius: 80,
-                          badgeWidget: InkWell(
-                            onTap: () {
-                              Get.to(
-                                () => WorkDetailScreen(
-                                  selectedWorkshop: entry.key,
-                                ),
-                              );
-                            },
-                            child:
-                                const SizedBox(), // Boş widget, kullanılabilir
-                          ),
-                        );
-                      }).toList(),
-                      centerSpaceRadius: 50,
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () => {
+                      setState(() {
+                        _refreshAllDataPage();
+                      })
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: selectedCheckDate == "Tümü"
+                            ? Colors.black
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: isLoadingAll
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              "Tümü",
+                              style: TextStyle(
+                                color: selectedCheckDate == "Tümü"
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 20),
-                const Text(
-                  "Atölye Stok Tablosu",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                // Tablo
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: workshopService.workshopStocks.length,
-                  itemBuilder: (context, index) {
-                    final entry =
-                        workshopService.workshopStocks.entries.toList()[index];
-                    double progress =
-                        entry.value / maxStock; // Progress hesaplama
-
-                    // Satırı GestureDetector ile sarmalıyoruz
-                    return GestureDetector(
-                      onTap: () {
-                        // Tıklanınca detay sayfasına yönlendirme
-                        Get.to(() => WorkDetailScreen(
-                              selectedWorkshop: entry.key,
-                            ));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    entry.key,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    "${entry.value.toInt()} Adet",
-                                    style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color:
-                                            Color.fromARGB(255, 66, 143, 67)),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () => _selectDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: selectedCheckDate == "Tarih Seç"
+                            ? Colors.black
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: isLoadingDate
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              "Tarih Seç",
+                              style: TextStyle(
+                                color: selectedCheckDate == "Tarih Seç"
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            const SizedBox(height: 5),
-                            // Progress Bar
-                            LinearProgressIndicator(
-                              value: progress,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.black,
-                            ),
-                            const SizedBox(height: 10),
-                          ],
+                    ),
+                  ),
+                ],
+              ),
+              Obx(() {
+                if (isLoadingAll || isLoadingDate) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.black,
+                    ),
+                  );
+                }
+
+                if (workshopService.workshopStocks.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.grey,
+                          size: 80,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "Seçilen tarihte veri bulunamadı.",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                // En yüksek stok miktarını bul
+                double maxStock =
+                    workshopService.workshopStocks.values.isNotEmpty
+                        ? workshopService.workshopStocks.values
+                            .reduce((a, b) => a > b ? a : b)
+                        : 0;
+
+                return Column(
+                  children: [
+// Pie Chart
+                    SizedBox(
+                      height: 300, // Grafik boyutu
+                      child: PieChart(
+                        PieChartData(
+                          sections: workshopService.workshopStocks.entries
+                              .map((entry) {
+                            // Rastgele renk üretmek için Random sınıfını kullan
+                            final Random random = Random();
+                            final Color randomColor = Color.fromARGB(
+                              255, // Opaklık (her zaman 255, tamamen görünür)
+                              random.nextInt(256), // Kırmızı (0-255)
+                              random.nextInt(256), // Yeşil (0-255)
+                              random.nextInt(256), // Mavi (0-255)
+                            );
+
+                            return PieChartSectionData(
+                              value: entry.value,
+                              title: "${entry.key}\n${entry.value.toInt()}",
+                              color: randomColor, // Rastgele belirlenen renk
+                              radius: 80,
+                              badgeWidget: InkWell(
+                                onTap: () {
+                                  Get.to(
+                                    () => WorkDetailScreen(
+                                      selectedWorkshop: entry.key,
+                                    ),
+                                  );
+                                },
+                                child:
+                                    const SizedBox(), // Boş widget, kullanılabilir
+                              ),
+                            );
+                          }).toList(),
+                          centerSpaceRadius: 50,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ],
-            );
-          }),
+                    ),
+
+                    selectedCheckDate == "Tarih Seç"
+                        ? Text(
+                            "${selectedDate?.day}/${selectedDate?.month}/${selectedDate?.year}",
+                            style: const TextStyle(fontSize: 18),
+                          )
+                        : Text("Tümü"),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Atölye Stok Tablosu",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    // Tablo
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: workshopService.workshopStocks.length,
+                      itemBuilder: (context, index) {
+                        final entry = workshopService.workshopStocks.entries
+                            .toList()[index];
+                        double progress =
+                            entry.value / maxStock; // Progress hesaplama
+
+                        // Satırı GestureDetector ile sarmalıyoruz
+                        return GestureDetector(
+                          onTap: () {
+                            // Tıklanınca detay sayfasına yönlendirme
+                            Get.to(() => WorkDetailScreen(
+                                  selectedWorkshop: entry.key,
+                                  date: selectedDate,
+                                  dataType: selectedCheckDate,
+                                ));
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: Text(
+                                        entry.key,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        "${entry.value.toInt()} Adet",
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color.fromARGB(
+                                                255, 66, 143, 67)),
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                // Progress Bar
+                                LinearProgressIndicator(
+                                  value: progress,
+                                  backgroundColor: Colors.grey[300],
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
