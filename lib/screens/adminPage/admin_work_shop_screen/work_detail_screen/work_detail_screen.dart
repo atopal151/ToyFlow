@@ -148,7 +148,9 @@ Stream<List<Map<String, dynamic>>> _getWorkshopDateData({DateTime? startDate}) a
       .where('tarih', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
       .where('tarih', isLessThan: Timestamp.fromDate(endOfDay))
       .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+      .map((snapshot) => snapshot.docs.map((doc) => doc.data()).where((data) =>
+                  (data['miktar'] ?? 0) >
+                  0) .toList());
 }
 
 
