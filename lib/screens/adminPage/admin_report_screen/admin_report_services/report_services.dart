@@ -3,23 +3,44 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ReportServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<Map<String, String>>> getWorkshops() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await _firestore.collection('atolyeler').get();
-      List<Map<String, String>> workshops = querySnapshot.docs.map((doc) {
-        return {
-          "name": doc["name"] as String,
-          "collection": doc["collection"] as String,
-          "nitelik": doc["nitelik"] as String,
-        };
-      }).toList();
-      return workshops;
-    } catch (e) {
-      print("Error fetching workshops: $e");
-      return [];
-    }
+Future<List<Map<String, String>>> getWorkshopsAndDepolar() async {
+  try {
+    // Atölyeleri çek
+    QuerySnapshot atolyelerSnapshot =
+        await _firestore.collection('atolyeler').get();
+
+    List<Map<String, String>> workshops = atolyelerSnapshot.docs.map((doc) {
+      return {
+        "name": doc["name"] as String,
+        "collection": doc["collection"] as String,
+        "nitelik": doc["nitelik"] as String,
+        "type": "atolye", // Atölye türünü belirtmek için ek alan
+      };
+    }).toList();
+
+    // Depoları çek
+    QuerySnapshot depolarSnapshot =
+        await _firestore.collection('depolar').get();
+
+    List<Map<String, String>> depolar = depolarSnapshot.docs.map((doc) {
+      return {
+        "name": doc["title"] as String,
+        "collection": doc["collection"] as String,
+        "nitelik": "depo", // Depo türünü belirtmek için
+        "type": "depo", // Depo türünü belirtmek için ek alan
+      };
+    }).toList();
+
+    // Atölye ve Depo listelerini birleştir
+    List<Map<String, String>> combinedList = [...workshops, ...depolar];
+
+    return combinedList;
+  } catch (e) {
+    print("Error fetching workshops and depolar: $e");
+    return [];
   }
+}
+
 
   /// Firestore'dan `urun` koleksiyonundaki `name` alanlarını çeker
   Future<List<String>> getToyNames(String collection,String name) async {

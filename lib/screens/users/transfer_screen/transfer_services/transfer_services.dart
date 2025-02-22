@@ -53,6 +53,7 @@ class TransferServices {
     required String renk,
     String? boyut,
     String? aksesuar,
+    required String atelye,
     required int miktar,
     required String islemTuru,
     required String aciklama,
@@ -65,7 +66,7 @@ class TransferServices {
         islemTuru: islemTuru,
         boyut: boyut,
         aksesuar: aksesuar,
-        atelye: _productServices.workshopName.value,
+        atelye: atelye,
         aciklama: aciklama,
       );
     } else {
@@ -114,6 +115,7 @@ class TransferServices {
             "$userRole ${_productServices.firstName.value} ${_productServices.lastName.value} $addDepo stoğuna $miktar adet ürün aktarıldı! ");
 
         await _recordMovement(
+          atelye: collectionPath,
           malzeme: urun,
           renk: urunRenk,
           boyut: boyut,
@@ -137,6 +139,8 @@ class TransferServices {
             context, "Ha$addDepo stoğuna ürün başarıyla aktarıldı!ta ");
 
         await _recordMovement(
+
+          atelye: collectionPath,
           malzeme: urun,
           renk: urunRenk,
           boyut: boyut,
@@ -169,7 +173,7 @@ class TransferServices {
         miktarGirdi <= 0) {
       showAlertDialog(context, "Lütfen tüm alanları doldurun. ");
 
-      return;
+      return; 
     }
 
     try {
@@ -194,14 +198,16 @@ class TransferServices {
             'tarih': FieldValue.serverTimestamp()
           });
          await _recordMovement(
+
+          atelye: depoCollection,
           malzeme: urun,
           renk: renk,
           boyut: boyut,
           aksesuar: aksesuar,
-          miktar: mevcutMiktar-miktarGirdi,
+          miktar: miktarGirdi,
           islemTuru: 'Stok Satış',
           aciklama:
-              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value}  ${mevcutMiktar-miktarGirdi} adet $renk $boyut $aksesuar cm $urun satış kaydı girildi.',
+              '$userRole ${_productServices.firstName.value} ${_productServices.lastName.value}  $miktarGirdi adet $renk $boyut $aksesuar cm $urun satış kaydı girildi.',
         );
           showAlertDialog(context, "Stok satış düşümü başarıyla gerçekleştirildi. ");
         } else {
@@ -260,6 +266,7 @@ class TransferServices {
               context, "$downDepo stoğundan ürün düşümü başarıyla yapıldı. ");
 
           await _recordMovement(
+            atelye: collectionPath,
             malzeme: malzeme,
             boyut: boyut,
             renk: renk,

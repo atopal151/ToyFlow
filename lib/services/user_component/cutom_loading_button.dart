@@ -9,7 +9,7 @@ class CustomLoadingButton extends StatelessWidget {
 
   const CustomLoadingButton({
     super.key,
-    this.isLoading,
+    this.isLoading = false,
     required this.onPressed,
     required this.text,
     this.backgroundColor = Colors.black,
@@ -30,25 +30,35 @@ class CustomLoadingButton extends StatelessWidget {
           ),
         ),
         child: (isLoading ?? false)
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : Row(
+            ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 8),
+                children: const [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  SizedBox(width: 12),
                   Text(
-                    text,
-                    style: const TextStyle(
+                    "Yükleniyor...",
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                 ],
+              )
+            : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
       ),
     );

@@ -61,10 +61,11 @@ class _StockSellScreenState extends State<StockSellScreen> {
         await FirebaseFirestore.instance.collection(depoCollection).get();
     setState(() {
       final urunSet =
-          urunSnapshot.docs.map((doc) => doc['urun'] as String).toSet();
+          urunSnapshot.docs.where((doc) => (doc['miktar'] ?? 0) > 0).map((doc) => doc['urun'] as String).toSet();
       _donusumUrun = urunSet.toList();
     });
   }
+
 
   Future<void> _fetchRenkler(String depoCollection, String urun) async {
     try {
@@ -88,7 +89,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
 
       setState(() {
         final renkSet =
-            renkSnapshot.docs.map((doc) => doc['renk'] as String).toSet();
+            renkSnapshot.docs.where((doc) => (doc['miktar'] ?? 0) > 0).map((doc) => doc['renk'] as String).toSet();
         _renk = renkSet.toList();
       });
 
@@ -108,7 +109,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
           .get();
       setState(() {
         final boyutSet =
-            boyutSnapshot.docs.map((doc) => doc['boyut'] as String).toSet();
+            boyutSnapshot.docs.where((doc) => (doc['miktar'] ?? 0) > 0).map((doc) => doc['boyut'] as String).toSet();
         _boyut = boyutSet.toList();
       });
     } catch (e) {
@@ -126,7 +127,7 @@ class _StockSellScreenState extends State<StockSellScreen> {
           .where('boyut', isEqualTo: boyut)
           .get();
       setState(() {
-        final aksesuarSet = aksesuarSnapshot.docs
+        final aksesuarSet = aksesuarSnapshot.docs.where((doc) => (doc['miktar'] ?? 0) > 0)
             .map((doc) => doc['aksesuar'] as String)
             .toSet();
         _aksesuar = aksesuarSet.toList();
@@ -172,169 +173,171 @@ class _StockSellScreenState extends State<StockSellScreen> {
           style: TextStyle(fontSize: 15),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DropdownSelector(
-            hintText: 'Depo',
-            items: _depolar,
-            selectedValue: _selectedDepo,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedDepo = newValue;
-                _currentDepoCollection = _depoCollectionMap[newValue!];
-                if (_currentDepoCollection != null) {
-                  _fetchUrunler(_currentDepoCollection!);
-                  _selectedMalzeme = null;
-                  _selectedRenk = null;
-                  _selectedBoyut = null;
-                  _selectedAksesuar = null;
-                  _renk = [];
-                  _boyut = [];
-                  _aksesuar = [];
-                  miktar = 0;
-                }
-              });
-            },
-            icon: Icons.arrow_drop_down,
-          ),
-          DropdownSelector(
-            hintText: 'Ürün',
-            items: _donusumUrun,
-            selectedValue: _selectedMalzeme,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedMalzeme = newValue;
-                if (newValue != null && _currentDepoCollection != null) {
-                  _fetchRenkler(_currentDepoCollection!, _selectedMalzeme!);
-                  _selectedRenk = null;
-                  _selectedBoyut = null;
-                  _selectedAksesuar = null;
-                  _boyut = [];
-                  _aksesuar = [];
-                  miktar = 0;
-                }
-              });
-            },
-            icon: Icons.arrow_drop_down,
-          ),
-          DropdownSelector(
-            hintText: 'Renk',
-            items: _renk,
-            selectedValue: _selectedRenk,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedRenk = newValue;
-                if (newValue != null && _currentDepoCollection != null) {
-                  _fetchBoyutlar(
-                      _currentDepoCollection!, _selectedMalzeme!, newValue);
-                  _selectedBoyut = null;
-                  _selectedAksesuar = null;
-                  _aksesuar = [];
-                  miktar = 0;
-                }
-              });
-            },
-            icon: Icons.arrow_drop_down,
-          ),
-          DropdownSelector(
-            hintText: 'Boyut',
-            items: _boyut,
-            selectedValue: _selectedBoyut,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedBoyut = newValue;
-                if (newValue != null && _currentDepoCollection != null) {
-                  _fetchAksesuarlar(
-                    _currentDepoCollection!,
-                    _selectedMalzeme!,
-                    _selectedRenk!,
-                    newValue,
-                  );
-                  _selectedAksesuar = null;
-                  miktar = 0;
-                }
-              });
-            },
-            icon: Icons.arrow_drop_down,
-          ),
-          DropdownSelector(
-            hintText: 'Aksesuar',
-            items: _aksesuar,
-            selectedValue: _selectedAksesuar,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedAksesuar = newValue;
-                if (newValue != null && _currentDepoCollection != null) {
-                  _fetchMiktar(
-                    _currentDepoCollection!,
-                    _selectedMalzeme!,
-                    _selectedRenk!,
-                    _selectedBoyut!,
-                    newValue,
-                  );
-                }
-              });
-            },
-            icon: Icons.arrow_drop_down,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 35.0,
-              top: 15,
-            ),
-            child: Text(
-              'Hazır Stok: $miktar adet',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: TextFieldWithCounter(
-                  controller: _miktarController,
-                  hintText: 'Miktar',
-                  icon: Icons.shopping_cart,
-                ),
-              ),
-              CustomLoadingButton(
-                isLoading: isLoading,
-                onPressed: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-
-                  try {
-                    final miktarGirdi = int.tryParse(_miktarController.text);
-                    if (_selectedMalzeme == null ||
-                        _selectedRenk == null ||
-                        _selectedBoyut == null ||
-                        _selectedAksesuar == null ||
-                        miktarGirdi == null) {
-                      showAlertDialog(context, "Lüften boş alanları doldur.");
-                      return;
-                    }
-                    _transferServices.sellMiktar(
-                        context,
-                        _currentDepoCollection!,
-                        _selectedMalzeme!,
-                        _selectedRenk!,
-                        _selectedBoyut!,
-                        _selectedAksesuar!,
-                        miktarGirdi);
-                    await Future.delayed(const Duration(seconds: 1));
-                  } finally {
-                    setState(() {
-                      isLoading = false;
-                    });
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownSelector(
+              hintText: 'Depo',
+              items: _depolar,
+              selectedValue: _selectedDepo,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedDepo = newValue;
+                  _currentDepoCollection = _depoCollectionMap[newValue!];
+                  if (_currentDepoCollection != null) {
+                    _fetchUrunler(_currentDepoCollection!);
+                    _selectedMalzeme = null;
+                    _selectedRenk = null;
+                    _selectedBoyut = null;
+                    _selectedAksesuar = null;
+                    _renk = [];
+                    _boyut = [];
+                    _aksesuar = [];
+                    miktar = 0;
                   }
-                },
-                text: "Satıldı",
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Ürün',
+              items: _donusumUrun,
+              selectedValue: _selectedMalzeme,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedMalzeme = newValue;
+                  if (newValue != null && _currentDepoCollection != null) {
+                    _fetchRenkler(_currentDepoCollection!, _selectedMalzeme!);
+                    _selectedRenk = null;
+                    _selectedBoyut = null;
+                    _selectedAksesuar = null;
+                    _boyut = [];
+                    _aksesuar = [];
+                    miktar = 0;
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Renk',
+              items: _renk,
+              selectedValue: _selectedRenk,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRenk = newValue;
+                  if (newValue != null && _currentDepoCollection != null) {
+                    _fetchBoyutlar(
+                        _currentDepoCollection!, _selectedMalzeme!, newValue);
+                    _selectedBoyut = null;
+                    _selectedAksesuar = null;
+                    _aksesuar = [];
+                    miktar = 0;
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Boyut',
+              items: _boyut,
+              selectedValue: _selectedBoyut,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedBoyut = newValue;
+                  if (newValue != null && _currentDepoCollection != null) {
+                    _fetchAksesuarlar(
+                      _currentDepoCollection!,
+                      _selectedMalzeme!,
+                      _selectedRenk!,
+                      newValue,
+                    );
+                    _selectedAksesuar = null;
+                    miktar = 0;
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            DropdownSelector(
+              hintText: 'Aksesuar',
+              items: _aksesuar,
+              selectedValue: _selectedAksesuar,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedAksesuar = newValue;
+                  if (newValue != null && _currentDepoCollection != null) {
+                    _fetchMiktar(
+                      _currentDepoCollection!,
+                      _selectedMalzeme!,
+                      _selectedRenk!,
+                      _selectedBoyut!,
+                      newValue,
+                    );
+                  }
+                });
+              },
+              icon: Icons.arrow_drop_down,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 35.0,
+                top: 15,
               ),
-            ],
-          ),
-        ],
+              child: Text(
+                'Hazır Stok: $miktar adet',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFieldWithCounter(
+                    controller: _miktarController,
+                    hintText: 'Miktar',
+                    icon: Icons.shopping_cart,
+                  ),
+                ),
+                CustomLoadingButton(
+                  isLoading: isLoading,
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+        
+                    try {
+                      final miktarGirdi = int.tryParse(_miktarController.text);
+                      if (_selectedMalzeme == null ||
+                          _selectedRenk == null ||
+                          _selectedBoyut == null ||
+                          _selectedAksesuar == null ||
+                          miktarGirdi == null) {
+                        showAlertDialog(context, "Lüften boş alanları doldur.");
+                        return;
+                      }
+                      _transferServices.sellMiktar(
+                          context,
+                          _currentDepoCollection!,
+                          _selectedMalzeme!,
+                          _selectedRenk!,
+                          _selectedBoyut!,
+                          _selectedAksesuar!,
+                          miktarGirdi);
+                      await Future.delayed(const Duration(seconds: 1));
+                    } finally {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                  text: "Satıldı",
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

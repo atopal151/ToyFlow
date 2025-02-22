@@ -20,6 +20,9 @@ class RecordServices {
       await _firestore.collection('movers').add({
         'malzeme': malzeme,
         'renk': renk,
+        'denye':denye,
+        'fine':fine,
+        'gramaj':gramaj,
         'miktar': miktar,
         'islemTuru': islemTuru,
         'boyut': boyut,

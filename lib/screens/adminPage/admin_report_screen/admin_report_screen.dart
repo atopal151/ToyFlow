@@ -4,6 +4,7 @@ import 'package:toyflow/screens/adminPage/admin_report_screen/admin_report_servi
 import 'package:toyflow/services/user_component/dropdown_selector.dart';
 
 import '../../../services/user_component/cutom_loading_button.dart';
+import 'admin_report_services/report_pdf_services.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -15,6 +16,9 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   final ReportServices _reportServices = ReportServices();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  DateTime? startDate;
+  DateTime? endDate;
 
   String? selectedWorkshop;
   String? selectedCollection;
@@ -47,6 +51,34 @@ class _ReportScreenState extends State<ReportScreen> {
   ];
 
   Map<String, Map<String, String>> workshopMap = {};
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: startDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != startDate) {
+      setState(() {
+        startDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: endDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != endDate) {
+      setState(() {
+        endDate = picked;
+      });
+    }
+  }
 
   List<Map<String, dynamic>> reportData = [];
   @override
@@ -112,6 +144,23 @@ class _ReportScreenState extends State<ReportScreen> {
         query = query.where("denye", isEqualTo: selectedDenye);
       }
 
+      if (startDate != null && endDate != null) {
+        // endDate'i gün sonuna ayarlıyoruz
+        DateTime adjustedEndDate = DateTime(
+          endDate!.year,
+          endDate!.month,
+          endDate!.day,
+          23,
+          59,
+          59,
+        );
+
+        query = query
+            .orderBy("tarih")
+            .startAt([Timestamp.fromDate(startDate!)]).endAt(
+                [Timestamp.fromDate(adjustedEndDate)]);
+      }
+
       // **Firestore'dan Veriyi Çekme**
       QuerySnapshot querySnapshot = await query.get();
 
@@ -132,7 +181,8 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _fetchWorkshops() async {
-    List<Map<String, String>> workshops = await ReportServices().getWorkshops();
+    List<Map<String, String>> workshops =
+        await ReportServices().getWorkshopsAndDepolar();
 
     setState(() {
       workshopNames = workshops.map((w) => w["name"]!).toList();
@@ -147,8 +197,8 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Future<void> _fetchToyName() async {
-    String collectionToFetch = "toy_name"; // Varsayılan koleksiyon
-    String docName = "name"; // Varsayılan name
+    String collectionToFetch = ""; // Varsayılan koleksiyon
+    String docName = ""; // Varsayılan name
 
     switch (selectedNitelik) {
       case "Dokuma":
@@ -239,12 +289,45 @@ class _ReportScreenState extends State<ReportScreen> {
         } else if (selectedTransaction == "Fire Kaydı") {
           collectionToFetch = "toy_name";
           docName = "name";
+        } else if (selectedTransaction == "Stok Satış") {
+          collectionToFetch = "toy_name";
+          docName = "name";
+        }
+        break;
+      case "depo":
+        if (selectedTransaction == "Stok Ekleme") {
+          collectionToFetch = "toy_name";
+          docName = "name";
+        } else if (selectedTransaction == "Stok Düşümü") {
+          collectionToFetch = "toy_name";
+          docName = "name";
+        } else if (selectedTransaction == "Fire Kaydı") {
+          collectionToFetch = "toy_name";
+          docName = "name";
+        } else if (selectedTransaction == "Stok Satış") {
+          collectionToFetch = "toy_name";
+          docName = "name";
+        }
+        break;
+      case "admin":
+        if (selectedTransaction == "Stok Ekleme") {
+          collectionToFetch = "iplik";
+          docName = "iplik";
+        } else if (selectedTransaction == "Stok Düşümü") {
+          collectionToFetch = "iplik";
+          docName = "iplik";
+        } else if (selectedTransaction == "Fire Kaydı") {
+          collectionToFetch = "iplik";
+          docName = "iplik";
+        } else if (selectedTransaction == "Stok Satış") {
+          collectionToFetch = "iplik";
+          docName = "iplik";
         }
         break;
 
       default:
-        collectionToFetch = "toy_name";
-        docName = "name";
+        collectionToFetch = "";
+        docName = "";
     }
 
     List<String> fetchedToyNames =
@@ -327,10 +410,9 @@ class _ReportScreenState extends State<ReportScreen> {
                             selectedNitelik = workshopMap[value]
                                 ?["nitelik"]; // Nitelik bilgisi güncellendi
                             toyNames.clear();
-                            print(selectedCollection);
-                            
+                            print(selectedWorkshop);
+                            print(selectedNitelik);
                           }),
-                          _fetchToyName()
                         },
                     icon: Icons.factory),
 
@@ -342,25 +424,23 @@ class _ReportScreenState extends State<ReportScreen> {
                 onChanged: (value) => {
                       setState(() {
                         selectedTransaction = value;
+                        print(selectedTransaction);
+                        _fetchToyName();
                       })
                     },
                 icon: Icons.list),
 
             //--------urun seçimi---------
-            toyNames.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : DropdownSelector(
-                    hintText: "Ürün",
-                    items: toyNames,
-                    selectedValue: selectedToy,
-                    onChanged: (value) => {
+            DropdownSelector(
+                hintText: "Ürün",
+                items: toyNames,
+                selectedValue: selectedToy,
+                onChanged: (value) => {
                       setState(() {
                         selectedToy = value;
                       })
                     },
-                    icon: Icons.toys),
+                icon: Icons.toys),
 
             //--------Renk Seçimi---------
 
@@ -369,6 +449,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       (selectedNitelik == "Boyama" ||
                           selectedNitelik == "Kesim" ||
                           selectedNitelik == "Dikim" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Dolum" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
@@ -376,16 +457,19 @@ class _ReportScreenState extends State<ReportScreen> {
                       (selectedNitelik == "Kesim" ||
                           selectedNitelik == "Dikim" ||
                           selectedNitelik == "Dolum" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
                   (selectedTransaction == "Fire Kaydı" &&
                       (selectedNitelik == "Kesim" ||
                           selectedNitelik == "Dikim" ||
                           selectedNitelik == "Dolum" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
                   (selectedTransaction == "Stok Satış" &&
-                      (selectedNitelik == "Transfer")),
+                          (selectedNitelik == "Transfer") ||
+                      selectedNitelik == "depo"),
               child: colorNames.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : DropdownSelector(
@@ -406,20 +490,24 @@ class _ReportScreenState extends State<ReportScreen> {
                       (selectedNitelik == "Kesim" ||
                           selectedNitelik == "Dikim" ||
                           selectedNitelik == "Dolum" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
                   (selectedTransaction == "Stok Düşümü" &&
                       (selectedNitelik == "Dikim" ||
                           selectedNitelik == "Dolum" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
                   (selectedTransaction == "Fire Kaydı" &&
                       (selectedNitelik == "Dikim" ||
                           selectedNitelik == "Dolum" ||
+                          selectedNitelik == "depo" ||
                           selectedNitelik == "Paketleme" ||
                           selectedNitelik == "Transfer")) ||
                   (selectedTransaction == "Stok Satış" &&
-                      (selectedNitelik == "Transfer")),
+                          (selectedNitelik == "Transfer") ||
+                      selectedNitelik == "depo"),
               child: boyutNames.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : DropdownSelector(
@@ -438,13 +526,17 @@ class _ReportScreenState extends State<ReportScreen> {
             Visibility(
               visible: (selectedTransaction == "Stok Ekleme" &&
                       (selectedNitelik == "Paketleme" ||
-                          selectedNitelik == "Transfer")) ||
+                          selectedNitelik == "Transfer")||
+                          selectedNitelik == "depo" ) ||
                   (selectedTransaction == "Stok Düşümü" &&
-                      (selectedNitelik == "Transfer")) ||
+                      (selectedNitelik == "Transfer")||
+                          selectedNitelik == "depo" ) ||
                   (selectedTransaction == "Fire Kaydı" &&
-                      (selectedNitelik == "Transfer")) ||
+                      (selectedNitelik == "Transfer")||
+                          selectedNitelik == "depo" ) ||
                   (selectedTransaction == "Stok Satış" &&
-                      (selectedNitelik == "Transfer")),
+                      (selectedNitelik == "Transfer")||
+                          selectedNitelik == "depo" ),
               child: aksesuarNames.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : DropdownSelector(
@@ -528,6 +620,37 @@ class _ReportScreenState extends State<ReportScreen> {
                       },
                       icon: Icons.format_line_spacing),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Text("Başlangıç Tarihi"),
+                      TextButton(
+                        onPressed: () => _selectStartDate(context),
+                        child: Text(startDate == null
+                            ? "Seçiniz"
+                            : "${startDate!.day}/${startDate!.month}/${startDate!.year}"),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Bitiş Tarihi"),
+                      TextButton(
+                        onPressed: () => _selectEndDate(context),
+                        child: Text(endDate == null
+                            ? "Seçiniz"
+                            : "${endDate!.day}/${endDate!.month}/${endDate!.year}"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
             Row(
               children: [
                 Expanded(
@@ -546,12 +669,24 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 Expanded(
-                  flex:1,
+                  flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0),
                     child: CustomLoadingButton(
-                      onPressed: () {
-                        //pdf e aktarma işlemleri
+                      onPressed: () async {
+                        if (reportData.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('PDF için veri bulunamadı')),
+                          );
+                          return;
+                        }
+
+                        await ReportPdfService.generateReportPdf(
+                          context,
+                          'Rapor - ${selectedWorkshop ?? "Genel"}',
+                          reportData,
+                        );
                       },
                       text: 'PDF`e aktar',
                     ),
@@ -562,10 +697,11 @@ class _ReportScreenState extends State<ReportScreen> {
 
             // **Listeleme Bölümü**
             isLoading
-                ? Center(child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ))
+                ? Center(
+                    child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  ))
                 : reportData.isEmpty
                     ? Center(child: Text("Sonuç bulunamadı"))
                     : ListView.builder(
@@ -594,17 +730,17 @@ class _ReportScreenState extends State<ReportScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      "İşlem Türü: ${report["islemTuru"] ?? "Bilinmiyor"}"),
+                                      "İşlem Türü: ${report["islemTuru"] ?? "-"}"),
+                                  Text("Atelye: ${report["atelye"] ?? "-"}"),
+                                  Text("Miktar: ${report["miktar"] ?? "-"}"),
+                                  Text("Renk: ${report["renk"] ?? "-"}"),
+                                  Text("Gramaj: ${report["gramaj"] ?? "-"}"),
+                                  Text("Fine: ${report["fine"] ?? "-"}"),
+                                  Text("Denye: ${report["denye"] ?? "-"}"),
                                   Text(
-                                      "Atelye: ${report["atelye"] ?? "Bilinmiyor"}"),
+                                      "Aksesuar: ${report["aksesuar"] ?? "-"}"),
                                   Text(
-                                      "Miktar: ${report["miktar"] ?? "Bilinmiyor"}"),
-                                  Text(
-                                      "Renk: ${report["renk"] ?? "Bilinmiyor"}"),
-                                  Text(
-                                      "Aksesuar: ${report["aksesuar"] ?? "Yok"}"),
-                                  Text(
-                                      "Açıklama: ${report["aciklama"] ?? "Bilinmiyor"}"),
+                                      "Açıklama: ${report["aciklama"] ?? "-"}"),
                                   Text(
                                     "Tarih: ${_formatTimestamp(report["tarih"])}",
                                   ),

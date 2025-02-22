@@ -325,6 +325,12 @@ class _StokTransferState extends State<StokTransfer> {
                             content: Text("Lütfen tüm alanları doldurun.")),
                       );
                     } else {
+                      setState(() {
+                        isLoading = true; // Loading başlatılıyor
+                      });
+
+                      // Kullanıcıya loading gösterebilmek için 1 saniyelik gecikme ekliyoruz
+                      await Future.delayed(const Duration(seconds: 1));
                       print(
                           "$_selectedDepo $_selectedGetDepo $_selectedMalzeme $_selectedRenk $_selectedBoyut $_selectedAksesuar $_miktarController");
 
@@ -349,7 +355,6 @@ class _StokTransferState extends State<StokTransfer> {
                           miktar: int.parse(_miktarController.text),
                         ),
                       ]).then((results) {
-
                         // Eğer tüm işlemler başarılıysa kullanıcıya mesaj göster
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -364,7 +369,6 @@ class _StokTransferState extends State<StokTransfer> {
                         _selectedMalzeme = null;
                         _selectedRenk = null;
                         setState(() {
-
                           isLoading = true;
                           Get.back();
                         });
