@@ -734,6 +734,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                   Text("Atelye: ${report["atelye"] ?? "-"}"),
                                   Text("Miktar: ${report["miktar"] ?? "-"}"),
                                   Text("Renk: ${report["renk"] ?? "-"}"),
+                                   Text("Boyut: ${report["boyut"] ?? "-"}"),
                                   Text("Gramaj: ${report["gramaj"] ?? "-"}"),
                                   Text("Fine: ${report["fine"] ?? "-"}"),
                                   Text("Denye: ${report["denye"] ?? "-"}"),
