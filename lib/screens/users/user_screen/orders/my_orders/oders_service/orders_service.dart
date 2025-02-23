@@ -4,34 +4,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 Future<void> saveOrderToFirestore({
-   String? urun,
-   String? iplik,
-   String? kumas,
-   String? renk,
-   String? boyut,
-   String? aksesuar,
-   String? gramaj,
-   String? fine,
-   String? denye,
+  String? atelye,
+  String? atelyeCollection,
+  String? atelyeNitelik,
+  String? urun,
+  String? iplik,
+  String? kumas,
+  String? renk,
+  String? boyut,
+  String? aksesuar,
+  String? gramaj,
+  String? fine,
+  String? denye,
   required String miktar,
   required String role,
   String? aciklama,
   required String status,
-  required BuildContext context,  
+  required BuildContext context,
 }) async {
-  try { 
+  try {
     showDialog(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return const Center(
           child: CircularProgressIndicator(),
         );
       },
     );
- 
+
     await FirebaseFirestore.instance.collection('orders').add({
-      'urun': urun ?? '', 
+      'atelye': atelye ?? '',
+      'atelyecollection':atelyeCollection ?? '',
+      'atelyenitelik':atelyeNitelik ?? '',
+      'urun': urun ?? '',
       'iplik': iplik ?? '',
       'kumas': kumas ?? '',
       'renk': renk ?? '',
@@ -42,19 +48,19 @@ Future<void> saveOrderToFirestore({
       'denye': denye ?? '',
       'miktar': miktar,
       'role': role,
-      "aciklama":aciklama,
-      'status':status,
-      'timestamp': FieldValue.serverTimestamp(),  
+      "aciklama": aciklama,
+      'status': status,
+      'timestamp': FieldValue.serverTimestamp(),
     });
- 
-    Navigator.pop(context);  
+
+    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Sipariş başarıyla kaydedildi."),
       ),
     );
-  } catch (e) { 
-    Navigator.pop(context); 
+  } catch (e) {
+    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Sipariş kaydedilirken bir hata oluştu: $e"),

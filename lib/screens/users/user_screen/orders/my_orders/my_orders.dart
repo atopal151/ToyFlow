@@ -24,22 +24,81 @@ class _MyOrdersState extends State<MyOrders> {
   final StockService stockService = StockService();
   final AtolyeServices atolyeServices = AtolyeServices();
   final TransferServices transferServices = TransferServices();
+  Map<String, bool> isLoading = {};
 
   @override
   void initState() {
     super.initState();
-    print(productServices.role.value);
+    productServices.getAtolyeCollectionDetails();
   }
 
-  Future<void> transferOrder(String orderId) async {
+  Future<void> transferOrder(String orderId, int miktar) async {
     try {
-      await _firestore.collection('orders').doc(orderId).delete();
-      if (mounted) {
-        showAlertDialog(context, "Sipariş başarıyla stoğa aktarıldı.");
+      // Geçerli miktar kontrolü
+      if (miktar <= 0) {
+        if (mounted) {
+          showAlertDialog(context, "Geçerli bir miktar girin.");
+        }
+        return;
+      }
+
+      // Siparişi getir
+      DocumentSnapshot orderDoc =
+          await _firestore.collection('orders').doc(orderId).get();
+
+      print("1.aşama");
+
+      // Firestore'dan gelen miktarı güvenli şekilde int'e çevirme
+      String miktarString = orderDoc['miktar']?.toString() ?? "0";
+      int currentMiktar = int.tryParse(miktarString) ?? 0;
+
+      print("Mevcut Sipariş Miktarı: $currentMiktar");
+
+      if (!orderDoc.exists) {
+        if (mounted) {
+          showAlertDialog(context, "Sipariş bulunamadı.");
+        }
+        return;
+      }
+
+      // Geçerli sipariş miktarını aldıktan sonra işlemleri yap
+      if (miktar >= currentMiktar) {
+        // Eğer transfer miktarı mevcut miktara eşit veya fazla ise siparişi sil
+        await _firestore.collection('orders').doc(orderId).delete();
+        print("Sipariş tamamen silindi.");
+
+        if (mounted) {
+          showAlertDialog(
+              context, "Sipariş başarıyla stoğa aktarıldı ve tamamen silindi.");
+        }
+      } else {
+        // Aksi durumda siparişin miktarını güncelle
+        int yeniMiktar = currentMiktar - miktar;
+        print("Yeni Miktar (Güncellenecek): $yeniMiktar");
+
+        try {
+          await _firestore.collection('orders').doc(orderId).update({
+            'miktar': yeniMiktar,
+          });
+          print("Sipariş miktarı Firestore'da başarıyla güncellendi.");
+        } catch (updateError) {
+          print("Güncelleme hatası: $updateError");
+        }
+
+        // Güncellenen dokümanı tekrar al ve yazdır
+        DocumentSnapshot updatedDoc =
+            await _firestore.collection('orders').doc(orderId).get();
+        print("Güncel miktar (Firestore'dan): ${updatedDoc['miktar']}");
+
+        if (mounted) {
+          showAlertDialog(context,
+              "Sipariş miktarı güncellendi. Kalan miktar: $yeniMiktar");
+        }
       }
     } catch (e) {
       if (mounted) {
-        showAlertDialog(context, "Hata $e");
+        showAlertDialog(context, "Hata oluştu: $e");
+        print("Hata: $e");
       }
     }
   }
@@ -103,14 +162,15 @@ class _MyOrdersState extends State<MyOrders> {
       ),
       body: Obx(
         () {
-          print(productServices.role.value);
-          if (productServices.role.value.isEmpty) {
+          print(productServices.atolyeCollection.value);
+          if (productServices.atolyeCollection.value.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
           return StreamBuilder<QuerySnapshot>(
             stream: _firestore
                 .collection('orders')
-                .where("role", isEqualTo: productServices.role.value)
+                .where("role",
+                    isEqualTo: productServices.atolyeCollection.value)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -180,30 +240,86 @@ class _MyOrdersState extends State<MyOrders> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // Approve Order Button
                           if (status != 'Tamamlandı')
-                            IconButton(
-                              icon: const Icon(Icons.check_circle,
-                                  color: Colors.green),
-                              onPressed: () {
-                                approveOrder(order.id);
-                              },
-                            ),
+                            isLoading[order.id + '_approve'] == true
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : IconButton(
+                                    icon: const Icon(Icons.check_circle,
+                                        color: Colors.green),
+                                    onPressed: () async {
+                                      setState(() {
+                                        isLoading[order.id + '_approve'] = true;
+                                      });
+
+                                      await approveOrder(order.id);
+
+                                      setState(() {
+                                        isLoading[order.id + '_approve'] =
+                                            false;
+                                      });
+                                    },
+                                  ),
+
+                          // Delete Order Button
                           if (status == 'Tamamlandı')
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                deleteOrder(order.id);
-                              },
-                            ),
+                            isLoading[order.id + '_delete'] == true
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () async {
+                                      setState(() {
+                                        isLoading[order.id + '_delete'] = true;
+                                      });
+
+                                      await deleteOrder(order.id);
+
+                                      setState(() {
+                                        isLoading[order.id + '_delete'] = false;
+                                      });
+                                    },
+                                  ),
+
+                          // Transfer Order Button
                           if (status == 'Tamamlandı')
-                            IconButton(
-                              icon: const Icon(Icons.transfer_within_a_station,
-                                  color: Color.fromARGB(255, 241, 126, 38)),
-                              onPressed: () {
-                                showAmountInputDialog(
-                                    context, order.id, orderData);
-                              },
-                            ),
+                            isLoading[order.id + '_transfer'] == true
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : IconButton(
+                                    icon: const Icon(
+                                        Icons.transfer_within_a_station,
+                                        color:
+                                            Color.fromARGB(255, 241, 126, 38)),
+                                    onPressed: () async {
+                                      setState(() {
+                                        isLoading[order.id + '_transfer'] =
+                                            true;
+                                      });
+
+                                      await showAmountInputDialog(
+                                          context, order.id, orderData);
+
+                                      setState(() {
+                                        isLoading[order.id + '_transfer'] =
+                                            false;
+                                      });
+                                    },
+                                  ),
                         ],
                       ),
                     ),
@@ -306,73 +422,151 @@ class _MyOrdersState extends State<MyOrders> {
         );
       }
       if (productServices.role.value == "Boyama") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
+          malzeme: orderData["kumas"],
           context: context,
-          urun: orderData['kumas'],
           gramaj: orderData['gramaj'],
           fine: orderData['fine'],
           renk: orderData['renk'] ?? "Yok",
           miktar: miktar,
         );
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['kumas'],
+            gramaj: orderData['gramaj'],
+            fine: orderData['fine'],
+            renk: orderData['renk'] ?? "Yok",
+            miktar: miktar,
+          );
+
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Kesim") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
           context: context,
-          urun: orderData['kumas'],
+          malzeme: orderData['kumas'],
           gramaj: orderData['gramaj'],
           fine: orderData['fine'],
           miktar: miktar,
           renk: orderData['renk'],
         );
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['kumas'],
+            gramaj: orderData['gramaj'],
+            fine: orderData['fine'],
+            miktar: miktar,
+            renk: orderData['renk'],
+          );
+
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Dikim") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
           context: context,
-          urun: orderData['urun'],
+          malzeme: orderData['urun'],
           miktar: miktar,
           boyut: orderData['boyut'],
           renk: orderData['renk'],
         );
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['urun'],
+            miktar: miktar,
+            boyut: orderData['boyut'],
+            renk: orderData['renk'],
+          );
+
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Dolum") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
           context: context,
-          urun: orderData['urun'],
+          malzeme: orderData['urun'],
           miktar: miktar,
           boyut: orderData['boyut'],
           renk: orderData['renk'],
         );
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['urun'],
+            miktar: miktar,
+            boyut: orderData['boyut'],
+            renk: orderData['renk'],
+          );
+
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Paketleme") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
           context: context,
-          urun: orderData['urun'],
+          malzeme: orderData['urun'],
           miktar: miktar,
           boyut: orderData['boyut'],
           renk: orderData['renk'],
         );
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['urun'],
+            miktar: miktar,
+            boyut: orderData['boyut'],
+            renk: orderData['renk'],
+          );
+        }
+
+        // Siparişi Firestore'dan sil
+        await transferOrder(orderId, miktar);
       }
       if (productServices.role.value == "Transfer") {
-        atolyeServices.addOrUpdateUrunWaitStock(
-          collectionsWait: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
           context: context,
-          urun: orderData['urun'],
+          malzeme: orderData['urun'],
           miktar: miktar,
           boyut: orderData['boyut'],
           aksesuar: orderData['aksesuar'],
           renk: orderData['renk'],
         );
-        showAlertDialog(context,
-            "Sipariş Onaylandı. Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
-      }
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['urun'],
+            miktar: miktar,
+            boyut: orderData['boyut'],
+            aksesuar: orderData['aksesuar'],
+            renk: orderData['renk'],
+          );
 
-      // Siparişi Firestore'dan sil
-      await transferOrder(orderId);
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+          showAlertDialog(context,
+              "Sipariş Onaylandı. Paketleme Atölyesi Stoğundan Transfer Yapabilirsiniz.");
+        }
+      }
     } catch (e) {
       showAlertDialog(context, "Hata: $e");
     }

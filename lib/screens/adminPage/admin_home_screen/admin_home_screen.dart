@@ -363,68 +363,64 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     const SizedBox(height: 10),
                     // Tablo
                     ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: workshopService.workshopStocks.length,
-                      itemBuilder: (context, index) {
-                        final entry = workshopService.workshopStocks.entries
-                            .toList()[index];
-                        double progress =
-                            entry.value / maxStock; // Progress hesaplama
+  physics: const NeverScrollableScrollPhysics(),
+  shrinkWrap: true,
+  itemCount: workshopService.workshopStocks.length,
+  itemBuilder: (context, index) {
+    final entry = workshopService.workshopStocks.entries.toList()[index];
+    double progress = (maxStock > 0) ? entry.value / maxStock : 0.0;
 
-                        // Satırı GestureDetector ile sarmalıyoruz
-                        return GestureDetector(
-                          onTap: () {
-                            // Tıklanınca detay sayfasına yönlendirme
-                            Get.to(() => WorkDetailScreen(
-                                  selectedWorkshop: entry.key,
-                                  date: selectedDate,
-                                  dataType: selectedCheckDate,
-                                ));
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: Text(
-                                        entry.key,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                        "${entry.value.toInt()} Adet",
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color.fromARGB(
-                                                255, 66, 143, 67)),
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5),
-                                // Progress Bar
-                                LinearProgressIndicator(
-                                  value: progress,
-                                  backgroundColor: Colors.grey[300],
-                                  color: Colors.black,
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => WorkDetailScreen(
+              selectedWorkshop: entry.key,
+              date: selectedDate,
+              dataType: selectedCheckDate,
+            ));
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    entry.key,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "${entry.value.toInt()} Adet",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromARGB(255, 66, 143, 67),
                     ),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            // Güvenli Progress Bar
+            LinearProgressIndicator(
+              value: progress.clamp(0.0, 1.0),
+              backgroundColor: Colors.grey[300],
+              color: Colors.black,
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  },
+),
+
                   ],
                 );
               }),

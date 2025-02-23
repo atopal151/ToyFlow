@@ -23,7 +23,14 @@ class _ComingOrdersState extends State<ComingOrders> {
     "Kesim": "Dikim",
     "Dikim": "Dolum",
     "Dolum": "Paketleme",
+    "Paketleme": "Transfer",
   };
+
+  @override
+  void initState() {
+    super.initState();
+    productServices.getAtolyeCollectionDetails();
+  }
 
   Future<void> approveOrder(String orderId) async {
     try {
@@ -45,16 +52,16 @@ class _ComingOrdersState extends State<ComingOrders> {
   Widget build(BuildContext context) {
     final currentRole = productServices.role.value;
     final targetRole = roleMapping[currentRole];
-
+    print(productServices.getAtolyeCollectionDetails());
     return Scaffold(
       appBar: AppBar(
         title: const Text("Gelen Siparişler"),
       ),
       body: Obx(
         () {
-          final currentRole = productServices.role.value;
-
-          if (currentRole.isEmpty) {
+          final atelyeCollection=productServices.atolyeCollection.value;
+          
+          if (atelyeCollection.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -68,16 +75,11 @@ class _ComingOrdersState extends State<ComingOrders> {
             "Paketleme": "Transfer",
           };
 
-          final targetRole = roleMapping[currentRole];
-
-          if (targetRole == null) {
-            return const Center(child: Text("Geçersiz role."));
-          }
 
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('orders')
-                .where('role', isEqualTo: targetRole)
+                .where('atelyecollection', isEqualTo: atelyeCollection)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

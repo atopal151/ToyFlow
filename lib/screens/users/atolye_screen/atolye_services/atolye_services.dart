@@ -854,6 +854,237 @@ class AtolyeServices {
     //-------------------------------------------------------------------------------------//
   }
 
+
+//-----stok düşümü-------
+  Future<String> decreaseOrdersStock({
+    required BuildContext context,
+    required String malzeme,
+    required String collection,
+    String? denye,
+    String? gramaj,
+    String? fine,
+    String? renk,
+    String? boyut,
+    String? aksesuar,
+    required int miktar,
+  }) async {
+    if (_productServices.role.value == "Dokuma") {
+      if (collection.isEmpty ||
+          malzeme.isEmpty ||
+          denye!.isEmpty ||
+          miktar <= 0) {
+        showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+        return "eksik bilgi";
+      }
+
+      try {
+        QuerySnapshot existingRecord = await _firestore
+            .collection(collection)
+            .where('urun', isEqualTo: malzeme)
+            .where('denye', isEqualTo: denye)
+            .get();
+
+        if (existingRecord.docs.isNotEmpty) {
+          DocumentSnapshot doc = existingRecord.docs.first;
+          int currentMiktar = doc['miktar'] ?? 0;
+
+          if (currentMiktar >= miktar) {
+            await _firestore.collection(collection).doc(doc.id).update({
+              'miktar': currentMiktar - miktar,
+            });
+
+            showAlertDialog(context, "Stok başarı ile güncellendi.");
+            
+            await _recordMovement(
+              malzeme: malzeme,
+              denye: denye,
+              miktar: miktar,
+              islemTuru: 'Stok Düşümü',
+              aciklama:
+                  '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar kilo  denye: $denye  $malzeme düşümü yaptı.',
+            );
+            return "başarılı";
+          } else {
+            showAlertDialog(context, "Yetersiz stok miktarı.");
+            return "yetersiz";
+          }
+        } else {
+          showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
+          return "urun_bulunamadi";
+        }
+      } catch (e) {
+        showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
+        return "hata";
+      } 
+    }
+
+    if (_productServices.role.value == "Boyama") {
+      if (collection.isEmpty ||
+          malzeme.isEmpty ||
+          gramaj!.isEmpty ||
+          fine!.isEmpty ||
+          miktar <= 0) {
+        showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+        return "eksik bilgi";
+      }
+
+      try {
+        QuerySnapshot existingRecord = await _firestore
+            .collection(collection)
+            .where('urun', isEqualTo: malzeme)
+            .where('gramaj', isEqualTo: gramaj)
+            .where('fine', isEqualTo: fine)
+            .get();
+
+        if (existingRecord.docs.isNotEmpty) {
+          DocumentSnapshot doc = existingRecord.docs.first;
+          int currentMiktar = doc['miktar'] ?? 0;
+
+          if (currentMiktar >= miktar) {
+            await _firestore.collection(collection).doc(doc.id).update({
+              'miktar': currentMiktar - miktar,
+            });
+
+            showAlertDialog(context, "Stok başarı ile güncellendi.");
+
+            await _recordMovement(
+              malzeme: malzeme,
+              gramaj: gramaj,
+              fine: fine,
+              miktar: miktar,
+              islemTuru: 'Stok Düşümü',
+              aciklama:
+                  '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar kilo  gramaj: $gramaj fine: $fine  $malzeme düşümü yaptı.',
+            );
+            return "başarılı";
+          } else {
+            showAlertDialog(context, "Yetersiz stok miktarı.");
+            return "yetersiz";
+          }
+        } else {
+          showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
+          return "urun_bulunamadi";
+        }
+      } catch (e) {
+        showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
+        return "hata";
+      } 
+    }
+
+    if (_productServices.role.value == "Kesim") {
+      if (collection.isEmpty ||
+          malzeme.isEmpty ||
+          gramaj!.isEmpty ||
+          fine!.isEmpty ||
+          renk!.isEmpty ||
+          miktar <= 0) {
+        showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+        return "eksik bilgi";
+      }
+
+      try {
+        QuerySnapshot existingRecord = await _firestore
+            .collection(collection)
+            .where('urun', isEqualTo: malzeme)
+            .where('gramaj', isEqualTo: gramaj)
+            .where('fine', isEqualTo: fine)
+            .where('renk', isEqualTo: renk)
+            .get();
+
+        if (existingRecord.docs.isNotEmpty) {
+          DocumentSnapshot doc = existingRecord.docs.first;
+          int currentMiktar = doc['miktar'] ?? 0;
+
+          if (currentMiktar >= miktar) {
+            await _firestore.collection(collection).doc(doc.id).update({
+              'miktar': currentMiktar - miktar,
+            });
+
+            showAlertDialog(context, "Stok başarı ile güncellendi.");
+
+            await _recordMovement(
+              malzeme: malzeme,
+              gramaj: gramaj,
+              fine: fine,
+              renk: renk,
+              miktar: miktar,
+              islemTuru: 'Stok Düşümü',
+              aciklama:
+                  '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar kilo  gramaj: $gramaj fine: $fine $renk $malzeme düşümü yaptı.',
+            );
+            return "başarılı";
+          } else {
+            showAlertDialog(context, "Yetersiz stok miktarı.");
+            return "yetersiz";
+          }
+        } else {
+          showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
+          return "urun_bulunamadi";
+        }
+      } catch (e) {
+        showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
+        return "hata";
+      } 
+    }
+
+    if (_productServices.role.value == "Dikim" ||
+        _productServices.role.value == "Dolum" ||
+        _productServices.role.value == "Paketleme") {
+      if (collection.isEmpty ||
+          malzeme.isEmpty ||
+          boyut!.isEmpty ||
+          renk!.isEmpty ||
+          miktar <= 0) {
+        showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+        return "eksik bilgi";
+      }
+
+      try {
+        QuerySnapshot existingRecord = await _firestore
+            .collection(collection)
+            .where('urun', isEqualTo: malzeme)
+            .where('renk', isEqualTo: renk)
+            .where('boyut', isEqualTo: boyut)
+            .get();
+
+        if (existingRecord.docs.isNotEmpty) {
+          DocumentSnapshot doc = existingRecord.docs.first;
+          int currentMiktar = doc['miktar'] ?? 0;
+
+          if (currentMiktar >= miktar) {
+            await _firestore.collection(collection).doc(doc.id).update({
+              'miktar': currentMiktar - miktar,
+            });
+
+            showAlertDialog(context, "Stok başarı ile güncellendi.");
+
+            await _recordMovement(
+              malzeme: malzeme,
+              renk: renk,
+              boyut: boyut,
+              miktar: miktar,
+              islemTuru: 'Stok Düşümü',
+              aciklama:
+                  '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar adet $boyut $renk $malzeme düşümü yaptı.',
+            );
+            return "başarılı";
+          } else {
+            showAlertDialog(context, "Yetersiz stok miktarı.");
+            return "yetersiz";
+          }
+        } else {
+          showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
+          return "urun_bulunamadi";
+        }
+      } catch (e) {
+        showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
+        return "hata";
+      } 
+    }
+    return "geçersiz rol";
+  }
+
+
 //-----stok düşümü-------
   Future<void> decreaseStock({
     required BuildContext context,

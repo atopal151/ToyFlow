@@ -18,7 +18,6 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
   final List<Widget> _pages = [
     const AdminHomeScreen(),
     const AdminWorkShopScreen(),
-    //const ChatScreen(),
     const AdminSearchScreen(),
   ];
 
@@ -46,10 +45,6 @@ class _BottomNavBarWithPagesState extends State<BottomNavBarWithPages> {
               icon: _buildAnimatedIcon(Icons.cut_outlined, 1),
               label: '',
             ),
-            /*BottomNavigationBarItem(
-              icon: _buildAnimatedIcon(Icons.chat_bubble_outline, 2),
-              label: '',
-            ),*/
             BottomNavigationBarItem(
               icon: _buildAnimatedIcon(Icons.search_outlined, 2),//chats eklerken 3 yap
               label: '',

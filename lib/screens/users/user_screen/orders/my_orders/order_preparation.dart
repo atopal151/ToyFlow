@@ -8,6 +8,7 @@ import 'package:toyflow/services/user_component/dropdown_selector.dart';
 import 'package:toyflow/services/user_component/text_field_with_counter.dart';
 
 import '../../../../../services/user_services/get_data_table.dart';
+import '../../../../adminPage/admin_report_screen/admin_report_services/report_services.dart';
 import 'oders_service/orders_service.dart';
 
 class OrderPreparation extends StatefulWidget {
@@ -23,6 +24,9 @@ class _OrderPreparationState extends State<OrderPreparation> {
   final TextEditingController _miktarController = TextEditingController();
   final TextEditingController _aciklamaController = TextEditingController();
 
+  String? _selectedAtelye;
+  String? _selectedCollection;
+  String? _selectedNitelik;
   String? _selectedUrun;
   String? _selectedIpler;
   String? _selectedKumas;
@@ -33,6 +37,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
   String? _selectedFine;
   String? _selectedDenye;
 
+  List<String> atelyeler = [];
   List<String> urunler = [];
   List<String> ipler = [];
   List<String> kumaslar = [];
@@ -43,6 +48,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
   List<String> fineler = [];
   List<String> denyeler = [];
 
+  Map<String, Map<String, String>> atelyeMap = {};
   @override
   void initState() {
     super.initState();
@@ -55,6 +61,23 @@ class _OrderPreparationState extends State<OrderPreparation> {
     _fetchDenyeList();
     _fetchFineList();
     _fetchGramajList();
+    _fetchWorkshops();
+  }
+
+  Future<void> _fetchWorkshops() async {
+    List<Map<String, String>> workshops =
+        await ReportServices().getWorkshops();
+
+    setState(() {
+      atelyeler = workshops.map((w) => w["name"]!).toList();
+      atelyeMap = {
+        for (var w in workshops)
+          w["name"]!: {
+            "collection": w["collection"]!,
+            "nitelik": w["nitelik"]!,
+          }
+      };
+    });
   }
 
   Future<void> _fetchKumasList() async {
@@ -143,6 +166,21 @@ class _OrderPreparationState extends State<OrderPreparation> {
           return SingleChildScrollView(
             child: Column(
               children: [
+                DropdownSelector(
+                    hintText: "Atölye Seçiniz",
+                    items: atelyeler,
+                    selectedValue: _selectedAtelye,
+                    onChanged: (value) => {
+                          setState(() {
+                            _selectedAtelye = value;
+                            _selectedCollection =
+                                atelyeMap[value!]?["collection"];
+                            _selectedNitelik = atelyeMap[value]
+                                ?["nitelik"]; // Nitelik bilgisi güncellendi-
+                            print(_selectedAtelye);
+                          }),
+                        },
+                    icon: Icons.factory),
                 if (productServices.role.value == "Dikim" ||
                     productServices.role.value == "Transfer" ||
                     productServices.role.value == "Dolum" ||
@@ -285,17 +323,21 @@ class _OrderPreparationState extends State<OrderPreparation> {
                         onPressed: () async {
                           {
                             if (productServices.role.value == "Dokuma") {
-                              if ((_selectedIpler ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedIpler ?? '').isNotEmpty &&
                                   (_selectedDenye ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     iplik: _selectedIpler,
                                     denye: _selectedDenye,
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -305,11 +347,15 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Boyama") {
-                              if ((_selectedKumas ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedKumas ?? '').isNotEmpty &&
                                   (_selectedFine ?? '').isNotEmpty &&
                                   (_selectedGramaj ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     kumas: _selectedKumas,
                                     gramaj: _selectedGramaj,
@@ -317,7 +363,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -327,12 +373,16 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Kesim") {
-                              if ((_selectedKumas ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedKumas ?? '').isNotEmpty &&
                                   (_selectedFine ?? '').isNotEmpty &&
                                   (_selectedRenk ?? '').isNotEmpty &&
                                   (_selectedGramaj ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     kumas: _selectedKumas,
                                     renk: _selectedRenk,
@@ -341,7 +391,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -351,11 +401,15 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Dikim") {
-                              if ((_selectedUrun ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedUrun ?? '').isNotEmpty &&
                                   (_selectedRenk ?? '').isNotEmpty &&
                                   (_selectedBoyut ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     urun: _selectedUrun,
                                     renk: _selectedRenk,
@@ -363,7 +417,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -373,11 +427,15 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Dolum") {
-                              if ((_selectedUrun ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedUrun ?? '').isNotEmpty &&
                                   (_selectedRenk ?? '').isNotEmpty &&
                                   (_selectedBoyut ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     urun: _selectedUrun,
                                     renk: _selectedRenk,
@@ -385,7 +443,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -395,11 +453,15 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Paketleme") {
-                              if ((_selectedUrun ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedUrun ?? '').isNotEmpty &&
                                   (_selectedRenk ?? '').isNotEmpty &&
                                   (_selectedBoyut ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     urun: _selectedUrun,
                                     renk: _selectedRenk,
@@ -407,7 +469,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");
@@ -417,12 +479,16 @@ class _OrderPreparationState extends State<OrderPreparation> {
                               }
                             }
                             if (productServices.role.value == "Transfer") {
-                              if ((_selectedUrun ?? '').isNotEmpty &&
+                              if ((_selectedAtelye ?? '').isNotEmpty &&
+                                  (_selectedUrun ?? '').isNotEmpty &&
                                   (_selectedRenk ?? '').isNotEmpty &&
                                   (_selectedBoyut ?? '').isNotEmpty &&
                                   (_selectedAksesuar ?? '').isNotEmpty &&
                                   _miktarController.text.trim().isNotEmpty) {
                                 await saveOrderToFirestore(
+                                    atelye: _selectedAtelye,
+                                    atelyeCollection: _selectedCollection,
+                                    atelyeNitelik: _selectedNitelik,
                                     context: context,
                                     urun: _selectedUrun,
                                     renk: _selectedRenk,
@@ -431,7 +497,7 @@ class _OrderPreparationState extends State<OrderPreparation> {
                                     miktar: _miktarController.text,
                                     aciklama: _aciklamaController.text,
                                     status: "Bekliyor",
-                                    role: productServices.role.value);
+                                    role: productServices.atolyeCollection.value);
 
                                 showAlertDialog(
                                     context, "Sipariş başarıyla kaydedildi.");

@@ -41,6 +41,28 @@ Future<List<Map<String, String>>> getWorkshopsAndDepolar() async {
   }
 }
 
+Future<List<Map<String, String>>> getWorkshops() async {
+  try {
+    // Atölyeleri çek
+    QuerySnapshot atolyelerSnapshot =
+        await _firestore.collection('atolyeler').get();
+
+    List<Map<String, String>> workshops = atolyelerSnapshot.docs.map((doc) {
+      return {
+        "name": doc["name"] as String,
+        "collection": doc["collection"] as String,
+        "nitelik": doc["nitelik"] as String,
+        "type": "atolye", // Atölye türünü belirtmek için ek alan
+      };
+    }).toList();
+
+  
+    return workshops;
+  } catch (e) {
+    print("Error fetching workshops and depolar: $e");
+    return [];
+  }
+}
 
   /// Firestore'dan `urun` koleksiyonundaki `name` alanlarını çeker
   Future<List<String>> getToyNames(String collection,String name) async {

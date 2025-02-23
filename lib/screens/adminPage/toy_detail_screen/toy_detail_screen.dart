@@ -26,6 +26,7 @@ class ToyDetailScreen extends StatefulWidget {
 
 class _ToyDetailScreenState extends State<ToyDetailScreen> {
   bool isLoading = false;
+  bool _isDisposed = false; // Dispose kontrolü için değişken
   final DataTableService _dataTableService = DataTableService();
   final ToyDetailServices _toyDetailServices = ToyDetailServices();
   String title = "";
@@ -66,7 +67,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   Future<void> _fetchUrunList() async {
     List<String> fetchedUrun =
         await _dataTableService.getCollectionData('toy_name', 'name');
-    if (mounted) {
+    if (mounted && !_isDisposed) {
       setState(() {
         _urun = fetchedUrun.toSet().toList();
       });
@@ -76,7 +77,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   Future<void> _fetchRenkList() async {
     List<String> fetchedRenk =
         await _dataTableService.getCollectionData('toy_renk', 'renk');
-    if (mounted) {
+    if (mounted && !_isDisposed) {
       setState(() {
         _renk = fetchedRenk.toSet().toList();
       });
@@ -86,7 +87,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   Future<void> _fetchBoyutList() async {
     List<String> fetchedBoyut =
         await _dataTableService.getCollectionData('toy_height', 'boyut');
-    if (mounted) {
+    if (mounted && !_isDisposed) {
       setState(() {
         _boyut = fetchedBoyut.toSet().toList();
       });
@@ -96,7 +97,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   Future<void> _fetchAksesuarList() async {
     List<String> fetchedAksesuar =
         await _dataTableService.getCollectionData('toy_aksesuar', 'aksesuar');
-    if (mounted) {
+    if (mounted && !_isDisposed) {
       setState(() {
         _aksesuar = fetchedAksesuar.toSet().toList();
       });
@@ -104,6 +105,8 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   }
 
   Future<void> _getDepoDetails() async {
+    if (_isDisposed) return;
+
     setState(() {
       isLoading = true;
     });
@@ -117,17 +120,17 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         aksesuar: _selectedAksesuar ?? widget.aksesuar ?? '',
       );
 
-      if (mounted) {
+      if (mounted && !_isDisposed) {
         setState(() {
           _depoDetails = fetchedDetails;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && !_isDisposed) {
         print("Veri yüklenirken hata oluştu: $e");
       }
     } finally {
-      if (mounted) {
+      if (mounted && !_isDisposed) {
         setState(() {
           isLoading = false;
         });
@@ -137,6 +140,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
   @override
   void dispose() {
+    _isDisposed = true; // Sayfa dispose edildi
     super.dispose();
   }
 
@@ -158,10 +162,12 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   items: _urun.toSet().toList(),
                   selectedValue: _selectedMalzeme,
                   onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedMalzeme = newValue;
-                      title = _selectedMalzeme!;
-                    });
+                    if (!_isDisposed) {
+                      setState(() {
+                        _selectedMalzeme = newValue;
+                        title = _selectedMalzeme!;
+                      });
+                    }
                   },
                   icon: Icons.arrow_drop_down,
                 ),
@@ -170,9 +176,11 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   items: _renk.toSet().toList(),
                   selectedValue: _selectedRenk,
                   onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedRenk = newValue;
-                    });
+                    if (!_isDisposed) {
+                      setState(() {
+                        _selectedRenk = newValue;
+                      });
+                    }
                   },
                   icon: Icons.arrow_drop_down,
                 ),
@@ -181,9 +189,11 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   items: _boyut.toSet().toList(),
                   selectedValue: _selectedBoyut,
                   onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedBoyut = newValue;
-                    });
+                    if (!_isDisposed) {
+                      setState(() {
+                        _selectedBoyut = newValue;
+                      });
+                    }
                   },
                   icon: Icons.arrow_drop_down,
                 ),
@@ -192,9 +202,11 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   items: _aksesuar.toSet().toList(),
                   selectedValue: _selectedAksesuar,
                   onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedAksesuar = newValue;
-                    });
+                    if (!_isDisposed) {
+                      setState(() {
+                        _selectedAksesuar = newValue;
+                      });
+                    }
                   },
                   icon: Icons.arrow_drop_down,
                 ),
@@ -202,7 +214,9 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                   padding: const EdgeInsets.only(left: 16.0, bottom: 16),
                   child: CustomLoadingButton(
                     onPressed: () async {
-                      await _getDepoDetails();
+                      if (!_isDisposed) {
+                        await _getDepoDetails();
+                      }
                     },
                     text: "Bul",
                   ),

@@ -12,7 +12,6 @@ class NewToyAddScreen extends StatefulWidget {
 class _NewToyAddScreenState extends State<NewToyAddScreen> {
   final TextEditingController _kumas = TextEditingController();
   final TextEditingController _iplik = TextEditingController();
-  final TextEditingController _toyName = TextEditingController();
   final TextEditingController _toyRenk = TextEditingController();
   final TextEditingController _toyBoyut = TextEditingController();
   final TextEditingController _toyAksesuar = TextEditingController();
@@ -98,21 +97,6 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
     }
   }
 
-  void _addName() {
-    String name = _toyName.text;
-
-    if (name.isNotEmpty) {
-      _toyAddServices.addNewToy(
-        urun: name,
-        context: context,
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Boş alanları lütfen doldurun.')),
-      );
-    }
-  }
-
   void _addRenk() {
     String renk = _toyRenk.text;
 
@@ -167,6 +151,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            /*
             Row(
               children: [
                 Expanded(
@@ -202,7 +187,7 @@ class _NewToyAddScreenState extends State<NewToyAddScreen> {
                   ),
                 ),
               ],
-            ),
+            ),*/
             Row(
               children: [
                 Expanded(

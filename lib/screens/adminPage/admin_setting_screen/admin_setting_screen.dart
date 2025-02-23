@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/admin_report_screen/admin_report_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
+import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_with_photo_add_screen.dart';
 import 'package:toyflow/screens/adminPage/register_screen/user_info.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +12,7 @@ import '../../../services/user_services/product_services.dart';
 import '../../users/user_screen/orders/coming_orders/coming_orders.dart';
 import '../new_storage_add/storage.dart';
 import '../new_toy_add_screen/new_toy_detail.dart';
+import '../new_toy_add_screen/toy_list_screen.dart';
 import '../new_work_shop/work_shop.dart';
 import '../stock_screen/stok_screen.dart';
 
@@ -200,6 +202,25 @@ class _AdminSettingScreenState extends State<AdminSettingScreen> {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Get.to(() => const NewToyDetail());
+                  },
+                ),
+                 ListTile( 
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.playlist_add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Oyuncak İsmi'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Get.to(() => const ToyListScreen());
                   },
                 ),
                 ListTile(
