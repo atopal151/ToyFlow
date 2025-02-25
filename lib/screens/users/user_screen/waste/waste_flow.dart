@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:toyflow/services/user_services/product_services.dart';
 
+import '../../../../services/user_services/get_photo.dart';
+
 class FireTakip extends StatefulWidget {
   const FireTakip({super.key});
 
@@ -58,6 +60,8 @@ class _FireTakipState extends State<FireTakip> {
               String gramaj = data['gramaj'] ?? '--';
               String fine = data['fine'] ?? '--';
               String denye = data['denye'] ?? '--';
+
+                          final String urunAdi = data['urun'];
               String miktar = data['miktar'] != null
                   ? "${data['miktar']} kg/adet"
                   : 'Bilinmiyor';
@@ -75,15 +79,47 @@ class _FireTakipState extends State<FireTakip> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'images/fire.webp',
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  leading: 
+                                  // Fotoğraf için FutureBuilder
+                                  FutureBuilder<String?>(
+                                    future: getToyPhoto(urunAdi),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return const Icon(Icons.error,
+                                            size: 60);
+                                      } else if (snapshot.hasData &&
+                                          snapshot.data != null) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            snapshot.data!,
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                const Icon(Icons.broken_image,
+                                                    size: 60),
+                                          ),
+                                        );
+                                      } else {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.asset(
+                                            'images/kumas.webp',
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class ToyWithPhotoAddScreen extends StatefulWidget {
   const ToyWithPhotoAddScreen({super.key});
@@ -21,17 +22,44 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
   /// Fotoğraf Seçme İşlemi
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = File(pickedFile.path);  // XFile'den File'a dönüşüm
       });
       print('Seçilen dosya yolu: ${pickedFile.path}');
     } else {
       print('Hiçbir dosya seçilmedi.');
     }
   }
+
+ Future<File?> compressImage(File file) async {
+  // Hedef dosya yolu .jpg uzantılı olarak ayarlanıyor
+  final String targetPath = '${file.parent.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+  try {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+      quality: 60, // Sıkıştırma kalitesi
+      minWidth: 800,
+      minHeight: 800,
+    );
+
+    if (result != null) {
+      print("Orijinal boyut: ${file.lengthSync()} bytes");
+      return File(result.path);  // XFile yerine File döndürüyoruz
+    } else {
+      print("Sıkıştırma başarısız.");
+      return null;
+    }
+  } catch (e) {
+    print("Sıkıştırma hatası: $e");
+    return null;
+  }
+}
+
 
   /// Fotoğrafı Firestore'a Kaydetme ve Firestore'a Bilgileri Ekleme
   Future<void> _addToy() async {
@@ -49,9 +77,16 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
     });
 
     try {
+      // Fotoğrafı sıkıştır
+      File? compressedImage = await compressImage(_selectedImage!);
+
+      if (compressedImage == null) {
+        throw Exception("Fotoğraf sıkıştırılamadı.");
+      }
+
       // Firebase Storage instance'ını özel bucket URL'si ile başlat
       FirebaseStorage storage = FirebaseStorage.instanceFor(
-        bucket: 'gs://toyflow-9f294.firebasestorage.app',
+               bucket: 'gs://toyflow-9f294.firebasestorage.app', // Doğru bucket URL'si
       );
 
       // Dosya adını ve referansını belirle
@@ -60,7 +95,7 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
       Reference storageRef = storage.ref().child(fileName);
 
       // Fotoğrafı yükle
-      UploadTask uploadTask = storageRef.putFile(_selectedImage!);
+      UploadTask uploadTask = storageRef.putFile(compressedImage);
 
       // Yükleme sırasında loglar
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {

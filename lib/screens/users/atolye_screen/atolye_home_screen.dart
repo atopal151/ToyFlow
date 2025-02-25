@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:toyflow/services/user_services/product_services.dart';
 import '../../../services/user_services/custom_app_bar.dart';
+import '../../../services/user_services/get_photo.dart';
 import 'atolye_edit_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -428,7 +429,7 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                       itemBuilder: (context, index) {
                         final work = dokumaStokList[index];
                         String eklemeTarihi = 'Bilinmiyor';
-
+                          final String urunAdi = work['urun'];
                         if (work['tarih'] != null) {
                           Timestamp timestamp = work['tarih'];
                           DateTime dateTime = timestamp.toDate();
@@ -454,16 +455,47 @@ class _AtolyeHomeScreenState extends State<AtolyeHomeScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    getImageForRole(productServices.role
-                                        .value), // Dinamik olarak resim belirle
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
+                               
+                                  // Fotoğraf için FutureBuilder
+                                  FutureBuilder<String?>(
+                                    future: getToyPhoto(urunAdi),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return const Icon(Icons.error,
+                                            size: 60);
+                                      } else if (snapshot.hasData &&
+                                          snapshot.data != null) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            snapshot.data!,
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                const Icon(Icons.broken_image,
+                                                    size: 60),
+                                          ),
+                                        );
+                                      } else {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.asset(
+                                            'images/kumas.webp',
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
-                                ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(

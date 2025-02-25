@@ -65,6 +65,27 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     );
   }
 
+  /// Firestore'dan ilgili ürünün fotoğraf URL'sini alır
+  Future<String?> getToyPhoto(String urunAdi) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('toy_name')
+          .where('name', isEqualTo: urunAdi)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first['photo'];
+      } else {
+        print("Ürün bulunamadı: $urunAdi");
+        return null;
+      }
+    } catch (e) {
+      print("Fotoğraf alınırken hata oluştu: $e");
+      return null;
+    }
+  }
+
   Future<void> _generatePdf() async {
     final snapshot = await _firestore
         .collection(_collectionName!)
@@ -133,26 +154,28 @@ class _WorkDetailScreenState extends State<WorkDetailScreen> {
     }
   }
 
-Stream<List<Map<String, dynamic>>> _getWorkshopDateData({DateTime? startDate}) async* {
-  if (_collectionName == null || startDate == null) {
-    yield []; // Eğer koleksiyon adı veya tarih yoksa boş liste döndür
-    return;
+  Stream<List<Map<String, dynamic>>> _getWorkshopDateData(
+      {DateTime? startDate}) async* {
+    if (_collectionName == null || startDate == null) {
+      yield []; // Eğer koleksiyon adı veya tarih yoksa boş liste döndür
+      return;
+    }
+
+    // Firestore için tarih filtreleme aralığını belirleyelim
+    DateTime startOfDay =
+        DateTime(startDate.year, startDate.month, startDate.day);
+    DateTime endOfDay = startOfDay.add(Duration(days: 1));
+
+    yield* FirebaseFirestore.instance
+        .collection(_collectionName!)
+        .where('tarih', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('tarih', isLessThan: Timestamp.fromDate(endOfDay))
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => doc.data())
+            .where((data) => (data['miktar'] ?? 0) > 0)
+            .toList());
   }
-
-  // Firestore için tarih filtreleme aralığını belirleyelim
-  DateTime startOfDay = DateTime(startDate.year, startDate.month, startDate.day);
-  DateTime endOfDay = startOfDay.add(Duration(days: 1));
-
-  yield* FirebaseFirestore.instance
-      .collection(_collectionName!)
-      .where('tarih', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-      .where('tarih', isLessThan: Timestamp.fromDate(endOfDay))
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map((doc) => doc.data()).where((data) =>
-                  (data['miktar'] ?? 0) >
-                  0) .toList());
-}
-
 
   Stream<List<Map<String, dynamic>>> _getWorkshopData() async* {
     if (_collectionName != null) {
@@ -298,6 +321,8 @@ Stream<List<Map<String, dynamic>>> _getWorkshopDateData({DateTime? startDate}) a
                     itemCount: filteredData.length,
                     itemBuilder: (context, index) {
                       final data = filteredData[index];
+                      final String urunAdi = data['urun'];
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
@@ -315,22 +340,44 @@ Stream<List<Map<String, dynamic>>> _getWorkshopDateData({DateTime? startDate}) a
                                 left: 16, right: 16, top: 16, bottom: 16),
                             child: Row(
                               children: [
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: ClipRRect(
+                                // Fotoğraf için FutureBuilder
+                                FutureBuilder<String?>(
+                                  future: getToyPhoto(urunAdi),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return const Icon(Icons.error, size: 60);
+                                    } else if (snapshot.hasData &&
+                                        snapshot.data != null) {
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          snapshot.data!,
+                                          width: 60,
+                                          height: 90,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(Icons.broken_image,
+                                                      size: 60),
+                                        ),
+                                      );
+                                    } else {
+                                      return ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.asset(
-                                          'images/toy.webp',
+                                          'images/kumas.webp',
                                           width: 60,
                                           height: 90,
                                           fit: BoxFit.cover,
                                         ),
-                                      ),
-                                    ),
-                                  ],
+                                      );
+                                    }
+                                  },
                                 ),
+                                const SizedBox(width: 16),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [

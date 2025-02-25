@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/admin_report_screen/admin_report_screen.dart';
 import 'package:toyflow/screens/adminPage/mover_screen/mover_screen.dart';
-import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_with_photo_add_screen.dart';
 import 'package:toyflow/screens/adminPage/register_screen/user_info.dart';
 import 'package:toyflow/services/user_services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';

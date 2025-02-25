@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:toyflow/screens/users/atolye_screen/atolye_services/atolye_services.dart';
 
 import '../../../../services/user_services/auth_service.dart';
+import '../../../../services/user_services/get_photo.dart';
 import '../../../../services/user_services/product_services.dart';
 
 class UsersWorkScreen extends StatefulWidget {
@@ -22,10 +23,9 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
   List<Map<String, dynamic>> _works = [];
   final ProductServices _productServices = Get.find();
   final AuthService _authService = AuthService();
-  final AtolyeServices atolyeServices=AtolyeServices();
+  final AtolyeServices atolyeServices = AtolyeServices();
   bool isLoading = false;
   List<Map<String, String>> fetchedAtolyeler = [];
-
 
   @override
   void initState() {
@@ -38,9 +38,9 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
     print(
         "Product Services Collection: ${_productServices.atolyeCollection.value}");
 
-
     await _fetchUserData();
   }
+
   Future<void> _fetchUserData() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -67,7 +67,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
           .collection(atolyeServices.collectionWait)
           .get();
 
-      print("${atolyeServices.collectionWait} tablosundaki veriler çekiliyor...");
+      print(
+          "${atolyeServices.collectionWait} tablosundaki veriler çekiliyor...");
 
       setState(() {
         _works = querySnapshot.docs
@@ -150,9 +151,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
             'tarih': tarih,
           });
         } else {
-          await firestore
-              .collection(atolyeServices.collectionName)
-              .add({
+          await firestore.collection(atolyeServices.collectionName).add({
             'urun': urunAdi,
             'renk': renk,
             'boyut': boyut,
@@ -229,7 +228,6 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
       ),
       body: Column(
         children: [
-         
           const SizedBox(
             height: 20,
           ),
@@ -252,6 +250,8 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                         itemCount: _works.length,
                         itemBuilder: (context, index) {
                           final work = _works[index];
+
+                          final String urunAdi = work['urun'];
                           String eklemeTarihi = 'Bilinmiyor';
 
                           if (work['tarih'] != null &&
@@ -283,14 +283,45 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      'images/fullmov.webp',
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    ),
+                                  // Fotoğraf için FutureBuilder
+                                  FutureBuilder<String?>(
+                                    future: getToyPhoto(urunAdi),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return const Icon(Icons.error,
+                                            size: 60);
+                                      } else if (snapshot.hasData &&
+                                          snapshot.data != null) {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            snapshot.data!,
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                const Icon(Icons.broken_image,
+                                                    size: 60),
+                                          ),
+                                        );
+                                      } else {
+                                        return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.asset(
+                                            'images/kumas.webp',
+                                            width: 60,
+                                            height: 90,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

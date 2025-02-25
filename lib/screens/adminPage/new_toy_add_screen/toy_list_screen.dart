@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_with_photo_add_screen.dart';
 
 class ToyListScreen extends StatefulWidget {
@@ -36,6 +37,33 @@ class _ToyListScreenState extends State<ToyListScreen> {
     return null;
   }
 
+  /// Fotoğraf Sıkıştırma İşlemi
+  Future<File?> _compressImage(File file) async {
+    final String targetPath =
+        '${file.parent.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    try {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: 60,
+        minWidth: 800,
+        minHeight: 800,
+      );
+
+      if (result != null) {
+        print("Orijinal boyut: ${file.lengthSync()} bytes");
+        return File(result.path);
+      } else {
+        print("Sıkıştırma başarısız.");
+        return null;
+      }
+    } catch (e) {
+      print("Sıkıştırma hatası: $e");
+      return null;
+    }
+  }
+
   /// Fotoğrafı Firebase Storage'a Yükle
   Future<String?> _uploadImage(File imageFile) async {
     try {
@@ -55,8 +83,10 @@ class _ToyListScreenState extends State<ToyListScreen> {
   }
 
   /// Oyuncak Adını ve Fotoğrafını Güncelle
-  Future<void> _updateToy(String docId, String currentName, String? currentPhoto) async {
-    TextEditingController _nameController = TextEditingController(text: currentName);
+  Future<void> _updateToy(
+      String docId, String currentName, String? currentPhoto) async {
+    TextEditingController _nameController =
+        TextEditingController(text: currentName);
     File? _newImage;
 
     showDialog(
@@ -100,12 +130,23 @@ class _ToyListScreenState extends State<ToyListScreen> {
               String updatedPhotoUrl = currentPhoto ?? _defaultPhotoUrl;
 
               if (_newImage != null) {
-                String? uploadedUrl = await _uploadImage(_newImage!);
-                if (uploadedUrl != null) {
-                  updatedPhotoUrl = uploadedUrl;
+                // Fotoğrafı sıkıştır
+                File? compressedImage = await _compressImage(_newImage!);
+                if (compressedImage != null) {
+                  String? uploadedUrl = await _uploadImage(compressedImage);
+                  if (uploadedUrl != null) {
+                    updatedPhotoUrl = uploadedUrl;
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Yeni fotoğraf yüklenemedi.')),
+                    );
+                    return;
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Yeni fotoğraf yüklenemedi.')),
+                    const SnackBar(
+                        content: Text('Fotoğraf sıkıştırılamadı.')),
                   );
                   return;
                 }
@@ -142,7 +183,9 @@ class _ToyListScreenState extends State<ToyListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
+        backgroundColor: Colors.grey.shade100,
         title: const Text('Oyuncak Listesi'),
         actions: [
           InkWell(
@@ -184,24 +227,28 @@ class _ToyListScreenState extends State<ToyListScreen> {
                   : _defaultPhotoUrl;
 
               return Card(
+                color: Colors.white,
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  leading: Image.network(
-                    displayPhoto,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
+                  leading: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.network(
+                      displayPhoto,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   title: Text(name),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        icon: const Icon(Icons.edit, color: Color.fromARGB(255, 57, 50, 50)),
                         onPressed: () => _updateToy(docId, name, photoUrl),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: const Icon(Icons.delete, color: Color.fromARGB(255, 203, 105, 98)),
                         onPressed: () => _deleteToy(docId),
                       ),
                     ],

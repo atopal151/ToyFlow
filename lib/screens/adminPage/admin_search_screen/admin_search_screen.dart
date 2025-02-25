@@ -16,6 +16,7 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
   List<Map<String, dynamic>> allItems = [];
   List<Map<String, dynamic>> filteredItems = [];
   TextEditingController searchController = TextEditingController();
+
   String? _depoSelected;
 
   List<String> _depolar = [];
@@ -26,6 +27,8 @@ class _AdminSearchScreenState extends State<AdminSearchScreen> {
     super.initState();
     _fetchDepoData();
   }
+
+
 
   Future<void> _fetchDepoData() async {
     try {

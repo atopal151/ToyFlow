@@ -143,7 +143,7 @@ class _AdminWorkShopScreenState extends State<AdminWorkShopScreen> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  Get.to(() => WorkDetailScreen(selectedWorkshop: name));
+                  Get.to(() => WorkDetailScreen(selectedWorkshop: name,dataType: "Tümü",));
                 },
                 child: Container(
                   padding: const EdgeInsets.all(15.0),

@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:toyflow/screens/adminPage/new_toy_add_screen/new_toy_add_screen.dart';
 import '../../../services/user_component/dropdown_selector.dart';
-import 'new_toy_with_photo_add_screen.dart';
 
 class NewToyDetail extends StatefulWidget {
   const NewToyDetail({super.key});
