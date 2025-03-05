@@ -59,8 +59,8 @@ class _ComingOrdersState extends State<ComingOrders> {
       ),
       body: Obx(
         () {
-          final atelyeCollection=productServices.atolyeCollection.value;
-          
+          final atelyeCollection = productServices.atolyeCollection.value;
+
           if (atelyeCollection.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -74,7 +74,6 @@ class _ComingOrdersState extends State<ComingOrders> {
             "Dolum": "Paketleme",
             "Paketleme": "Transfer",
           };
-
 
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -99,57 +98,105 @@ class _ComingOrdersState extends State<ComingOrders> {
                   final orderData = order.data() as Map<String, dynamic>;
 
                   final status = orderData['status'] ?? 'Bekliyor';
-                  final isWaiting = status == 'Bekliyor';
-                  if (status == 'Bekliyor' || status == "Hazırlanıyor") {
-                    return Card(
-                      color: Colors.white,
-                      margin: const EdgeInsets.symmetric(
+                  final isWaiting =
+                      status == 'Bekliyor' || status == "Hazırlanıyor";
+
+                  if (isWaiting) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
-                      elevation: 3,
-                      child: ListTile(
-                        title: const Padding(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            "Bekleyen Siparişler",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ...orderData.entries
-                                .where((entry) =>
-                                    entry.value != null &&
-                                    entry.value.toString().isNotEmpty &&
-                                    entry.key != 'timestamp' &&
-                                    entry.key != 'id' &&
-                                    entry.key != 'status')
-                                .map((entry) {
-                              return Text("${entry.key}: ${entry.value}");
-                            }),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Durum: $status",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: isWaiting ? Colors.orange : Colors.green,
-                              ),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (status != 'Hazırlanıyor' &&
-                                status != 'Tamamlandı')
-                              IconButton(
-                                icon: const Icon(Icons.check_circle,
-                                    color: Colors.green),
-                                onPressed: () {
-                                  approveOrder(order.id);
-                                },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 🏷 Başlık
+                              const Text(
+                                "Bekleyen Siparişler",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
-                          ],
+                              const SizedBox(height: 8),
+                          
+                              // 📝 Sipariş Bilgileri
+                              ...orderData.entries
+                                  .where((entry) =>
+                                      entry.value != null &&
+                                      entry.value.toString().isNotEmpty &&
+                                      entry.key != 'timestamp' &&
+                                      entry.key != 'id' &&
+                                      entry.key != 'status')
+                                  .map((entry) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2),
+                                  child: Text(
+                                    "${entry.key}: ${entry.value}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                );
+                              }),
+                              const SizedBox(height: 8),
+                          
+                              // 🔘 Sipariş Durumu
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: status == "Bekliyor"
+                                      ? Colors.orange.withOpacity(0.1)
+                                      : status == "Hazırlanıyor"
+                                          ? Colors.yellow.withOpacity(0.1)
+                                          : Colors.green.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  "Durum: $status",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: status == "Bekliyor"
+                                        ? Colors.orange
+                                        : status == "Hazırlanıyor"
+                                            ? Colors.yellow[800]
+                                            : Colors.green,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                          
+                              // 🎛️ Butonlar
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  if (status != 'Hazırlanıyor' &&
+                                      status != 'Tamamlandı')
+                                    _buildActionButton(
+                                      icon: Icons.check_circle,
+                                      color: Colors.green,
+                                      onPressed: () {
+                                        approveOrder(order.id);
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -160,6 +207,26 @@ class _ComingOrdersState extends State<ComingOrders> {
             },
           );
         },
+      ),
+    );
+  }
+
+// 🔘 Küçük, yuvarlak buton bileşeni
+  Widget _buildActionButton(
+      {required IconData icon,
+      required Color color,
+      required VoidCallback onPressed}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: IconButton(
+          icon: Icon(icon, color: Colors.white),
+          onPressed: onPressed,
+        ),
       ),
     );
   }

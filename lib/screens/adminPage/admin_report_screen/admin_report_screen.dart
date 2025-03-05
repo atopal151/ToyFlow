@@ -681,6 +681,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           );
                           return;
                         }
+                        print(reportData);
 
                         await ReportPdfService.generateReportPdf(
                           context,

@@ -112,7 +112,7 @@ class AtolyeServices {
   }) async {
     //-------------------------------------------------------------------------------------//
     if (userRole == "Dokuma") {
-      if (urun.isEmpty || fine!.isEmpty || gramaj!.isEmpty || miktar <= 0) {
+      if (urun.isEmpty || denye!.isEmpty || miktar <= 0) {
         showAlertDialog(context, "Gerekli Alanları Doldur!!");
         return;
       }
@@ -121,8 +121,7 @@ class AtolyeServices {
         QuerySnapshot querySnapshot = await _firestore
             .collection(collectionsWait)
             .where('urun', isEqualTo: urun)
-            .where('fine', isEqualTo: fine)
-            .where('gramaj', isEqualTo: gramaj)
+            .where('denye', isEqualTo: denye)
             .get();
         if (querySnapshot.docs.isNotEmpty) {
           DocumentSnapshot existingDoc = querySnapshot.docs.first;
@@ -133,12 +132,11 @@ class AtolyeServices {
           showAlertDialog(context, "Bekleyen Stok Başarı ile Güncellendi.");
           await _recordMovement(
             malzeme: urun,
-            fine: fine,
-            gramaj: gramaj,
+            denye: denye,
             miktar: miktar,
             islemTuru: 'Stok Ekleme',
             aciklama:
-                '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Bekleyen stoğa $miktar adet fine:$fine gramaj:$gramaj $urun ekledi!',
+                '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Bekleyen stoğa $miktar adet denye:$denye $urun ekledi!',
           );
         } else {
           await _firestore.collection(collectionsWait).add({
@@ -151,12 +149,11 @@ class AtolyeServices {
           showAlertDialog(context, "Bekleyen Yeni Stok Başarı ile Kaydedildi.");
           await _recordMovement(
             malzeme: urun,
-            fine: fine,
-            gramaj: gramaj,
+            denye:denye,
             miktar: miktar,
             islemTuru: 'Stok Ekleme',
             aciklama:
-                '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value}  Bekleyen stoğa $miktar adet fine:$fine gramaj:$gramaj cm $urun ekledi!',
+                '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value}  Bekleyen stoğa $miktar adet denye:$denye $urun ekledi!',
           );
         }
       } catch (e) {
@@ -1066,6 +1063,60 @@ class AtolyeServices {
               islemTuru: 'Stok Düşümü',
               aciklama:
                   '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar adet $boyut $renk $malzeme düşümü yaptı.',
+            );
+            return "başarılı";
+          } else {
+            showAlertDialog(context, "Yetersiz stok miktarı.");
+            return "yetersiz";
+          }
+        } else {
+          showAlertDialog(context, "Böyle bir ürün bulunmamaktadır.");
+          return "urun_bulunamadi";
+        }
+      } catch (e) {
+        showAlertDialog(context, "Kaydetme işlemi sırasında hata oluştu: $e");
+        return "hata";
+      } 
+    }
+     if (_productServices.role.value == "Transfer" ) {
+      if (collection.isEmpty ||
+          malzeme.isEmpty ||
+          boyut!.isEmpty ||
+          renk!.isEmpty ||
+          aksesuar!.isEmpty||
+          miktar <= 0) {
+        showAlertDialog(context, "Lütfen tüm alanları doldurun.");
+        return "eksik bilgi";
+      }
+
+      try {
+        QuerySnapshot existingRecord = await _firestore
+            .collection(collection)
+            .where('urun', isEqualTo: malzeme)
+            .where('renk', isEqualTo: renk)
+            .where('boyut', isEqualTo: boyut)
+            .where('aksesuar', isEqualTo: aksesuar)
+            .get();
+
+        if (existingRecord.docs.isNotEmpty) {
+          DocumentSnapshot doc = existingRecord.docs.first;
+          int currentMiktar = doc['miktar'] ?? 0;
+
+          if (currentMiktar >= miktar) {
+            await _firestore.collection(collection).doc(doc.id).update({
+              'miktar': currentMiktar - miktar,
+            });
+
+            showAlertDialog(context, "Stok başarı ile güncellendi.");
+
+            await _recordMovement(
+              malzeme: malzeme,
+              renk: renk,
+              boyut: boyut,
+              miktar: miktar,
+              islemTuru: 'Stok Düşümü',
+              aciklama:
+                  '${_productServices.workshopName.value}`nden ${_productServices.firstName.value} ${_productServices.lastName.value} Siparişten $miktar adet $boyut $renk $aksesuar $malzeme düşümü yaptı.',
             );
             return "başarılı";
           } else {

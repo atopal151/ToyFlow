@@ -192,135 +192,145 @@ class _MyOrdersState extends State<MyOrders> {
                   final status = orderData['status'] ?? 'Bekliyor';
                   final isWaiting = status == 'Bekliyor';
 
-                  return Card(
-                    color: Colors.white,
-                    margin:
+                  return Padding(
+                    padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    elevation: 3, // Elevation dört taraf için çalışır
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // Köşe yumuşatma
-                    ),
-                    child: ListTile(
-                      title: const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          "Sipariş Detayları",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...orderData.entries
-                              .where((entry) =>
-                                  entry.value != null &&
-                                  entry.value.toString().isNotEmpty &&
-                                  entry.key != 'timestamp' &&
-                                  entry.key != 'id' &&
-                                  entry.key != 'status')
-                              .map((entry) {
-                            return Text("${entry.key}: ${entry.value}");
-                          }),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Durum: $status",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: status == "Bekliyor"
-                                  ? Colors.red
-                                  : status == "Tamamlandı"
-                                      ? Colors.green
-                                      : status == "Hazırlanıyor"
-                                          ? Colors.orange
-                                          : Colors.grey,
-                            ),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Approve Order Button
-                          if (status != 'Tamamlandı')
-                            isLoading[order.id + '_approve'] == true
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
-                                  )
-                                : IconButton(
-                                    icon: const Icon(Icons.check_circle,
-                                        color: Colors.green),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 🏷 Başlık
+                            const Text(
+                              "Sipariş Detayları",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                        
+                            // 📝 Sipariş Bilgileri
+                            ...orderData.entries
+                                .where((entry) =>
+                                    entry.value != null &&
+                                    entry.value.toString().isNotEmpty &&
+                                    entry.key != 'timestamp' &&
+                                    entry.key != 'id' &&
+                                    entry.key != 'status')
+                                .map((entry) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 2),
+                                child: Text(
+                                  "${entry.key}: ${entry.value}",
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 8),
+                        
+                            // 🔘 Sipariş Durumu
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: status == "Bekliyor"
+                                    ? Colors.red.withOpacity(0.1)
+                                    : status == "Tamamlandı"
+                                        ? Colors.green.withOpacity(0.1)
+                                        : status == "Hazırlanıyor"
+                                            ? Colors.orange.withOpacity(0.1)
+                                            : Colors.grey.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                "Durum: $status",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: status == "Bekliyor"
+                                      ? Colors.red
+                                      : status == "Tamamlandı"
+                                          ? Colors.green
+                                          : status == "Hazırlanıyor"
+                                              ? Colors.orange
+                                              : Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                        
+                            // 🎛️ Butonlar
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                if (status != 'Tamamlandı')
+                                  _buildActionButton(
+                                    icon: Icons.check_circle,
+                                    color: Colors.green,
                                     onPressed: () async {
                                       setState(() {
                                         isLoading[order.id + '_approve'] = true;
                                       });
-
+                        
                                       await approveOrder(order.id);
-
+                        
                                       setState(() {
-                                        isLoading[order.id + '_approve'] =
-                                            false;
+                                        isLoading[order.id + '_approve'] = false;
                                       });
                                     },
                                   ),
-
-                          // Delete Order Button
-                          if (status == 'Tamamlandı')
-                            isLoading[order.id + '_delete'] == true
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
-                                  )
-                                : IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
+                                if (status == 'Tamamlandı')
+                                  _buildActionButton(
+                                    icon: Icons.delete,
+                                    color: Colors.red,
                                     onPressed: () async {
                                       setState(() {
                                         isLoading[order.id + '_delete'] = true;
                                       });
-
+                        
                                       await deleteOrder(order.id);
-
+                        
                                       setState(() {
                                         isLoading[order.id + '_delete'] = false;
                                       });
                                     },
                                   ),
-
-                          // Transfer Order Button
-                          if (status == 'Tamamlandı')
-                            isLoading[order.id + '_transfer'] == true
-                                ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
-                                  )
-                                : IconButton(
-                                    icon: const Icon(
-                                        Icons.transfer_within_a_station,
-                                        color:
-                                            Color.fromARGB(255, 241, 126, 38)),
+                                if (status == 'Tamamlandı')
+                                  _buildActionButton(
+                                    icon: Icons.transfer_within_a_station,
+                                    color:
+                                        const Color.fromARGB(255, 241, 126, 38),
                                     onPressed: () async {
                                       setState(() {
-                                        isLoading[order.id + '_transfer'] =
-                                            true;
+                                        isLoading[order.id + '_transfer'] = true;
                                       });
-
+                        
                                       await showAmountInputDialog(
                                           context, order.id, orderData);
-
+                        
                                       setState(() {
-                                        isLoading[order.id + '_transfer'] =
-                                            false;
+                                        isLoading[order.id + '_transfer'] = false;
                                       });
                                     },
                                   ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -329,6 +339,26 @@ class _MyOrdersState extends State<MyOrders> {
             },
           );
         },
+      ),
+    );
+  }
+
+  // 🔘 Küçük, yuvarlak buton bileşeni
+  Widget _buildActionButton(
+      {required IconData icon,
+      required Color color,
+      required VoidCallback onPressed}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: IconButton(
+          icon: Icon(icon, color: Colors.white),
+          onPressed: onPressed,
+        ),
       ),
     );
   }
@@ -413,13 +443,27 @@ class _MyOrdersState extends State<MyOrders> {
       String orderId, Map<String, dynamic> orderData, int miktar) async {
     try {
       if (productServices.role.value == "Dokuma") {
-        stockService.saveStock(
-          collections: atolyeServices.collectionWait,
+        String result = await atolyeServices.decreaseOrdersStock(
+          collection: orderData['atelyecollection'],
+          malzeme: orderData["iplik"],
           context: context,
-          urun: orderData['iplik'],
           denye: orderData['denye'],
           miktar: miktar,
         );
+        print(orderData);
+        if (result == "başarılı") {
+          atolyeServices.addOrUpdateUrunWaitStock(
+            collectionsWait: atolyeServices.collectionWait,
+            context: context,
+            urun: orderData['iplik'],
+            denye: orderData['denye'],
+            miktar: miktar,
+          );
+
+          print(atolyeServices.collectionWait);
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Boyama") {
         String result = await atolyeServices.decreaseOrdersStock(
@@ -535,10 +579,10 @@ class _MyOrdersState extends State<MyOrders> {
             boyut: orderData['boyut'],
             renk: orderData['renk'],
           );
-        }
 
-        // Siparişi Firestore'dan sil
-        await transferOrder(orderId, miktar);
+          // Siparişi Firestore'dan sil
+          await transferOrder(orderId, miktar);
+        }
       }
       if (productServices.role.value == "Transfer") {
         String result = await atolyeServices.decreaseOrdersStock(

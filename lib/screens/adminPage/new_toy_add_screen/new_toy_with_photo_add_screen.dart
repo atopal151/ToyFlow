@@ -26,40 +26,28 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
 
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);  // XFile'den File'a dönüşüm
+        _selectedImage = File(pickedFile.path);
       });
-      print('Seçilen dosya yolu: ${pickedFile.path}');
-    } else {
-      print('Hiçbir dosya seçilmedi.');
     }
   }
 
- Future<File?> compressImage(File file) async {
-  // Hedef dosya yolu .jpg uzantılı olarak ayarlanıyor
-  final String targetPath = '${file.parent.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+  Future<File?> compressImage(File file) async {
+    final String targetPath = '${file.parent.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-  try {
-    var result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: 60, // Sıkıştırma kalitesi
-      minWidth: 800,
-      minHeight: 800,
-    );
+    try {
+      var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: 60,
+        minWidth: 800,
+        minHeight: 800,
+      );
 
-    if (result != null) {
-      print("Orijinal boyut: ${file.lengthSync()} bytes");
-      return File(result.path);  // XFile yerine File döndürüyoruz
-    } else {
-      print("Sıkıştırma başarısız.");
+      return result != null ? File(result.path) : null;
+    } catch (e) {
       return null;
     }
-  } catch (e) {
-    print("Sıkıştırma hatası: $e");
-    return null;
   }
-}
-
 
   /// Fotoğrafı Firestore'a Kaydetme ve Firestore'a Bilgileri Ekleme
   Future<void> _addToy() async {
@@ -77,41 +65,22 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
     });
 
     try {
-      // Fotoğrafı sıkıştır
       File? compressedImage = await compressImage(_selectedImage!);
+      if (compressedImage == null) throw Exception("Fotoğraf sıkıştırılamadı.");
 
-      if (compressedImage == null) {
-        throw Exception("Fotoğraf sıkıştırılamadı.");
-      }
-
-      // Firebase Storage instance'ını özel bucket URL'si ile başlat
       FirebaseStorage storage = FirebaseStorage.instanceFor(
-               bucket: 'gs://toyflow-9f294.firebasestorage.app', // Doğru bucket URL'si
+        bucket: 'gs://toyflow-9f294.firebasestorage.app',
       );
 
-      // Dosya adını ve referansını belirle
       String fileName = 'toy_photos/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      print('Yükleme için dosya yolu: $fileName');
       Reference storageRef = storage.ref().child(fileName);
 
-      // Fotoğrafı yükle
       UploadTask uploadTask = storageRef.putFile(compressedImage);
-
-      // Yükleme sırasında loglar
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        print('Yükleme durumu: ${snapshot.state}');
-      }, onError: (e) {
-        print('Yükleme sırasında hata oluştu: $e');
-      });
-
-      // Yükleme tamamlandığında URL'yi al
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
 
       if (taskSnapshot.state == TaskState.success) {
         String downloadUrl = await storageRef.getDownloadURL();
-        print('Dosya başarıyla yüklendi. URL: $downloadUrl');
 
-        // Firestore'a oyuncak adı ve fotoğraf linkini ekle
         await _firestore.collection('toy_name').add({
           'name': toyName,
           'photo': downloadUrl,
@@ -121,7 +90,6 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
           const SnackBar(content: Text('Oyuncak başarıyla eklendi.')),
         );
 
-        // Alanları temizle
         setState(() {
           _toyNameController.clear();
           _selectedImage = null;
@@ -133,7 +101,6 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hata oluştu: $e')),
       );
-      print('Yükleme hatası: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -157,12 +124,27 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Oyuncak Adı TextField
-            TextField(
-              controller: _toyNameController,
-              decoration: const InputDecoration(
-                labelText: 'Oyuncak Adı',
-                border: OutlineInputBorder(),
+            // Oyuncak Adı TextField (Düzenlenmiş Tasarım)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30), // Oval kenarlar
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _toyNameController,
+                decoration: const InputDecoration(
+                  hintText: 'Oyuncak ismi yazın...',
+                  border: InputBorder.none, // Kenarlık kaldırıldı
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -171,16 +153,22 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
             GestureDetector(
               onTap: _pickImage,
               child: _selectedImage != null
-                  ? Image.file(
-                      _selectedImage!,
-                      height: 200,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : Container(
                       height: 200,
                       width: double.infinity,
-                      color: Colors.grey[300],
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                       child: const Center(
                         child: Text('Fotoğraf Seçmek İçin Tıklayın'),
                       ),
@@ -191,9 +179,26 @@ class _ToyWithPhotoAddScreenState extends State<ToyWithPhotoAddScreen> {
             // Yükleme Göstergeci
             _isLoading
                 ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _addToy,
-                    child: const Text('Oyuncak Ekle'),
+                : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _addToy,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black, // Siyah arka plan
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30), // Oval buton
+                        ),
+                      ),
+                      child: const Text(
+                        'Oyuncak Ekle',
+                        style: TextStyle(
+                          color: Colors.white, // Beyaz metin
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
           ],
         ),

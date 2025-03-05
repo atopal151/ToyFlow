@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../services/user_services/auth_service.dart';
 import '../../../../services/user_services/product_services.dart';
 import '../../../adminPage/new_toy_add_screen/new_toy_detail.dart';
+import '../../../adminPage/new_toy_add_screen/toy_list_screen.dart';
 import '../users_work_screen/users_work_screen.dart';
 import '../waste/waste_flow.dart';
 
@@ -243,6 +244,25 @@ void _launchURL(String url) async {
                       );
                     },
                   ),
+                ListTile( 
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.playlist_add,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  title: const Text('Oyuncak İsmi'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Get.to(() => const ToyListScreen());
+                  },
+                ),
                 ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(12),

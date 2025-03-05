@@ -445,6 +445,25 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                                   ),
                                                 ],
                                               ),
+
+                                                  const SizedBox(width: 10),
+                                              if (work['aksesuar'] != null)
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.style,
+                                                      color: Color.fromARGB(255, 192, 126, 39),
+                                                      size: 16),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    "${work['aksesuar']}",
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12),
+                                                  ),
+                                                  
+                                                ],
+                                              ),
                                           ],
                                         ),
                                         const SizedBox(height: 5),
@@ -457,7 +476,7 @@ class _UsersWorkScreenState extends State<UsersWorkScreen> {
                                             Text(
                                               '${work['miktar'] ?? 0} Kg/adet',
                                               style:
-                                                  const TextStyle(fontSize: 12),
+                                                  const TextStyle(fontSize: 12,fontWeight: FontWeight.bold),
                                             ),
                                           ],
                                         ),

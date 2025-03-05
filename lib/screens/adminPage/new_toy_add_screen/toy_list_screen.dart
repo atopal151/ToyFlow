@@ -81,57 +81,106 @@ class _ToyListScreenState extends State<ToyListScreen> {
       return null;
     }
   }
-
   /// Oyuncak Adını ve Fotoğrafını Güncelle
-  Future<void> _updateToy(
-      String docId, String currentName, String? currentPhoto) async {
-    TextEditingController _nameController =
-        TextEditingController(text: currentName);
-    File? _newImage;
+  /// 
+  /// 
+   
+   /// Oyuncak Adını ve Fotoğrafını Güncelle
+Future<void> _updateToy(
+    String docId, String currentName, String? currentPhoto) async {
+  TextEditingController nameController =
+      TextEditingController(text: currentName);
+  File? newImage;
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Oyuncağı Güncelle'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Oyuncak Adı'),
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      title: const Center(
+        child: Text(
+          'Oyuncağı Güncelle',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 350), // Genişliği sınırladık
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Fazladan genişlemeyi engelliyor
+          children: [
+            // Oyuncak Adı TextField (Yeni Tasarım)
+            Container(
+              width: 300,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () async {
-                  _newImage = await _pickImage();
-                  setState(() {});
-                },
-                child: _newImage != null
-                    ? Image.file(_newImage!, height: 150, fit: BoxFit.cover)
-                    : Image.network(
-                        (currentPhoto != null && currentPhoto.isNotEmpty)
-                            ? currentPhoto
-                            : _defaultPhotoUrl,
-                        height: 150,
-                        fit: BoxFit.cover,
-                      ),
+              child: TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Oyuncak Adı',
+                  border: InputBorder.none,
+                ),
               ),
-            ],
+            ),
+            const SizedBox(height: 16),
+
+            // Fotoğraf Seçme Alanı
+            GestureDetector(
+              onTap: () async {
+                newImage = await _pickImage();
+                setState(() {});
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: SizedBox(
+                  width: 250,
+                  height: 150,
+                  child: newImage != null
+                      ? Image.file(
+                          newImage!,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.network(
+                          (currentPhoto != null && currentPhoto.isNotEmpty)
+                              ? currentPhoto
+                              : _defaultPhotoUrl,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'İptal',
+            style: TextStyle(color: Colors.black),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('İptal'),
-          ),
-          ElevatedButton(
+        SizedBox(
+          width: double.infinity, // Tam genişlikte buton
+          child: ElevatedButton(
             onPressed: () async {
-              String updatedName = _nameController.text.trim();
+              String updatedName = nameController.text.trim();
               String updatedPhotoUrl = currentPhoto ?? _defaultPhotoUrl;
 
-              if (_newImage != null) {
-                // Fotoğrafı sıkıştır
-                File? compressedImage = await _compressImage(_newImage!);
+              if (newImage != null) {
+                File? compressedImage = await _compressImage(newImage!);
                 if (compressedImage != null) {
                   String? uploadedUrl = await _uploadImage(compressedImage);
                   if (uploadedUrl != null) {
@@ -145,8 +194,7 @@ class _ToyListScreenState extends State<ToyListScreen> {
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Fotoğraf sıkıştırılamadı.')),
+                    const SnackBar(content: Text('Fotoğraf sıkıştırılamadı.')),
                   );
                   return;
                 }
@@ -164,12 +212,172 @@ class _ToyListScreenState extends State<ToyListScreen> {
               Navigator.pop(context);
               setState(() {});
             },
-            child: const Text('Güncelle'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: const Text(
+              'Güncelle',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+  /*
+  Future<void> _updateToy(
+      String docId, String currentName, String? currentPhoto) async {
+    TextEditingController nameController =
+        TextEditingController(text: currentName);
+    File? newImage;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Center(
+          child: Text(
+            'Oyuncağı Güncelle',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Oyuncak Adı TextField (Yeni Tasarım)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30), // Oval kenarlar
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Oyuncak Adı',
+                  border: InputBorder.none, // Kenarlık kaldırıldı
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Fotoğraf Seçme Alanı
+            GestureDetector(
+              onTap: () async {
+                newImage = await _pickImage();
+                setState(() {});
+              },
+              child: newImage != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.file(
+                        newImage!,
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.network(
+                        (currentPhoto != null && currentPhoto.isNotEmpty)
+                            ? currentPhoto
+                            : _defaultPhotoUrl,
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'İptal',
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+          SizedBox(
+            child: ElevatedButton(
+              onPressed: () async {
+                String updatedName = nameController.text.trim();
+                String updatedPhotoUrl = currentPhoto ?? _defaultPhotoUrl;
+
+                if (newImage != null) {
+                  File? compressedImage = await _compressImage(newImage!);
+                  if (compressedImage != null) {
+                    String? uploadedUrl = await _uploadImage(compressedImage);
+                    if (uploadedUrl != null) {
+                      updatedPhotoUrl = uploadedUrl;
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Yeni fotoğraf yüklenemedi.')),
+                      );
+                      return;
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Fotoğraf sıkıştırılamadı.')),
+                    );
+                    return;
+                  }
+                }
+
+                await _firestore.collection('toy_name').doc(docId).update({
+                  'name': updatedName,
+                  'photo': updatedPhotoUrl,
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Oyuncak güncellendi.')),
+                );
+
+                Navigator.pop(context);
+                setState(() {});
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black, // Siyah arka plan
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30), // Oval buton
+                ),
+              ),
+              child: const Text(
+                'Güncelle',
+                style: TextStyle(
+                  color: Colors.white, // Beyaz metin
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
-  }
+  }*/
 
   /// Oyuncağı Sil
   Future<void> _deleteToy(String docId) async {
@@ -188,11 +396,21 @@ class _ToyListScreenState extends State<ToyListScreen> {
         backgroundColor: Colors.grey.shade100,
         title: const Text('Oyuncak Listesi'),
         actions: [
-          InkWell(
-            onTap: () => Get.to(() => const ToyWithPhotoAddScreen()),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(Icons.add),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.black, borderRadius: BorderRadius.circular(50)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () => Get.to(() => const ToyWithPhotoAddScreen()),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -226,30 +444,93 @@ class _ToyListScreenState extends State<ToyListScreen> {
                   ? photoUrl
                   : _defaultPhotoUrl;
 
-              return Card(
-                color: Colors.white,
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  leading: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(
-                      displayPhoto,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  title: Text(name),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Color.fromARGB(255, 57, 50, 50)),
-                        onPressed: () => _updateToy(docId, name, photoUrl),
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Color.fromARGB(255, 203, 105, 98)),
-                        onPressed: () => _deleteToy(docId),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Fotoğraf
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          width: 80, // Kare boyut
+                          height: 80,
+                          child: Image.network(
+                            displayPhoto,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Oyuncak Adı ve Butonlar
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .spaceBetween, // Butonları sağa it
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+
+                            Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center, // Ortada hizala
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.black),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      size: 17,
+                                    ),
+                                    onPressed: () =>
+                                        _updateToy(docId, name, photoUrl),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.black),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color:
+                                            Color.fromARGB(255, 255, 255, 255),
+                                        size: 17),
+                                    onPressed: () => _deleteToy(docId),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
