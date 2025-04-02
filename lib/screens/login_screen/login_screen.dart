@@ -172,15 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const Spacer(flex: 2),
-              const Text(
-                "Özgüner Oyuncak",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
-              ),
-              const Spacer(flex: 1),
+              
             ],
           ),
         ),
