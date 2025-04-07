@@ -1,6 +1,8 @@
 // login_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:toyflow/screens/signup_page/signup_page.dart';
 import '../../services/user_services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,6 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = false;
     });
+  }
+  void _getToSignupScreen(){
+    Get.to(SignupScreen());
   }
 
   @override
@@ -119,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon:
                               const Icon(Icons.lock, color: Colors.grey),
                           suffixIcon: InkWell(
-                            onTap: (){
+                            onTap: () {
                               setState(() {
                                 isPasswordVisible = !isPasswordVisible;
                               });
@@ -169,10 +174,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap:() {
+                          _getToSignupScreen();
+                        },
+                        child:  Text(
+                          'Kayıt Ol',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.grey[400]),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              
+              const Spacer(flex: 2),
             ],
           ),
         ),
