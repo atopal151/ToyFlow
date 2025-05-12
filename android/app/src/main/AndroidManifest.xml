@@ -11,7 +11,8 @@
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
         android:label="ToyFlow"
-        android:name="${applicationName}">
+        android:name="${applicationName}" 
+    android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
